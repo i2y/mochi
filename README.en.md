@@ -114,20 +114,20 @@ match lis:
 
 ### Algebraic data type
 ```python
-Data Point:
+aata Point:
     Point2D(x, y)
     Point3D(x, y, z)
 
-P1 = Point2D(x=1, y=2)
+p1 = Point2D(x=1, y=2)
 # => Point2D(x=1, y=2)
 
-P2 = Point2D(3, 4)
+p2 = Point2D(3, 4)
 # => Point2D(x=3, y=4)
 ```
 
 ### Pattern-matching function definition
 ```python
-Data Point:
+data Point:
     Point2D(x, y)
     Point3D(x, y, z)
 
@@ -160,12 +160,12 @@ range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
 ### Anonymous function
 ```python
 # Arrow expression.
-Add = (x, y) -> x+y
-Add(1, 2)
+add = (x, y) -> x+y
+add(1, 2)
 # => 3
 
-Add = -> $1 + $2
-Add(1, 2)
+add = -> $1 + $2
+add(1, 2)
 # => 3
 
 foo = (x, y) ->
