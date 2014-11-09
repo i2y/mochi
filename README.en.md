@@ -78,13 +78,13 @@ v(1, 2, 3)
 {'x': 100, 'y': 200}
 # => pmap({'y': 200, 'x': 100})
 
-m (x = 100, y = 200)
+m(x=100, y=200)
 # => pmap({'y': 200, 'x': 100})
 
-s (1, 2, 3)
+s(1, 2, 3)
 # => pset([1, 2, 3])
 
-b (1, 2, 3)
+b(1, 2, 3)
 # => pbag([1, 2, 3])
 ```
 
@@ -118,7 +118,7 @@ Data Point:
     Point2D(x, y)
     Point3D(x, y, z)
 
-P1 = Point2D(x = 1, y = 2)
+P1 = Point2D(x=1, y=2)
 # => Point2D(x=1, y=2)
 
 P2 = Point2D(3, 4)
@@ -128,8 +128,8 @@ P2 = Point2D(3, 4)
 ### Pattern-matching function definition
 ```python
 Data Point:
-    Point2D (x, y)
-    Point3D (x, y, z)
+    Point2D(x, y)
+    Point3D(x, y, z)
 
 defm offset:
     [Point2D(x1, y1), Point2D(x2, y2)]:
