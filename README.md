@@ -22,7 +22,7 @@ PythonのAST/バイトコードに変換し、Python仮想マシン上で実行�
 - パターンマッチ/代数的データ型みたいなもの
 - パイプライン演算子
 - 無名関数定義の糖衣構文
-- Python3のitertools、functools、operatorモジュールの関数とレシピの関数が組み込み
+- Python3のitertools、functools、operatorモジュールの関数とitertoolsレシピの関数が組み込み
 
 
 ## 依存モジュール
