@@ -1,6 +1,6 @@
 __author__ = 'Yasushi Itoh'
 __version__ = '0.0.1'
-__license__ = 'MIT'
+__license__ = 'MIT License'
 
 
 import sys
