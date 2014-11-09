@@ -1,0 +1,239 @@
+1 * 3 + (2 + 3)
+x = 1 * 3 + (2 + 3)
+x
+type
+True
+if False:
+    z = "aiueo"
+    z + "kakiku"
+elif False:
+    100000
+elif False:
+    200000
+else:
+    print "False!"
+
+if True:
+    w = "aiueo"
+    w + "kakiku"
+else:
+   "fafa"
+
+[]
+[1]
+[1, 2]
+[w, 2, 3]
+
+def f():
+    print("f" + "a")
+
+
+(x) -> x
+
+ff = (x, y) -> x
+
+f()
+print(200)
+ff(1, 2)
+1 ^ ff(2) ^ ff(3)
+1 |> ff(2) |> ff(3)
+{}
+{"x" : 3}
+{"x" : 3, "y" : 1 + 1}
+{"y" + "z" : 3, "y" : 1 + 1}
+{x : 3}
+#zzz = cases 10:
+#    | 10 => print(100000)
+#    | _ =>  "else!"
+#
+#zzz
+
+fff = match [1, 2, 3]:
+    [1, 2, 3]: True
+
+print("faf")
+print(fff)
+print("afaf")
+
+match {"x": [1, 2, 3]}:
+    {"x": [1, _, y]}: y
+
+#case {"x": (1, 2, 3)}
+#    {"x": 100}
+#    {"x": z} :
+
+# xyz = if True: 0 else: 100
+
+# xyz
+
+[z1, &z2] = [1, 2, 3, 4, 5]
+z2
+
+get(z2, 0, 2)
+
+xxxxx = 33333
+#def fafafafafafa():
+#    loop:
+#        print(100)
+#        yield 10
+#
+#g = fafafafafafa()
+#next(g)
+
+#[for item in range(1, 31): item * 2] |> map({ $1 * 2 }) |> tuple() |> print()
+#[for item in range(1, 31): item * 2] |> map({ $1 * 2 }) |> print()
+#[for item in range(1, 31): item * 2] |> print()
+#[for item in range(1, 31): item * 2] |> print()
+[item * 2 for item in range(1, 31)] |> map(-> $1 * 2) |> tuple() |> print()
+[item * 2 for item in range(1, 31)] |> print()
+
+"faf".__str__()
+if 21 + -20 == 1 and True:
+    zz = (-> $1 + $2)(100, 200)
+else:
+    zz2 = (-> $1 + $2)(100, 20)
+
+1 + 1
+3 + 2
+
+print(str(1) + str(2), 10)
+
+tuple(map(-> if True: $1 + 10 else: $1 + 20, [1, 2, 3]))
+
+match ["faa", 200]:
+    ["aaa", xx]: print(xx + 200)
+    ["faa", xxx]: print(xxx + 1000)
+
+def fr(x, y):
+    [x + 1, y()]
+
+fr2 = flip(fr)
+print(fr2(-> 1 + 2, 1))
+print(fr(1, -> 1 + 2))
+
+
+#record Node(x, y)
+
+#r = Node(10, 20)
+#case r:
+#    Node(x, 20) => x
+
+#record Node2(value, left, right)
+
+data BinTree:
+    Leaf(value)
+    Node(value, left, right)
+
+Leaf(20)
+Node(1, 2, 3)
+Node(1, 2, 3)
+Node(10, 15, 40)
+Node(20, 100, Leaf(40))
+
+
+#@lru_cache()
+def addAB(a, b):
+    if a == 0:
+        b
+    else:
+        addAB(a - 1, b + 1)
+
+print(addAB(1986, 27))
+
+import flask
+from PIL import Image
+
+module fafa:
+    a, b, lll
+    a = 100
+    b = {"a" : 3}
+    c = 300
+    def lll():
+        print("lll")
+
+print(fafa.b)
+
+fafa.lll()
+
+import flask
+
+def xxxx():
+    try:
+        print(100)
+        raise Exception("fafa")
+    except Exception as e:
+        print(e)
+    except Exception as b:
+        print(b)
+    finally:
+        print("finally")
+
+xxxx()
+if True:
+    print("true")
+else:
+    print("fafa")
+
+
+
+def addAB2(a, b):
+    try:
+        if a == 0:
+            b
+        else:
+            addAB2(a - 1, b + 1)
+    finally:
+        "finally"
+
+def addAB3(a, b):
+    if a == 0:
+        b
+    else:
+        addAB3(a - 1, b + 1)
+
+print(addAB3(100000000, 200000))
+
+from time import time
+
+#def tak(x, y, z):
+#    if x <= y:
+#        z
+#    else:
+#        tak(tak(x - 1, y, z), tak(y - 1, z, x), tak(z - 1, x, y))
+
+def tak(x, y, z):
+    if x <= y:
+        return z
+    else:
+        return tak(tak(x - 1, y, z), tak(y - 1, z, x), tak(z - 1, x, y))
+
+start = time()
+res = tak(20, 10, 0)
+print(time() - start, res)
+
+map(-> $1 * 2, [1, 2, 3])
+print("afaf")
+print(tuple(map(-> $1 * 2, [1, 2, 3])))
+print("afaf")
+map((item) -> item * 2, [1, 2, 3]) |> tuple() |> print()
+
+#fffff = x, y -> print(x, y)
+#fffff(10, 20)
+#print([int(1), 2, "a" + "b"], [2, 4, 6])
+
+
+def vagrgs(a, &rest):
+    print(rest)
+
+vagrgs(1, 2, 3)
+
+require "etc_inner.mochi"
+
+print(TestB.fafa)
+TestB.fafa()
+
+def fafa():
+    x = 3000
+    x
+
+print(fafa())

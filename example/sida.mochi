@@ -1,0 +1,37 @@
+import random
+from PIL import Image
+
+N = 20
+xm = 0
+ym = 0.5
+h = 0.6
+
+width = 500
+height = 500
+
+W1x = -> 0.836 * $1 + 0.044 * $2
+W1y = -> -0.044 * $1 + 0.836 * $2 + 0.169
+W2x = -> -0.141 * $1 + 0.302 * $2
+W2y = -> 0.302 * $1 + 0.141 * $2 + 0.127
+W3x = -> 0.141 * $1 - 0.302 * $2
+W3y = -> 0.302 * $1 + 0.141 * $2 + 0.169
+W4x = -> 0 * $2
+W4y = -> 0.175337 * $2
+
+
+def f(im, k, x, y):
+    if 0 < k:
+        f(im, k - 1, W1x(x, y), W1y(x, y))
+        if random.random() < 0.3:
+            f(im, k - 1, W2x(x, y), W2y(x, y))
+        if random.random() < 0.3:
+            f(im, k - 1, W3x(x, y), W3y(x, y))
+        if random.random() < 0.3:
+            f(im, k - 1, W4x(x, y), W4y(x, y))
+    else:
+        s = 490
+        im.putpixel([int(x * s + width * 0.5), int(height - y * s)], tuple([0, 128, 0]))
+
+im = Image.new("RGB", [width, height], tuple([255, 255, 255]))
+f(im, N, 0, 0)
+im.show()
