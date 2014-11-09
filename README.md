@@ -109,6 +109,7 @@ print(hoge(3))
 # 注意：matchはスコープを作りません。
 #      これはPythonやMochiのif文と同様です。
 lis = [1, 2, 3]
+
 match lis:
     [1, 2, x]: x
     _: None

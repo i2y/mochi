@@ -100,6 +100,7 @@ hoge(3)
 ### Pattern matching
 ```python
 lis = [1, 2, 3]
+
 match lis:
     [1, 2, x]: x
     _: None
