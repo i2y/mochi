@@ -156,7 +156,7 @@ offset(Point3D(1, 2, 3), Point3D(4, 5, 6))
 ### パイプライン演算子（fizzbuzz)
 [こちらのページ](http://wllwmiilmmw.tumblr.com/post/72971456714/yeti-lang)に記載のコードを参考に、
 Mochiでfizzbuzz。
-```
+```python
 def fizzbuzz(n):
     match [n % 3, n % 5]:
         [0, 0]: "fizzbuzz"
