@@ -198,9 +198,9 @@ pvector(map(-> $1 * 2, [1, 2, 3]))
 - 説明の追加
 - 構文解析の改善
 - クラス定義のサポート？
-## Licence
 
-[MITライセンス](https://github.com/tcnksm/tool/blob/master/LICENCE)
+## Licence
+MIT Licence
 
 ## Author
 
