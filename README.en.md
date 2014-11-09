@@ -7,8 +7,8 @@ Mochi is a dynamically typed functional programming language and its interpreter
 ## Summary
 Mochi is a dynamically typed functional programming language.
 Interpreter is written in Python3.
+A program written in Mochi is compiled to Python's AST / bytecode by the interpreter.
 
-Interpreter convert code written in Mochi into Python's AST / bytecode and executes on the Python virtual machine.
 
 
 ## Features
