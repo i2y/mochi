@@ -12,7 +12,7 @@ Mochiは動的型付けの関数型言語です。
 PythonのAST/バイトコードに変換し、Python仮想マシン上で実行します。
 
 
-### 特徴
+## 特徴
 - Pythonぽい構文
 - Pythonモジュールを簡単に利用可
 - 動作環境のPython（CPython or PyPy）と同等の実行速度
