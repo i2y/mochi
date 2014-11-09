@@ -115,7 +115,7 @@ match lis:
 
 ### Algebraic data type
 ```python
-aata Point:
+data Point:
     Point2D(x, y)
     Point3D(x, y, z)
 
