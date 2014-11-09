@@ -23,10 +23,10 @@ A program written in Mochi is compiled to Python's AST / bytecode by the interpr
 
 
 ## Dependencies
-- CPython => 3.2 or PyPy => 3.2.1
-- rply => 0.7.2
-- pyrsistent => 0.6.2
-- pathlib => 1.0.1
+- CPython >= 3.2 or PyPy >= 3.2.1
+- rply >= 0.7.2
+- pyrsistent >= 0.6.2
+- pathlib >= 1.0.1
 
 
 ## Installation
