@@ -96,7 +96,7 @@ b(1, 2, 3)
 ```
 
 ### 関数定義
-```
+```python
 def hoge(x):
     hoge + str(x)
      
