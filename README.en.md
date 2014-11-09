@@ -160,7 +160,7 @@ range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
 ### Anonymous function
 ```python
 # Arrow expression.
-add = (x, y) -> x+y
+add = (x, y) -> x + y
 add(1, 2)
 # => 3
 
