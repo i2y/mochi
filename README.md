@@ -93,11 +93,13 @@ b(1, 2, 3)
 ```
 
 ### 関数定義
+```
 def hoge(x):
     hoge + str(x)
      
 print(hoge(3))
 # hoge3を表示
+```
 
 ### パターンマッチ
 ```python
