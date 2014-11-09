@@ -47,7 +47,7 @@ $ mochi
 ```sh
 $ cat kinako.mochi
 print('kinako')
-$ kinako.mochi mochi
+$ mochi kinako.mochi
 kinako
 $
 ```
