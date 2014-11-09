@@ -129,6 +129,7 @@ data Point:
     
 p1 = Point2D(x=1, y=2)
 # => Point2D(x=1, y=2)
+
 p2 = Point2D(3, 4)
 # => Point2D(x=3, y=4)
 ```
