@@ -21,7 +21,7 @@ PythonのAST/バイトコードに変換し、Python仮想マシン上で実行�
 - 基本のデータ型は永続データ構造（Pyrsistentを利用）
 - パターンマッチ/代数的データ型みたいなもの
 - パイプライン演算子
-- 無名関数定義の糖衣構文
+- 無名関数定義のシンタックスシュガー
 - Python3のitertools、functools、operatorモジュールの関数とitertoolsレシピの関数が組み込み
 
 
