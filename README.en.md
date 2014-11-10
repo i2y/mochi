@@ -31,7 +31,7 @@ A program written in Mochi is compiled to Python's AST / bytecode by the interpr
 
 ## Installation
 ```sh
-$ pip install git+https://github.com/i2y/mochi.git
+$ pip install mochi
 ```
 
 

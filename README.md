@@ -35,7 +35,7 @@ PythonのAST/バイトコードに変換し、Python仮想マシン上で実行�
 ## インストール
 
 ```sh
-$ pip install git+https://github.com/i2y/mochi.git
+$ pip install mochi
 ```
 
 
