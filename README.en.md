@@ -22,7 +22,7 @@ A program written in Mochi is compiled to Python's AST / bytecode by the interpr
 - Built-in Python3 itertools and functools, operator module functions and function in itertools recipes
 
 
-## Dependencies
+## Requirements
 - CPython >= 3.2 or PyPy >= 3.2.1
 - rply >= 0.7.2
 - pyrsistent >= 0.6.2
