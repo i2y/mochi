@@ -23,7 +23,7 @@ import platform
 from pyrsistent import v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l, plist, pclass, freeze, thaw
 
 # import traceback
-
+import mochi
 from mochi.parser import Symbol, Keyword, parse, lex, REPL_CONTINUE
 
 
@@ -1246,7 +1246,6 @@ def is_record(name):
 
 
 #---------------------------------------------------------
-VERSION = '0.0.1'
 
 syntax_table = {}
 
@@ -3103,17 +3102,16 @@ def assert_not_same(value1, value2):
     assert value1 is not value2
 
 
+# 'translator' and 'bindingNameSetStack' is a global variable.
 translator = Translator()
 global_scope = Scope()
 for name in global_env.keys():
     global_scope.add_binding_name(name, "<builtin>")
 binding_name_set_stack = [global_scope]
 
+VERSION = '0.0.1.1'
 
-#if __name__ == '__main__':
 def main():
-    # 'translator' and 'bindingNameSetStack' is a global variable.
-
     eval("""
 (mac get! (ref)
   `((get ,ref 0)))

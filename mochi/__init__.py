@@ -1,5 +1,7 @@
+from mochi import mochi
+
 __author__ = 'Yasushi Itoh'
-__version__ = '0.0.1'
+__version__ = mochi.VERSION
 __license__ = 'MIT License'
 
 

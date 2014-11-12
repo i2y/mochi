@@ -13,10 +13,10 @@ if not IS_PYTHON_34:
 setup(
     name='mochi',
     version=__version__,
-    description='A programming language',
+    description='Dynamically typed functional programming language',
     license=__license__,
     author=__author__,
-    url='https://github.com/i2y/mochi.git',
+    url='https://github.com/i2y/mochi',
     platforms=['any'],
     entry_points={
         'console_scripts': [
