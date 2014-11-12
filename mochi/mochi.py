@@ -299,7 +299,7 @@ def _require_py_module(target_symbols):
             if target_name == 'builtins' or target_name in binding_name_set:
                 continue
             target_obj = __import__(target_name)
-        binding_name_set.add_constant_name(target_name, "<string>")  # TODO
+        binding_name_set.add_binding_name(target_name, "<string>")  # TODO
         global_env[target_name] = target_obj
     return True
 
@@ -1288,8 +1288,8 @@ op_ast_map = {'+': ast.Add(),
               'or': ast.Or()}
 
 
-def add_constant_name(binding_name, file_name):
-    return binding_name_set_stack[-1].add_constant_name(binding_name, file_name)
+def add_binding_name(binding_name, file_name):
+    return binding_name_set_stack[-1].add_binding_name(binding_name, file_name)
 
 
 def _check_duplicated_binding_name(symbol, filename, lis):
@@ -1311,7 +1311,6 @@ def check_duplicated_binding_name(symbol, filename):
 def check_duplicated_binding_name_outer(symbol, filename):
     binding_name_set_stack[-2].add(symbol.name)
     return symbol
-    # return _check_duplicated_binding_name(symbol, filename, binding_name_set_stack[:-1])
 
 
 def check_duplicated_binding(sexps, filename):
@@ -1344,9 +1343,9 @@ class Scope(dict):
         for child in self.children:
             merge_map.update(child)
         for binding_name in merge_map.keys():
-            self.add_constant_name(binding_name, merge_map[binding_name])
+            self.add_binding_name(binding_name, merge_map[binding_name])
 
-    def add_constant_name(self, binding_name, file_name):
+    def add_binding_name(self, binding_name, file_name):
         # TODO _gs
         if not binding_name.startswith('_gs') and binding_name in self:
             raise DuplicatedDefError(binding_name, file_name)
@@ -1419,11 +1418,11 @@ def tuple_it(obj):
 if IS_PYTHON_34:
     expr_and_stmt_ast = (ast.Expr, ast.If, ast.For, ast.FunctionDef, ast.Assign, ast.Delete, ast.Try, ast.Raise,
                          ast.With, ast.While, ast.Break, ast.Return, ast.Continue, ast.ClassDef,
-                         ast.Import, ast.ImportFrom)
+                         ast.Import, ast.ImportFrom, ast.Pass)
 else:
     expr_and_stmt_ast = (ast.Expr, ast.If, ast.For, ast.FunctionDef, ast.Assign, ast.Delete, ast.TryFinally,
                          ast.TryExcept, ast.Raise, ast.With, ast.While, ast.Break, ast.Return, ast.Continue,
-                         ast.ClassDef, ast.Import, ast.ImportFrom)
+                         ast.ClassDef, ast.Import, ast.ImportFrom, ast.Pass)
 
 required_filename_set = set()
 
@@ -1439,7 +1438,7 @@ class Translator(object):
         self.filename = filename
         with open(filename, 'r') as f:
             sexps = parse(lex(f.read()))
-            chdir(str(Path(filename).parent))
+            chdir(normpath(str(Path(filename).parent)))
             for sexp in sexps:
                 if isinstance(sexp, MutableSequence):
                     sexp = tuple_it(sexp)
@@ -1990,7 +1989,7 @@ class Translator(object):
 
         @lexical_scope()
         def visit_ClassDef(self, node):
-            add_constant_name(node.name, self.filename)
+            add_binding_name(node.name, self.filename)
             return self.generic_visit(node)
 
         @lexical_scope(quasi=True)
@@ -2045,14 +2044,14 @@ class Translator(object):
         def visit_FunctionDef(self, node):
             if hasattr(node, 'is_visited') and node.is_visited:
                 return node
-            add_constant_name(node.name, self.filename)
+            add_binding_name(node.name, self.filename)
             for arg in node.args.args:
-                add_constant_name(arg if isinstance(arg, str) else arg.arg, self.filename)
+                add_binding_name(arg if isinstance(arg, str) else arg.arg, self.filename)
             if node.args.vararg is not None:
-                add_constant_name(node.args.vararg if isinstance(node.args.vararg, str) else node.args.vararg.arg,
+                add_binding_name(node.args.vararg if isinstance(node.args.vararg, str) else node.args.vararg.arg,
                                   self.filename)
             if node.args.kwarg is not None:
-                add_constant_name(node.args.kwarg if isinstance(node.args.kwarg) else node.args.kwarg.arg,
+                add_binding_name(node.args.kwarg if isinstance(node.args.kwarg) else node.args.kwarg.arg,
                                   self.filename)
             for stmt in node.body:
                 self.visit(stmt)
@@ -2065,7 +2064,12 @@ class Translator(object):
         def visit_Assign(self, node):
             if not (hasattr(node, 're_assign') and node.re_assign):
                 for target in node.targets:
-                    add_constant_name(target.id, self.filename)
+                    add_binding_name(target.id, self.filename)
+            return node
+
+        def visit_ExceptHandler(self, node):
+            if hasattr(node, 'name'):
+                add_binding_name(node.name, self.filename)
             return node
 
     def _check_duplicated_binding(self, func_ast):
@@ -2179,8 +2183,8 @@ class Translator(object):
     def _tail_to_return_s(self, exps):
 
         def except_tail_to_return(except_exp):
-            if issequence_except_str(except_exp) and isinstance(except_exp[0], Symbol) and except_exp[
-                0].name == 'except':
+            if issequence_except_str(except_exp) and isinstance(except_exp[0], Symbol)\
+                    and except_exp[0].name == 'except':
                 return (except_exp[0],) + self._tail_to_return_s(except_exp[1:])
             return except_exp
 
@@ -2194,7 +2198,7 @@ class Translator(object):
             exp = (Symbol('return'), exp)
         elif not isinstance(exp[0], Symbol):
             exp = (Symbol('return'), exp)
-        elif exp[0].name in {'val', '_val', 'return', 'yield', 'yield-from', 'raise'}:
+        elif exp[0].name in {'val', '_val', 'return', 'yield', 'yield-from', 'pass', 'raise'}:
             pass
         elif exp[0].name == 'if':
             if_exp = exp
@@ -3102,7 +3106,7 @@ def assert_not_same(value1, value2):
 translator = Translator()
 global_scope = Scope()
 for name in global_env.keys():
-    global_scope.add_constant_name(name, "<builtin>")
+    global_scope.add_binding_name(name, "<builtin>")
 binding_name_set_stack = [global_scope]
 
 
