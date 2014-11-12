@@ -3,8 +3,11 @@ from time import time
 def factorial(n, m):
     if n == 1:
         m
-    factorial(n - 1, n * m)
+    else:
+        factorial(n - 1, n * m)
 
 start = time()
-factorial(900, 1)
-print(time() - start)
+print(factorial(10000, 1))
+print()
+print('factorial(10000)')
+print('time:', time() - start)
