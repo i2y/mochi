@@ -113,7 +113,6 @@ klg.add('MODULE', r'^module$')
 klg.add('REQUIRE', r'^require$')
 klg.add('VAR', r'^var$')
 klg.add('LET', r'^let$')
-klg.add('PASS', r'^pass$')
 klg.add('DEF', r'^def$')
 klg.add('DEFM', r'^defm$')
 klg.add('FN', r'^fn$')
@@ -153,7 +152,7 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                       'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'DQUOTE_STR', 'SQUOTE_STR', 'AT',
                       'NAME', 'EQUALS', 'IF', 'ELSEIF', 'ELSE', 'COLON', 'SEMI', 'DATA', 'IMPORT', 'REQUIRE',
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'RETURN',
-                      'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'PASS', 'THINARROW',
+                      'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'THINARROW',
                       'YIELD', 'FROM', 'FOR', 'IN', 'DOT', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT',
                       'MODULE', 'AS', 'RAISE'],
                      precedence=[('left', ['EQUALS']),
@@ -194,7 +193,6 @@ def stmts_stmt(p):
 
 
 @pg.production('stmt : NEWLINE')
-@pg.production('stmt : PASS')
 @pg.production('stmt : SEMI')
 def stmt_newline(p):
     pass
@@ -776,11 +774,6 @@ def field(p):
 @pg.production('key : binop_expr')
 def key(p):
     return p[0]
-
-
-@pg.production('match_expr : MATCH expr COLON NEWLINE INDENT PASS NEWLINE DEDENT')
-def case_empty(p):
-    return Symbol('None')
 
 
 @pg.production('match_expr : MATCH expr COLON NEWLINE INDENT case_branches DEDENT')
