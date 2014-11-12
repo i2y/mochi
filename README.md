@@ -143,13 +143,13 @@ data Point:
 
 defm offset:
     [Point2D(x1, y1), Point2D(x2, y2)]:
-        Point2D([x1 + x2, y1 + y2])
+        Point2D(x1 + x2, y1 + y2)
     [Point3D(x1, y1, z1), Point3D(x2, y2, z2)]:
-        Point3D([x1 + x2, y1 + y2, z1 + z2])
+        Point3D(x1 + x2, y1 + y2, z1 + z2)
     _: None
 
 offset(Point2D(1, 2), Point2D(3, 4))
-# => Point2D(x=3, y=4)
+# => Point2D(x=4, y=5)
 offset(Point3D(1, 2, 3), Point3D(4, 5, 6))
 # => Point3D(x=5, y=7, z=9)
 ```
