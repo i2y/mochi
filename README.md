@@ -169,7 +169,7 @@ range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
 # => pvector([1, 2, 'fizz', 4, 'buzz', 'fizz', 7, 8, 'fizz', 'buzz', 11, 'fizz', 13, 14, 'fizzbuzz', 16, 17, 'fizz', 19, 'buzz', 'fizz', 22, 23, 'fizz', 'buzz', 26, 'fizz', 28, 29, 'fizzbuzz'])
 
 # python3ではmapはイテレータを返すため、そのままprintするとイテレータオブジェクト自体を表示します。
-# ここではイテレータの中身を表示させたいので、print前にpvectorでpesrsistent vectorに変換しています。
+# ここではイテレータの中身を表示したいので、print前にpvectorでpesrsistent vectorに変換しています。
 ```
 
 ### 無名関数
