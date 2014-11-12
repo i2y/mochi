@@ -2,8 +2,8 @@ from time import time
 
 def factorial(n, m):
     if n == 1:
-        return m
-    return factorial(n - 1, n * m)
+        m
+    factorial(n - 1, n * m)
 
 start = time()
 factorial(900, 1)
