@@ -140,7 +140,7 @@ defm offset:
     _: None
 
 offset(Point2D(1, 2), Point2D(3, 4))
-# => Point2D(x=3, y=4)
+# => Point2D(x=4, y=6)
 offset(Point3D(1, 2, 3), Point3D(4, 5, 6))
 # => Point3D(x=5, y=7, z=9)
 ```
