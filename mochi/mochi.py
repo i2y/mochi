@@ -22,8 +22,6 @@ import platform
 
 from pyrsistent import v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l, plist, pclass, freeze, thaw
 
-# import traceback
-import mochi
 from mochi.parser import Symbol, Keyword, parse, lex, REPL_CONTINUE
 
 
@@ -1370,6 +1368,19 @@ def lexical_scope(quasi=False):
     return _lexical_scope
 
 
+required_filenames_stack = [set()]
+
+
+def lexical_scope_for_require(func):
+    def _lexical_scope(*args, **kwargs):
+        try:
+            required_filenames_stack.append(set())
+            return func(*args, **kwargs)
+        finally:
+            required_filenames_stack.pop()
+    return _lexical_scope
+
+
 def flatten_list(lis):
     i = 0
     while i < len(lis):
@@ -1423,8 +1434,6 @@ else:
                          ast.TryExcept, ast.Raise, ast.With, ast.While, ast.Break, ast.Return, ast.Continue,
                          ast.ClassDef, ast.Import, ast.ImportFrom, ast.Pass)
 
-required_filename_set = set()
-
 
 class Translator(object):
     def __init__(self, macro_table={}, filename='<string>'):
@@ -1464,13 +1473,13 @@ class Translator(object):
         return body
 
     def translate_required_file(self, filename):
-        if filename in required_filename_set:
+        required_filenames = required_filenames_stack[-1]
+        if filename in required_filenames:
             return self.translate_ref(NONE_SYM)[1],
         else:
-            required_filename_set.add(filename)
+            required_filenames.add(filename)
             return self.translate_loaded_file(filename)
 
-    #    def translate_loaded_files(self, file_symbols):
     def translate_loaded_files(self, file_paths):
         body = []
         for file_path in file_paths:
@@ -2325,6 +2334,7 @@ class Translator(object):
                           col_offset=0),), self.translate(EMPTY_SYM, False)[1]
 
     @syntax('def')
+    @lexical_scope_for_require
     def translate_defun(self, exp, decorator_exps=None, visible=True):
         if not (len(exp) >= 4 and type(exp[1]) is Symbol):
             raise MochiSyntaxError(exp, self.filename)
