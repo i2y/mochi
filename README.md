@@ -242,7 +242,7 @@ x
 
 ### module
 ```python
-module Math
+module Math:
     export add, sub
     
     def add(x, y):
