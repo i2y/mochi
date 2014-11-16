@@ -238,6 +238,12 @@ y = 20000
 require "anko.mochi"
 x
 # => 10000
+
+x = 30000
+
+require 'anko.mochi' # include once
+x
+# => 30000
 ```
 
 ### モジュール
@@ -253,6 +259,32 @@ module Math:
 
 Math.add(1, 2)
 # => 3
+```
+
+```sh
+$ cat foobar.mochi
+foo = 'foo'
+bar = 'bar'
+```
+
+```python
+require 'foobar.mochi'
+[foo, bar]
+# => pvector(['foo', 'bar'])
+
+foo = 'foofoofoo'
+
+module X:
+    export foobar
+    require 'foobar.mochi'
+    def foobar:
+        [foo, bar]
+
+X.foobar()
+# => pvector(['foo', 'bar'])
+
+[foo, bar]
+# => pvector(['foofoofoo', 'bar'])
 ```
 
 ## TODO

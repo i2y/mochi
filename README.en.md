@@ -213,7 +213,7 @@ pvector(map(-> $1 * 2, [1, 2, 3]))
 # => pvector([2, 4, 6])
 ```
 
-### Including a file
+### Including a file at compile time
 ```sh
 $ cat anko.mochi
 x = 10000
@@ -227,7 +227,7 @@ x
 
 x = 30000
 
-require 'anko.mochi' # include once
+require 'anko.mochi' # include once at compile time
 x
 # => 30000
 ```
