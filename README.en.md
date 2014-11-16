@@ -224,6 +224,12 @@ y = 20000
 require 'anko.mochi'
 x
 # => 10000
+
+x = 30000
+
+require 'anko.mochi' # load once
+x
+# => 30000
 ```
 
 ### Module
@@ -247,7 +253,7 @@ foo = 'foo'
 bar = 'bar'
 ```
 
-```pythno
+```python
 require 'foobar.mochi'
 [foo, bar]
 # => pvector(['foo', 'bar'])
@@ -262,11 +268,6 @@ module X:
 
 X.foobar()
 # => pvector(['foo', 'bar'])
-
-[foo, bar]
-# => pvector(['foofoofoo', 'bar'])
-
-require 'foobar.mochi' # load once
 
 [foo, bar]
 # => pvector(['foofoofoo', 'bar'])
