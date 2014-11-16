@@ -120,6 +120,31 @@ match lis:
     _: None
 
 # => pvector([2, 3])
+
+foo_map = {'foo' : 'bar'}
+
+match foo_map:
+    {'foo' : value}: value
+    _: None
+# => 'bar'
+```
+
+### 束縛
+```python
+x = 3000
+# => 3000
+
+[a, b] = [1, 2]
+a
+# => 1
+b
+# => 2
+
+[c, &d] = [1, 2, 3]
+c
+# => 1
+d
+# => pvector([2, 3])
 ```
 
 ### 代数的データ型
@@ -133,6 +158,9 @@ p1 = Point2D(x=1, y=2)
 
 p2 = Point2D(3, 4)
 # => Point2D(x=3, y=4)
+
+p1.x
+# => 1
 ```
 
 ### パターンマッチ関数定義
@@ -199,6 +227,33 @@ pvector(map(-> $1 * 2, [1, 2, 3]))
 # => pvector([2, 4, 6])
 ```
 
+### require
+```sh
+$ cat anko.mochi
+x = 10000
+y = 20000
+```
+
+```python
+require "anko.mochi"
+x
+# => 10000
+```
+
+### module
+```python
+module Math
+    export add, sub
+    
+    def add(x, y):
+        x + y
+    
+    def sub(x, y):
+        x - y
+
+Math.add(1, 2)
+# => 3
+```
 
 ## TODO
 - 説明の追加
