@@ -221,7 +221,7 @@ y = 20000
 ```
 
 ```python
-require "anko.mochi"
+require 'anko.mochi'
 x
 # => 10000
 ```
@@ -239,6 +239,37 @@ module Math:
 
 Math.add(1, 2)
 # => 3
+```
+
+```sh
+$ cat foobar.mochi
+foo = 'foo'
+bar = 'bar'
+```
+
+```pythno
+require 'foobar.mochi'
+[foo, bar]
+# => pvector(['foo', 'bar'])
+
+foo = 'foofoofoo'
+
+module X:
+    export foobar
+    require 'foobar.mochi'
+    def foobar:
+        [foo, bar]
+
+X.foobar()
+# => pvector(['foo', 'bar'])
+
+[foo, bar]
+# => pvector(['foofoofoo', 'bar'])
+
+require 'foobar.mochi' # load once
+
+[foo, bar]
+# => pvector(['foofoofoo', 'bar'])
 ```
 
 ## TODO
