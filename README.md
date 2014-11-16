@@ -227,7 +227,7 @@ pvector(map(-> $1 * 2, [1, 2, 3]))
 # => pvector([2, 4, 6])
 ```
 
-### require
+### ファイルをインクルードする（コンパイル時に一度だけ）
 ```sh
 $ cat anko.mochi
 x = 10000
@@ -240,7 +240,7 @@ x
 # => 10000
 ```
 
-### module
+### モジュール
 ```python
 module Math:
     export add, sub
