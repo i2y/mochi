@@ -111,6 +111,7 @@ klg = LexerGenerator()
 klg.add('IMPORT', r'^import$')
 klg.add('MODULE', r'^module$')
 klg.add('REQUIRE', r'^require$')
+klg.add('EXPORT', r'^export$')
 klg.add('VAR', r'^var$')
 klg.add('LET', r'^let$')
 klg.add('DEF', r'^def$')
@@ -148,7 +149,7 @@ klg.add('OPIS', r'^is$')
 klg.add('NOT', r'^not$')
 
 pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ', 'OPGEQ', 'OPEQ', 'OPNEQ',
-                      'OPLT', 'OPGT', 'OPAND', 'OPOR', 'OPIS', 'NOT', 'NEWLINE', 'PERCENT',
+                      'OPLT', 'OPGT', 'OPAND', 'OPOR', 'OPIS', 'NOT', 'NEWLINE', 'PERCENT', 'EXPORT',
                       'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'DQUOTE_STR', 'SQUOTE_STR', 'AT',
                       'NAME', 'EQUALS', 'IF', 'ELSEIF', 'ELSE', 'COLON', 'SEMI', 'DATA', 'IMPORT', 'REQUIRE',
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'RETURN',
@@ -227,14 +228,24 @@ def require_expr(p):
     return [Symbol('require'), p[1]]
 
 
-@pg.production('module_expr : MODULE NAME COLON NEWLINE INDENT export_cls block DEDENT')
+@pg.production('module_expr : MODULE NAME COLON NEWLINE INDENT export_cls_list block DEDENT')
 def module_expr(p):
     return [Symbol('module'), token_to_symbol(p[1]), p[5]] + p[6]
 
 
-@pg.production('export_cls : names')
-def export_cls(p):
+@pg.production('export_cls_list : export_cls_list NEWLINE export_cls')
+def export_cls_list(p):
+    return p[0] + p[2]
+
+
+@pg.production('export_cls_list : export_cls')
+def export_cls_list_one(p):
     return p[0]
+
+
+@pg.production('export_cls : EXPORT names')
+def export_cls(p):
+    return p[1]
 
 
 @pg.production('names : names COMMA name')
