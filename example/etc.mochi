@@ -144,7 +144,7 @@ import flask
 from PIL import Image
 
 module fafa:
-    a, b, lll
+    export a, b, lll
     a = 100
     b = {"a" : 3}
     c = 300
