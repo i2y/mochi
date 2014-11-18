@@ -903,8 +903,8 @@ REPL_CONTINUE = object()
 
 
 def mod_lex(lexer, repl_mode=False):
-    paren_openers = 'LPAREN', 'LBRACE', 'LBRACK'
-    paren_closers = 'RPAREN', 'RBRACE', 'RBRACK'
+    paren_openers = {'LPAREN', 'LBRACE', 'LBRACK'}
+    paren_closers = {'RPAREN', 'RBRACE', 'RBRACK'}
 
     token_queue = []
     indent_level = [0]
@@ -929,17 +929,26 @@ def mod_lex(lexer, repl_mode=False):
         return token
 
     for token in lexer:
+        while len(token_queue) > 0:
+            queued_token = token_queue.pop()
+            if queued_token.gettokentype() in paren_openers:
+                paren_level += 1
+            elif queued_token.gettokentype() in paren_closers:
+                paren_level -= 1
+            ignore_newline = (paren_level > 0)
+            yield queued_token
+
         if token.name == 'NAME':
             for rule in klg.rules:
                 if rule.matches(token.value, 0):
                     token.name = rule.name
                     break
-
-        while len(token_queue) > 0:
-            tmp = token_queue.pop()
-            yield tmp
-
-        if token.gettokentype() == 'NEWLINE':
+        elif token.gettokentype() == 'NEWLINE':
+            for next_token in lexer:
+                if next_token.gettokentype() != 'NEWLINE':
+                    token_queue.append(next_token)
+                    break
+                token = next_token
             if not ignore_newline:
                 yield handle_newline(token)
             continue
@@ -964,6 +973,8 @@ def mod_lex(lexer, repl_mode=False):
             yield token
 
     if repl_mode and len(indent_level) > 1:
+        yield REPL_CONTINUE
+    elif repl_mode and paren_level > 0:
         yield REPL_CONTINUE
     else:
         while len(indent_level) > 1:
