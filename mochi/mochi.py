@@ -3119,7 +3119,7 @@ for name in global_env.keys():
     global_scope.add_binding_name(name, "<builtin>")
 binding_name_set_stack = [global_scope]
 
-VERSION = '0.0.2'
+VERSION = '0.0.2.1'
 
 def main():
     eval("""
