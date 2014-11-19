@@ -2593,7 +2593,7 @@ class Translator(object):
     def translate_import(self, exp):
         if len(exp) < 2:
             raise MochiSyntaxError(exp, self.filename)
-        names = [ast.alias(name=import_sym.name,  # check_duplicated_binding_name(import_sym, self.filename).name,
+        names = [ast.alias(name=import_sym.name,
                            asname=None,
                            lineno=import_sym.lineno,
                            col_offset=import_sym.col_offset) for import_sym in exp[1:]]
@@ -3119,7 +3119,7 @@ for name in global_env.keys():
     global_scope.add_binding_name(name, "<builtin>")
 binding_name_set_stack = [global_scope]
 
-VERSION = '0.0.2.1'
+VERSION = '0.0.2.2'
 
 def main():
     eval("""
