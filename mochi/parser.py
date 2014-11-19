@@ -944,11 +944,6 @@ def mod_lex(lexer, repl_mode=False):
                     token.name = rule.name
                     break
         elif token.gettokentype() == 'NEWLINE':
-            for next_token in lexer:
-                if next_token.gettokentype() != 'NEWLINE':
-                    token_queue.append(next_token)
-                    break
-                token = next_token
             if not ignore_newline:
                 yield handle_newline(token)
             continue
