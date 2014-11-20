@@ -1,0 +1,9 @@
+from flask import Flask
+
+app = Flask('demo')
+
+@app.route('/')
+def hello():
+    'Hello World!'
+
+app.run()
