@@ -103,7 +103,7 @@ lg.add('AT', r'@')
 lg.add('AMP', r'\&')
 lg.add('BACKSLASH', r'\\')
 
-lg.add('NEWLINE', r'\r?\n[\t ]*')
+lg.add('NEWLINE', r'(?:(?:\r?\n)[\t ]*)+')
 lg.ignore(r'[ \t\f\v]+')
 lg.ignore(r'#.*(?:\n|\r|\r\n|\n\r|$)')  # comment
 
