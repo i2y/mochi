@@ -218,9 +218,24 @@ def stmt(p):
     return p[0]
 
 
-@pg.production('import_expr : IMPORT NAME')
+@pg.production('import_expr : IMPORT names')
 def import_expr(p):
-    return [Symbol('import'), token_to_symbol(p[1])]
+    return [Symbol('import'), p[1]]
+
+
+@pg.production('names : _names')
+def names(p):
+    return Symbol('.'.join(p[0]))
+
+
+@pg.production('_names : NAME')
+def _names_one(p):
+    return [p[0].getstr()]
+
+
+@pg.production('_names : _names DOT NAME')
+def _names(p):
+    return p[0] + [p[2].getstr()]
 
 
 @pg.production('require_expr : REQUIRE string')
@@ -268,9 +283,9 @@ def tuple_elt(p):
     return p[0]
 
 
-@pg.production('from_expr : FROM NAME IMPORT NAME')
+@pg.production('from_expr : FROM names IMPORT NAME')
 def from_expr(p):
-    return [Symbol('from-import'), token_to_symbol(p[1]), token_to_symbol(p[3])]
+    return [Symbol('from-import'), p[1], token_to_symbol(p[3])]
 
 
 @pg.production('suite : binop_expr')  # TODO multi
