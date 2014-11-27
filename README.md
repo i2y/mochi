@@ -186,7 +186,12 @@ d
 data Point:
     Point2D(x, y)
     Point3D(x, y, z)
-    
+
+# 上記は下記と同じ意味。
+# record Point
+# record Point2D(x, y) < Point
+# record Point3D(x, y, z) < Point
+
 p1 = Point2D(x=1, y=2)
 # => Point2D(x=1, y=2)
 

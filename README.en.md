@@ -175,6 +175,11 @@ data Point:
     Point2D(x, y)
     Point3D(x, y, z)
 
+# The meaning of the above is the same as the meaning of the following.
+# record Point
+# record Point2D(x, y) < Point
+# record Point3D(x, y, z) < Point
+
 p1 = Point2D(x=1, y=2)
 # => Point2D(x=1, y=2)
 
