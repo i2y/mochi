@@ -151,6 +151,21 @@ match [1, 2, 3]:
 # => 'int'
 ```
 
+### Records
+```
+record Mochi
+record AnkoMochi(anko) < Mochi
+record KinakoMochi(kinako) < Mochi
+
+anko_mochi = AnkoMochi(anko=3)
+
+match anko_mochi:
+    KinakoMochi(kinako): 'kinako ' * kinako + ' mochi'
+    AnkoMochi(anko): 'anko ' * anko + 'mochi'
+    Mochi(_): 'mochi'
+# => 'anko anko anko mochi'
+```
+
 ### Bindings
 ```python
 x = 3000
