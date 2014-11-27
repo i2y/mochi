@@ -186,7 +186,7 @@ match anko_mochi:
 
 record Person(name, age):
     def show(self):
-        print(self.name + ': ' + age)
+        print(self.name + ': ' + self.age)
 
 foo = Person('foo', '32')
 foo.show()
