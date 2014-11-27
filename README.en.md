@@ -159,6 +159,10 @@ record KinakoMochi(kinako) < Mochi
 
 anko_mochi = AnkoMochi(anko=3)
 
+isinstance(anko_mochi, Mochi) # => True
+isinstance(anko_mochi, AnkoMochi) # => True
+isinstance(anko_mochi, KinakoMochi) # => False
+
 match anko_mochi:
     KinakoMochi(kinako): 'kinako ' * kinako + ' mochi'
     AnkoMochi(anko): 'anko ' * anko + 'mochi'
