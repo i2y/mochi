@@ -258,17 +258,17 @@ def export_cls_list_one(p):
     return p[0]
 
 
-@pg.production('export_cls : EXPORT names')
+@pg.production('export_cls : EXPORT namelist')
 def export_cls(p):
     return p[1]
 
 
-@pg.production('names : names COMMA name')
+@pg.production('namelist : namelist COMMA name')
 def names(p):
     return p[0] + [p[2]]
 
 
-@pg.production('names : name')
+@pg.production('namelist : name')
 def names_single(p):
     return [p[0]]
 
@@ -846,9 +846,49 @@ def record_expr(p):
     return [Symbol('record'), p[1], []]
 
 
+@pg.production('record_expr : RECORD id_expr OPLT id_expr')
+def record_expr(p):
+    return [Symbol('record'), p[1], p[3], []]
+
+
 @pg.production('record_expr : RECORD id_expr LPAREN record_fields RPAREN')
 def record_expr(p):
     return [Symbol('record'), p[1], p[3]]
+
+
+@pg.production('record_expr : RECORD id_expr LPAREN record_fields RPAREN OPLT id_expr')
+def record_expr(p):
+    return [Symbol('record'), p[1], p[6], p[3]]
+
+
+@pg.production('record_expr : RECORD id_expr COLON NEWLINE INDENT record_body DEDENT')
+def record_expr(p):
+    return [Symbol('record'), p[1], []] + p[5]
+
+
+@pg.production('record_expr : RECORD id_expr OPLT id_expr COLON NEWLINE INDENT record_body DEDENT')
+def record_expr(p):
+    return [Symbol('record'), p[1], p[3], []] + p[7]
+
+
+@pg.production('record_expr : RECORD id_expr LPAREN record_fields RPAREN COLON NEWLINE INDENT record_body DEDENT')
+def record_expr(p):
+    return [Symbol('record'), p[1], p[3]] + p[8]
+
+
+@pg.production('record_expr : RECORD id_expr LPAREN record_fields RPAREN OPLT id_expr COLON NEWLINE INDENT record_body DEDENT')
+def record_expr(p):
+    return [Symbol('record'), p[1], p[6], p[3]] + p[10]
+
+
+@pg.production('record_body : def_expr')
+def record_body(p):
+    return [p[0]]
+
+
+@pg.production('record_body : record_body def_expr')
+def record_body(p):
+    return p[0] + [p[1]]
 
 
 @pg.production('record_fields : record_field')
