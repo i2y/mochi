@@ -75,8 +75,25 @@ $
 v(1, 2, 3)
 # => pvector([1, 2, 3])
 
+vec = [1, 2, 3]
+vec2 = vec.set(0, 8)
+# => pvector([8, 2, 3]
+vec
+# => pvector([1, 2, 3])
+[x, y, z] = vec
+x # => 1
+y # => 2
+z # => 3
+
 {'x': 100, 'y': 200}
 # => pmap({'y': 200, 'x': 100})
+
+ma = {'x': 100, 'y': 200}
+ma.get('x') # => 100
+ma.x # => 100
+ma2 = ma.set('x', 10000)
+# => pmap({'y': 200, 'x': 10000})
+ma # => pmap({'y': 200, 'x': 100})
 
 m(x=100, y=200)
 # => pmap({'y': 200, 'x': 100})
@@ -118,6 +135,20 @@ match foo_map:
     {'foo' : value}: value
     _: None
 # => 'bar'
+
+match 10:
+    int(x): 'int'
+    float(x): 'float'
+    str(x): 'str'
+    bool(x): 'bool'
+    _: 'other'
+# => 'int'
+
+match [1, 2, 3]:
+    [1, str(x), 3]: 'str'
+    [1, int(x), 3]: 'int'
+    _: 'other'
+# => 'int'
 ```
 
 ### Bindings
