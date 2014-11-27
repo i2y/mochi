@@ -152,7 +152,7 @@ match [1, 2, 3]:
 ```
 
 ### Records
-```
+```python
 record Mochi
 record AnkoMochi(anko) < Mochi
 record KinakoMochi(kinako) < Mochi
