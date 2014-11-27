@@ -24,21 +24,8 @@ from pyrsistent import v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l, pli
 
 from mochi.parser import Symbol, Keyword, parse, lex, REPL_CONTINUE
 
-
 IS_PYTHON_34 = sys.version_info.major == 3 and sys.version_info.minor == 4
 IS_PYPY = platform.python_implementation() == 'PyPy'
-
-if IS_PYTHON_34:
-    def wr_long(f, x):
-        """Internal; write a 32-bit int to a file in little-endian order."""
-        f.write(bytes([x & 0xff,
-                       (x >> 8) & 0xff,
-                       (x >> 16) & 0xff,
-                       (x >> 24) & 0xff]))
-
-    from importlib.util import MAGIC_NUMBER as MAGIC
-else:
-    from py_compile import wr_long, MAGIC
 
 
 def issequence(obj):
@@ -2611,6 +2598,7 @@ class Translator(object):
                            col_offset=import_sym.col_offset) for import_sym in exp[2:]]
         return (ast.ImportFrom(module=exp[1].name,
                                names=names,
+                               level=0,
                                lineno=exp[0].lineno,
                                col_offset=exp[0].col_offset),), self.translate_ref(NONE_SYM)[1]
 
@@ -2996,24 +2984,6 @@ def _del(name, env):
     del env[name]
 
 
-def output_pyc(code):
-    import marshal
-    import time
-    import io
-
-    pyc_bytes = io.BytesIO()
-    pyc_bytes.write(b'\0\0\0\0')
-    wr_long(pyc_bytes, int(time.time()))
-    size = 0  # TODO
-    wr_long(pyc_bytes, size)
-    marshal.dump(code, pyc_bytes)
-    pyc_bytes.flush()
-    pyc_bytes.seek(0, 0)
-    pyc_bytes.write(MAGIC)
-    pyc_bytes.seek(0, 0)
-    sys.stdout.buffer.write(pyc_bytes.read())
-
-
 def output_code(code):
     import marshal
 
@@ -3035,11 +3005,6 @@ def execute_compiled_file(path):
 
     with open(path, 'rb') as compiled_file:
         return exec(marshal.load(compiled_file), global_env)
-
-
-#@builtin
-#def load(path):
-#    load_file(path, globalEnv)
 
 
 @builtin_rename('macex1')
@@ -3119,7 +3084,7 @@ for name in global_env.keys():
     global_scope.add_binding_name(name, "<builtin>")
 binding_name_set_stack = [global_scope]
 
-VERSION = '0.0.3'
+VERSION = '0.0.2.3'
 
 
 def main():
