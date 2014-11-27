@@ -183,6 +183,14 @@ match anko_mochi:
     AnkoMochi(anko): 'anko ' * anko + 'mochi'
     Mochi(_): 'mochi'
 # => 'anko anko anko mochi'
+
+record Person(name, age):
+    def show(self):
+        print(self.name + ': ' + age)
+
+foo = Person('foo', '32')
+foo.show()
+# -> foo: 32
 ```
 
 ### 束縛
