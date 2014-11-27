@@ -80,8 +80,25 @@ $
 v(1, 2, 3)
 # => pvector([1, 2, 3])
 
+vec = [1, 2, 3]
+vec2 = vec.set(0, 8)
+# => pvector([8, 2, 3]
+vec
+# => pvector([1, 2, 3])
+[x, y, z] = vec
+x # => 1
+y # => 2
+z # => 3
+
+
 {'x': 100, 'y': 200}
 # => pmap({'y': 200, 'x': 100})
+ma = {'x': 100, 'y': 200}
+ma.get('x') # => 100
+ma.x # => 100
+ma2 = ma.set('x', 10000)
+# => pmap({'y': 200, 'x': 10000})
+ma # => pmap({'y': 200, 'x': 100})
 
 m(x=100, y=200)
 # => pmap({'y': 200, 'x': 100})
@@ -127,6 +144,22 @@ match foo_map:
     {'foo' : value}: value
     _: None
 # => 'bar'
+
+
+# 組み込みの基本型によるマッチング
+match 10:
+    int(x): 'int'
+    float(x): 'float'
+    str(x): 'str'
+    bool(x): 'bool'
+    _: 'other'
+# => 'int'
+
+match [1, 2, 3]:
+    [1, str(x), 3]: 'str'
+    [1, int(x), 3]: 'int'
+    _: 'other'
+# => 'int'
 ```
 
 ### 束縛
@@ -180,6 +213,15 @@ offset(Point2D(1, 2), Point2D(3, 4))
 # => Point2D(x=4, y=6)
 offset(Point3D(1, 2, 3), Point3D(4, 5, 6))
 # => Point3D(x=5, y=7, z=9)
+
+defm show:
+    [int(x), message]: print('int', x, message)
+    [float(x), message]: print('float', x, message)
+    _: None
+
+show(1.0, 'msg')
+# -> float 1.0 msg
+# => None
 ```
 
 ### パイプライン演算子（fizzbuzz)
