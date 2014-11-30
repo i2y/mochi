@@ -16,18 +16,69 @@ A program written in Mochi is compiled to Python's AST / bytecode by the interpr
 - Tail recursion optimization (self tail recursive only), and no loop syntax
 - Re-assignment are not allowed in the function definition.
 - Basic data type is a persistent data structure (using Pyrsistent)
-- Pattern matching / Algebraic data type
+- Pattern matching / Data types, like algebraic data types
 - Pipeline operator
 - Syntax sugar of anonymous function definition
 - Built-in Python3 itertools and functools, operator module functions and function in itertools recipes
 
+
+## Examples
+### Factorial
+```python
+def factorial(n, m):
+    if n == 1:
+        m
+    else:
+        factorial(n - 1, n * m)
+```
+
+### FizzBuzz
+```python
+def fizzbuzz(n):
+    match [n % 3, n % 5]:
+        [0, 0]: "fizzbuzz"
+        [0, _]: "fizz"
+        [_, 0]: "buzz"
+        _: n
+
+range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
+```
+
+### Actor
+```python
+def show():
+    receive:
+        message:
+            print(message)
+            show()
+
+actor = spawn(show)
+
+send("foo", actor)
+actor ! "bar"
+
+wait_all()
+```
+
+### Flask
+```python
+from flask import Flask
+
+app = Flask('demo')
+
+@app.route('/')
+def hello():
+    'Hello World!'
+
+app.run()
+```
 
 ## Requirements
 - CPython >= 3.2 or PyPy >= 3.2.1
 - rply >= 0.7.2
 - pyrsistent >= 0.6.2
 - pathlib >= 1.0.1
-
+- eventlet >= 0.15.2
 
 ## Installation
 ```sh
@@ -64,7 +115,7 @@ kinako
 $
 ```
 
-## Examples
+## Examples for each feature
 
 
 ### Persistent data structures
@@ -200,7 +251,7 @@ d
 # => pvector([2, 3])
 ```
 
-### Algebraic data types
+### Data types, like algebraic data types (sum type)
 ```python
 data Point:
     Point2D(x, y)
@@ -242,15 +293,11 @@ offset(Point3D(1, 2, 3), Point3D(4, 5, 6))
 
 ### Pipeline operator 
 ```python
-def fizzbuzz(n):
-    match [n % 3, n % 5]:
-        [0, 0]: "fizzbuzz"
-        [0, _]: "fizz"
-        [_, 0]: "buzz"
-        _: n
-
-range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
-# => pvector([1, 2, 'fizz', 4, 'buzz', 'fizz', 7, 8, 'fizz', 'buzz', 11, 'fizz', 13, 14, 'fizzbuzz', 16, 17, 'fizz', 19, 'buzz', 'fizz', 22, 23, 'fizz', 'buzz', 26, 'fizz', 28, 29, 'fizzbuzz'])
+add = -> $1 + $2
+2 |> add(10) |> add(12)
+# => 24
+None |>? add(10) |>? add(12)
+# => None
 ```
 
 ### Anonymous function

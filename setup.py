@@ -5,7 +5,8 @@ from mochi import __author__, __version__, __license__, IS_PYTHON_34
 
 
 install_requires = ['rply>=0.7.2',
-                    'pyrsistent>=0.6.2']
+                    'pyrsistent>=0.6.2',
+                    'eventlet>=0.15.2']
 
 if not IS_PYTHON_34:
     install_requires.append('pathlib>=1.0.1')

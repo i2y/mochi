@@ -11,7 +11,6 @@ Mochiは動的型付けの関数型言語です。
 インタープリタは、Mochi言語で書かれたコードを
 PythonのAST/バイトコードに変換し、Python仮想マシン上で実行します。
 
-
 ## 特徴
 - Pythonぽい構文
 - Pythonモジュールを簡単に利用可
@@ -24,12 +23,65 @@ PythonのAST/バイトコードに変換し、Python仮想マシン上で実行�
 - 無名関数定義のシンタックスシュガー
 - Python3のitertools、functools、operatorモジュールの関数とitertoolsレシピの関数が組み込み
 
+## 例
+### Factorial
+```python
+def factorial(n, m):
+    if n == 1:
+        m
+    else:
+        factorial(n - 1, n * m)
+```
+
+### FizzBuzz
+```python
+def fizzbuzz(n):
+    match [n % 3, n % 5]:
+        [0, 0]: "fizzbuzz"
+        [0, _]: "fizz"
+        [_, 0]: "buzz"
+        _: n
+
+range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
+# Python3ではmapはイテレータを返すため、そのままprintするとイテレータオブジェクト自体を表示します。
+# ここではイテレータの中身を表示したいので、print前にpvectorでpesrsistent vectorに変換しています。
+```
+
+### Actor
+```python
+def show():
+    receive:
+        message:
+            print(message)
+            show()
+
+actor = spawn(show)
+
+send("foo", actor)
+actor ! "bar"
+
+wait_all()
+```
+
+### Flask
+```python
+from flask import Flask
+
+app = Flask('demo')
+
+@app.route('/')
+def hello():
+    'Hello World!'
+
+app.run()
+```
 
 ## 依存モジュール
 - CPython >= 3.2 or PyPy >= 3.2.1 
 - rply >= 0.7.2
 - pyrsistent >= 0.6.2
 - pathlib >= 1.0.1
+- eventlet >= 0.15.2
 
 
 ## インストール
@@ -68,8 +120,7 @@ kinako
 $
 ```
 
-## 簡単な例
-
+## 機能ごとの例
 
 ### 永続データ構造
 ```python
@@ -211,8 +262,8 @@ d
 # => pvector([2, 3])
 ```
 
-### 代数的データ型
-```python
+### 代数的データ型(sum type)ライクなデータ型
+``python
 data Point:
     Point2D(x, y)
     Point3D(x, y, z)
@@ -261,21 +312,11 @@ show(1.0, 'msg')
 ```
 
 ### パイプライン演算子（fizzbuzz)
-[こちらのページ](http://wllwmiilmmw.tumblr.com/post/72971456714/yeti-lang)に記載のコードを参考に、
-Mochiでfizzbuzz。
-```python
-def fizzbuzz(n):
-    match [n % 3, n % 5]:
-        [0, 0]: "fizzbuzz"
-        [0, _]: "fizz"
-        [_, 0]: "buzz"
-        _: n
-
-range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
-# => pvector([1, 2, 'fizz', 4, 'buzz', 'fizz', 7, 8, 'fizz', 'buzz', 11, 'fizz', 13, 14, 'fizzbuzz', 16, 17, 'fizz', 19, 'buzz', 'fizz', 22, 23, 'fizz', 'buzz', 26, 'fizz', 28, 29, 'fizzbuzz'])
-
-# Python3ではmapはイテレータを返すため、そのままprintするとイテレータオブジェクト自体を表示します。
-# ここではイテレータの中身を表示したいので、print前にpvectorでpesrsistent vectorに変換しています。
+add = -> $1 + $2
+2 |> add(10) |> add(12)
+# => 24
+None |>? add(10) |>? add(12)
+# => None
 ```
 
 ### 無名関数

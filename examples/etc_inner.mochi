@@ -1,8 +1,6 @@
-fafaffaafafa = 300
 module TestB:
-    e, f, fafa
+    export e, f, fafa
     e = 200
     def fafa():
         print(10000)
     f = "faf"
-

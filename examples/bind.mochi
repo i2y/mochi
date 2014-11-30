@@ -5,3 +5,9 @@ print(None |> bind(add2))
 add = -> $1 + $2
 print(2 |> add(10) |> add(12))
 print(None |>? add(10) |>? add(12))
+
+x = (10
+     |>? add(10)
+     |>? add(12))
+
+print(x)
