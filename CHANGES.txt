@@ -2,7 +2,8 @@ Revision history
 ----------------
 v0.0.4, 2014-12-01
   * Added Actor
+  * Added bind function and |>? operator
 v0.0.2, 2014-11-17
-  * Tweaked grammer of module syntax. Introduced export keyword.
-  * Tweaked a meaning of the require syntax.
+  * Tweaked grammer of module syntax. Introduced export keyword
+  * Tweaked a meaning of the require syntax
   * Added CHANGES.txt

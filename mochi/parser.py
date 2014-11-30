@@ -69,6 +69,7 @@ lg.add('UNTERMINATED_STRING', r"[\"\'].*")
 lg.add('NUMBER', r'-?[0-9]+(?:\.[0-9]+)?')
 lg.add('NAME', r'\&?[_a-zA-Z$][-_a-zA-Z0-9]*')
 lg.add('OPPAREN', r'" + operator_regex_str + "(?=\()')
+lg.add('PIPELINE_BIND', r'\|>\?')
 lg.add('PIPELINE', r'\|>')
 lg.add('BAR', r'\|')
 lg.add('LBRACK', r'\[')
@@ -152,7 +153,7 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                       'OPLT', 'OPGT', 'OPAND', 'OPOR', 'OPIS', 'NOT', 'NEWLINE', 'PERCENT', 'EXPORT',
                       'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'DQUOTE_STR', 'SQUOTE_STR', 'AT', 'BANG',
                       'NAME', 'EQUALS', 'IF', 'ELSEIF', 'ELSE', 'COLON', 'SEMI', 'DATA', 'IMPORT', 'REQUIRE',
-                      'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'RETURN',
+                      'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'PIPELINE_BIND', 'RETURN',
                       'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'THINARROW', 'RECEIVE',
                       'YIELD', 'FROM', 'FOR', 'IN', 'DOT', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT',
                       'MODULE', 'AS', 'RAISE'],
@@ -756,6 +757,14 @@ def left_app_fun_expr(p):
 def right_app_expr(p):
     expr, _, right_app_fun_expr, app_args = p
     return [right_app_fun_expr] + app_args + [expr]
+
+
+@pg.production('right_app_expr : expr PIPELINE_BIND right_app_fun_expr app_args')
+def right_app_bind_expr(p):
+    expr, _, right_app_fun_expr, app_args = p
+    return [Symbol('if'), [Symbol('is'), expr, Symbol('None')],
+            Symbol('None'),
+            [right_app_fun_expr] + app_args + [expr]]
 
 
 @pg.production('right_app_fun_expr : id_expr')

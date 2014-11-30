@@ -178,6 +178,13 @@ def flip(func):
 
 
 @builtin
+def bind(next_func, input):
+    if input is None:
+        return None
+    return next_func(input)
+
+
+@builtin
 def mapchain(func, iterable):
     return reduce(chain, map(func, iterable))
 
