@@ -54,8 +54,8 @@ def show():
 
 actor = spawn(show)
 
-send("foo", actor)
-actor ! "bar"
+send('foo', actor)
+actor ! 'bar' # send('bar', actor)
 
 wait_all()
 ```

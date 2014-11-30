@@ -57,8 +57,8 @@ def show():
 
 actor = spawn(show)
 
-send("foo", actor)
-actor ! "bar"
+send('foo', actor)
+actor ! 'bar' # send("bar", actor)
 
 wait_all()
 ```
@@ -263,7 +263,7 @@ d
 ```
 
 ### 代数的データ型(sum type)ライクなデータ型
-``python
+```python
 data Point:
     Point2D(x, y)
     Point3D(x, y, z)
