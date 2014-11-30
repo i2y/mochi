@@ -291,15 +291,6 @@ offset(Point3D(1, 2, 3), Point3D(4, 5, 6))
 # => Point3D(x=5, y=7, z=9)
 ```
 
-### Pipeline operator 
-```python
-add = -> $1 + $2
-2 |> add(10) |> add(12)
-# => 24
-None |>? add(10) |>? add(12)
-# => None
-```
-
 ### Anonymous function
 ```python
 # Arrow expression.
@@ -325,6 +316,15 @@ foo(0, 2)
 
 pvector(map(-> $1 * 2, [1, 2, 3]))
 # => pvector([2, 4, 6])
+```
+
+### Pipeline operator 
+```python
+add = -> $1 + $2
+2 |> add(10) |> add(12)
+# => 24
+None |>? add(10) |>? add(12)
+# => None
 ```
 
 ### Including a file at compile time
