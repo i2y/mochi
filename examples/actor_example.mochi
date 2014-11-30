@@ -1,0 +1,12 @@
+def show():
+    receive:
+        message:
+            print(message)
+            show()
+
+actor = spawn(show)
+
+send("foo", actor)
+actor ! "bar"
+
+wait_all()

@@ -78,6 +78,7 @@ lg.add('RBRACE', r'\}')
 lg.add('LPAREN', r'\(')
 lg.add('RPAREN', r'\)')
 lg.add('DOT', r'\.')
+lg.add('BANG', r'!')
 lg.add('PERCENT', r'%')
 lg.add('COMMA', r',')
 lg.add('THINARROW', r'->')
@@ -94,8 +95,6 @@ lg.add('OPEQ', r'==')
 lg.add('OPNEQ', r'!=')
 lg.add('OPLT', r'<')
 lg.add('OPGT', r'>')
-
-lg.add('BANG', r'!')
 
 lg.add('EQUALS', r'=')
 lg.add('SEMI', r';')
@@ -130,6 +129,7 @@ klg.add('THENCOLON', r'^then:$')
 klg.add('ELSE', r'^else$')
 klg.add('ELSEIF', r'^elif$')
 klg.add('MATCH', r'^match$')
+klg.add('RECEIVE', r'^receive$')
 klg.add('OF', r'^of$')
 klg.add('RECORD', r'^record$')
 klg.add('DATA', r'^data$')
@@ -150,10 +150,10 @@ klg.add('NOT', r'^not$')
 
 pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ', 'OPGEQ', 'OPEQ', 'OPNEQ',
                       'OPLT', 'OPGT', 'OPAND', 'OPOR', 'OPIS', 'NOT', 'NEWLINE', 'PERCENT', 'EXPORT',
-                      'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'DQUOTE_STR', 'SQUOTE_STR', 'AT',
+                      'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'DQUOTE_STR', 'SQUOTE_STR', 'AT', 'BANG',
                       'NAME', 'EQUALS', 'IF', 'ELSEIF', 'ELSE', 'COLON', 'SEMI', 'DATA', 'IMPORT', 'REQUIRE',
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'RETURN',
-                      'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'THINARROW',
+                      'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'THINARROW', 'RECEIVE',
                       'YIELD', 'FROM', 'FOR', 'IN', 'DOT', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT',
                       'MODULE', 'AS', 'RAISE'],
                      precedence=[('left', ['EQUALS']),
@@ -178,7 +178,6 @@ def block(p):
 
 @pg.production('stmts : stmts stmt')
 def stmts_b(p):
-    # if issequence_except_str(p[1]):
     if p[1] is None:
         return p[0]
     else:
@@ -376,12 +375,14 @@ def binding(p):
 @pg.production('expr : dict_expr')
 @pg.production('expr : tuple_expr')
 @pg.production('expr : match_expr')
+@pg.production('expr : receive_expr')
 @pg.production('expr : yield_expr')
 @pg.production('expr : yield_from_expr')
 @pg.production('expr : for_expr')
 @pg.production('expr : block_expr')
 @pg.production('expr : defm_expr')
 @pg.production('expr : dot_expr')
+@pg.production('expr : send_msg_expr')
 @pg.production('expr : id_expr')
 # @pg.production('expr : app_nc_expr')
 def expr(p):
@@ -523,6 +524,11 @@ def _compute_underscore_max_num(exps):
 @pg.production('dot_expr : expr DOT NAME')
 def dot_expr(p):
     return [Symbol('getattr'), p[0], p[2].getstr()]
+
+
+@pg.production('send_msg_expr : expr BANG expr')
+def dot_expr(p):
+    return [Symbol('send'), p[2], p[0]]
 
 
 @pg.production('for_expr : LBRACK binop_expr FOR pattern IN binop_expr RBRACK')  # TODO
@@ -839,6 +845,11 @@ def case_branch(p):
 @pg.production('pattern : binop_expr')
 def pattern(p):
     return p[0]
+
+
+@pg.production('receive_expr : RECEIVE COLON NEWLINE INDENT case_branches DEDENT')
+def case(p):
+    return [Symbol('match'), [Symbol('recv'), [Symbol('self')]]] + p[4]
 
 
 @pg.production('record_expr : RECORD id_expr')

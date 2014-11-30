@@ -23,6 +23,8 @@ import platform
 from pyrsistent import v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l, plist, pclass, freeze, thaw
 
 from mochi.parser import Symbol, Keyword, parse, lex, REPL_CONTINUE
+from mochi import actor
+
 
 IS_PYTHON_34 = sys.version_info.major == 3 and sys.version_info.minor == 4
 IS_PYPY = platform.python_implementation() == 'PyPy'
@@ -119,6 +121,12 @@ def make_default_env():
     env['False'] = False
     env['None'] = None
     env['Record'] = pclass((), 'Record')  # namedtuple('Record', ())
+    env['spawn'] = actor.spawn
+    env['send'] = actor.send
+    env['recv'] = actor.recv
+    env['self'] = actor.self
+    env['sleep'] = actor.sleep
+    env['wait_all'] = actor.wait_all
     env['__name__'] = '__main__'
     try:
         env['__loader__'] = __loader__
@@ -3084,10 +3092,16 @@ for name in global_env.keys():
     global_scope.add_binding_name(name, "<builtin>")
 binding_name_set_stack = [global_scope]
 
-VERSION = '0.0.3'
+VERSION = '0.0.4'
 
 
 def main():
+    import eventlet
+    eventlet.monkey_patch(#os=True, # if 'os' is true, rply don't work.
+                          socket=True,
+                          select=True,
+                          thread=True,
+                          time=True)
     eval("""
 (mac get! (ref)
   `((get ,ref 0)))
