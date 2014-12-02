@@ -24,6 +24,7 @@ from pyrsistent import v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l, pli
 
 from mochi.parser import Symbol, Keyword, parse, lex, REPL_CONTINUE
 from mochi import actor
+from mochi import __version__
 
 
 IS_PYTHON_34 = sys.version_info.major == 3 and sys.version_info.minor == 4
@@ -3099,8 +3100,6 @@ for name in global_env.keys():
     global_scope.add_binding_name(name, "<builtin>")
 binding_name_set_stack = [global_scope]
 
-VERSION = '0.0.4'
-
 
 def main():
     import eventlet
@@ -3636,7 +3635,7 @@ def main():
     if len(sys.argv) > 1:
         arg_parser = argparse.ArgumentParser(
             description='Mochi is a programming language.')
-        arg_parser.add_argument('-v', '--version', action='version', version=VERSION)
+        arg_parser.add_argument('-v', '--version', action='version', version=__version__)
         arg_parser.add_argument('-c', '--compile', action='store_true')
         arg_parser.add_argument('-e', '--execute-compiled-file', action='store_true')
         arg_parser.add_argument('file', nargs='?', type=str)

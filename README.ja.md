@@ -1,22 +1,29 @@
 Mochi
 ====
-Mochi is a dynamically typed programming language for functional programming and actor-style programming.
 
-Its interpreter is written in Python3. The interpreter translates a program written in Mochi to Python3's AST / bytecode.
+Mochiは動的型付けの関数型言語です。
+Python上で、関数型プログラミング、アクターを用いたプログラミングを行うための言語です。
 
-## Features
-- Python-like syntax
-- Tail recursion optimization (self tail recursion only), and no loop syntax
-- Re-assignment are not allowed in function definition.
-- Basic collection type is a persistent data structure. (using Pyrsistent)
-- Pattern matching / Data types, like algebraic data types
-- Pipeline operator
-- Syntax sugar of anonymous function definition
-- Actor, like Erlang's actor（using Eventlet)
-- Built-in Python3 itertools and functools, operator module functions and function in itertools recipes
+インタープリタはPython3で記述されています。インタープリタは、Mochi言語で書かれたコードを
+Python3のAST/バイトコードに変換し、Python仮想マシン上で実行します。
 
 
-## Examples
+## 特徴
+- Pythonぽい構文
+- Pythonモジュールを簡単に利用可
+- 動作環境のPython（CPython or PyPy）と同等の実行速度
+- 末尾再帰最適化（自己末尾再帰のみ）あり、ループ構文なし（内包表記はある）
+- 関数定義の中でローカル/グローバル変数への再代入不可
+- 基本のコレクションデータ型は永続データ構造（Pyrsistentを利用）
+- パターンマッチ/代数的データ型みたいなもの
+- パイプライン演算子
+- 無名関数定義のシンタックスシュガー
+- Erlangに似たアクター(Eventletベース）
+- Python3のitertools、functools、operatorモジュールの関数とitertoolsレシピの関数が組み込み
+
+
+
+## 例
 ### Factorial
 ```python
 def factorial(n, m):
@@ -36,8 +43,11 @@ def fizzbuzz(n):
         _: n
 
 range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
-# or
+# Python3ではmapはイテレータを返すため、そのままprintするとイテレータオブジェクト自体を表示します。
+# ここではイテレータの中身を表示したいので、print前にpvectorでpesrsistent vectorに変換しています。
+# イテレータを遅延シーケンスに変換してもよいです。
 range(1, 31) |> map(fizzbuzz) |> lazyseq() |> print()
+
 ```
 
 ### Actor
@@ -51,7 +61,7 @@ def show():
 actor = spawn(show)
 
 send('foo', actor)
-actor ! 'bar' # send('bar', actor)
+actor ! 'bar' # send("bar", actor)
 
 wait_all()
 ```
@@ -69,52 +79,55 @@ def hello():
 app.run()
 ```
 
-## Requirements
-- CPython >= 3.2 or PyPy >= 3.2.1
+## 依存モジュール
+- CPython >= 3.2 or PyPy >= 3.2.1 
 - rply >= 0.7.2
 - pyrsistent >= 0.6.2
 - pathlib >= 1.0.1
 - eventlet >= 0.15.2
 
-## Installation
+
+## インストール
+
 ```sh
 $ pip install mochi
 ```
 
 
-## Usage
+## 使い方
 
 ### REPL
 ```sh
 $ mochi
->>>
+>>> 
 ```
 
-### loading and running a file
+### ファイルを読んで実行
 ```sh
 $ cat kinako.mochi
-print('kinako')
+print('kinako') 
 $ mochi kinako.mochi
 kinako
 $
 ```
 
-### byte compilation
+### ファイルをバイトコンパイル
 ```sh
 $ mochi -c kinako.mochi > kinako.mochic
 ```
 
-### running a byte-compiled file
+### 予めバイトコンパイルしたものを実行
 ```sh
 $ mochi -e kinako.mochic
 kinako
 $
 ```
 
-## Examples for each feature
+## 機能ごとの例
 
-### Persistent data structures
+### 永続データ構造
 ```python
+
 [1, 2, 3]
 # => pvector([1, 2, 3])
 
@@ -130,6 +143,7 @@ vec
 x # => 1
 y # => 2
 z # => 3
+
 
 {'x': 100, 'y': 200}
 # => pmap({'y': 200, 'x': 100})
@@ -149,19 +163,23 @@ s(1, 2, 3)
 
 b(1, 2, 3)
 # => pbag([1, 2, 3])
+
+# その他の永続データ構造関連の例は、Pyrsistent のドキュメントを参照してください。
 ```
 
-### Function definitions
+### 関数定義
 ```python
 def hoge(x):
     hoge + str(x)
-
-hoge(3)
-# => hoge3
+     
+print(hoge(3))
+# hoge3を表示
 ```
 
-### Pattern matching
+### パターンマッチ
 ```python
+# 注意：matchはスコープを作りません。
+#      これはPythonやMochiのif文と同様です。
 lis = [1, 2, 3]
 
 match lis:
@@ -173,7 +191,7 @@ match lis:
     [1, &rest]: rest
     _: None
 
-# => pvector (2, 3)
+# => pvector([2, 3])
 
 foo_map = {'foo' : 'bar'}
 
@@ -182,6 +200,8 @@ match foo_map:
     _: None
 # => 'bar'
 
+
+# 組み込みの基本型によるマッチング
 match 10:
     int(x): 'int'
     float(x): 'float'
@@ -197,7 +217,7 @@ match [1, 2, 3]:
 # => 'int'
 ```
 
-### Records
+### レコード
 ```python
 record Mochi
 record AnkoMochi(anko) < Mochi
@@ -218,7 +238,6 @@ match anko_mochi:
     Mochi(_): 'mochi'
 # => 'anko anko anko mochi'
 
-
 record Person(name, age):
     def show(self):
         print(self.name + ': ' + self.age)
@@ -228,7 +247,7 @@ foo.show()
 # -> foo: 32
 ```
 
-### Bindings
+### 束縛
 ```python
 x = 3000
 # => 3000
@@ -246,13 +265,13 @@ d
 # => pvector([2, 3])
 ```
 
-### Data types, like algebraic data types (sum type)
+### 代数的データ型(sum type)ライクなデータ型
 ```python
 data Point:
     Point2D(x, y)
     Point3D(x, y, z)
 
-# The meaning of the above is the same as the meaning of the following.
+# 上記は下記と同じ意味。
 # record Point
 # record Point2D(x, y) < Point
 # record Point3D(x, y, z) < Point
@@ -267,7 +286,7 @@ p1.x
 # => 1
 ```
 
-### Pattern-matching function definitions
+### パターンマッチ関数定義
 ```python
 data Point:
     Point2D(x, y)
@@ -284,11 +303,20 @@ offset(Point2D(1, 2), Point2D(3, 4))
 # => Point2D(x=4, y=6)
 offset(Point3D(1, 2, 3), Point3D(4, 5, 6))
 # => Point3D(x=5, y=7, z=9)
+
+defm show:
+    [int(x), message]: print('int', x, message)
+    [float(x), message]: print('float', x, message)
+    _: None
+
+show(1.0, 'msg')
+# -> float 1.0 msg
+# => None
 ```
 
-### Anonymous function
+### 無名関数
 ```python
-# Arrow expression.
+# アロー式。CoffeeScriptに類似。
 add = (x, y) -> x + y
 add(1, 2)
 # => 3
@@ -313,7 +341,7 @@ pvector(map(-> $1 * 2, [1, 2, 3]))
 # => pvector([2, 4, 6])
 ```
 
-### Pipeline operator 
+### パイプライン演算子
 ```python
 add = -> $1 + $2
 2 |> add(10) |> add(12)
@@ -322,7 +350,7 @@ None |>? add(10) |>? add(12)
 # => None
 ```
 
-### Including a file at compile time
+### ファイルをインクルードする（コンパイル時に一度だけ）
 ```sh
 $ cat anko.mochi
 x = 10000
@@ -330,18 +358,18 @@ y = 20000
 ```
 
 ```python
-require 'anko.mochi'
+require "anko.mochi"
 x
 # => 10000
 
 x = 30000
 
-require 'anko.mochi' # include once at compile time
+require 'anko.mochi' # include once
 x
 # => 30000
 ```
 
-### Module
+### モジュール
 ```python
 module Math:
     export add, sub
@@ -383,12 +411,13 @@ X.foobar()
 ```
 
 ## TODO
-- Documentation
-- Improvement of parsing
-- Support class definition
+- 説明の追加
+- 構文解析の改善
+- クラス定義のサポート？
 
 ## License
 MIT License
 
 ## Author
-[i2y] (https://github.com/i2y)
+
+[i2y](https://github.com/i2y)

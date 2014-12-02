@@ -11,10 +11,13 @@ class Actor(object):
         self._inbox = Queue()
         self._callback = callback
 
-    def run(self):
-        cur_green = eventlet.getcurrent()
-        _actor_map[id(cur_green)] = self # TODO 後片付け
-        self._callback()
+    def run(self, *args, **kwargs):
+        greenlet_id = id(eventlet.getcurrent())
+        _actor_map[greenlet_id] = self
+        try:
+            self._callback(*args, **kwargs)
+        finally:
+            del _actor_map[greenlet_id]
 
     def send(self, message):
         self._inbox.put(message)
@@ -45,9 +48,9 @@ def self():
     return _actor_map.get(id(cur_green))
 
 
-def spawn(func):
+def spawn(func, *args, **kwargs):
     actor = Actor(func)
-    _actor_pool.spawn(actor.run)
+    _actor_pool.spawn(actor.run, *args, **kwargs)
     return actor
 
 
