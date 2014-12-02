@@ -11,17 +11,10 @@ install_requires = ['rply>=0.7.2',
 if not IS_PYTHON_34:
     install_requires.append('pathlib>=1.0.1')
 
-
-def long_description():
-    with codecs.open('README.md', encoding='utf8') as f:
-        return f.read()
-
-
 setup(
     name='mochi',
     version=__version__,
     description='Dynamically typed functional programming language',
-    long_description=long_description(),
     license=__license__,
     author=__author__,
     url='https://github.com/i2y/mochi',
