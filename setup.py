@@ -15,6 +15,7 @@ setup(
     name='mochi',
     version=__version__,
     description='Dynamically typed functional programming language',
+    long_description=open('README.rst').read(),
     license=__license__,
     author=__author__,
     url='https://github.com/i2y/mochi',
