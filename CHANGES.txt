@@ -1,5 +1,7 @@
 Revision history
 ----------------
+v0.0.5, 2014-12-05
+  * Changed defm syntax form
 v0.0.4, 2014-12-01
   * Added Actor
   * Added bind function and |>? operator
