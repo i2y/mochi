@@ -37,6 +37,20 @@ Factorial
         else:
             factorial(n - 1, n * m)
 
+
+    factorial(10000, 1)
+    # => 28462596809170545189064132121198688...
+
+    # Or
+
+    def factorial:
+        n: factorial(n, 1)
+        0, acc: acc
+        n, acc: factorial(n - 1, acc * n)
+        
+    factorial(10000)
+    # => 28462596809170545189064132121198688...
+
 FizzBuzz
 ~~~~~~~~
 
@@ -318,10 +332,10 @@ Pattern-matching function definitions
         Point2D(x, y)
         Point3D(x, y, z)
 
-    defm offset:
-        [Point2D(x1, y1), Point2D(x2, y2)]:
+    def offset:
+        Point2D(x1, y1), Point2D(x2, y2):
             Point2D(x1 + x2, y1 + y2)
-        [Point3D(x1, y1, z1), Point3D(x2, y2, z2)]:
+        Point3D(x1, y1, z1), Point3D(x2, y2, z2):
             Point3D(x1 + x2, y1 + y2, z1 + z2)
         _: None
 
@@ -329,6 +343,15 @@ Pattern-matching function definitions
     # => Point2D(x=4, y=6)
     offset(Point3D(1, 2, 3), Point3D(4, 5, 6))
     # => Point3D(x=5, y=7, z=9)
+
+    defm show:
+        int(x), message: print('int', x, message)
+        float(x), message: print('float', x, message)
+        _: None
+
+    show(1.0, 'msg')
+    # -> float 1.0 msg
+    # => None
 
 Anonymous function
 ~~~~~~~~~~~~~~~~~~

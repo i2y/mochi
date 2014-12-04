@@ -385,7 +385,7 @@ def binding(p):
 @pg.production('expr : dot_expr')
 @pg.production('expr : send_msg_expr')
 @pg.production('expr : id_expr')
-# @pg.production('expr : app_nc_expr')
+#@pg.production('expr : app_nc_expr')
 def expr(p):
     return p[0]
 
@@ -607,9 +607,44 @@ def fun_expr(p):
     return [Symbol('def'), fun_name, fun_args, p[4]]
 
 
-@pg.production('defm_expr : DEFM id_expr doc_string COLON NEWLINE INDENT case_branches DEDENT')
+@pg.production('defm_expr : DEF id_expr doc_string COLON NEWLINE INDENT defm_case_branches DEDENT')
 def fun_expr(p):
     return [Symbol('defm'), p[1]] + p[6]
+
+
+@pg.production('defm_case_branches : defm_case_branches defm_case_branch')
+def case_branches(p):
+    return p[0] + p[1]
+
+
+@pg.production('defm_case_branches : defm_case_branch')
+def case_branches_branch(p):
+    return p[0]
+
+
+@pg.production('defm_case_branch : defm_pattern COLON NEWLINE INDENT stmts DEDENT')
+def case_branch(p):
+    return [p[0], [Symbol('do')] + p[4]]
+
+
+@pg.production('defm_case_branch : defm_pattern COLON binop_expr NEWLINE')
+def case_branch(p):
+    return [p[0], p[2]]
+
+
+@pg.production('defm_case_branch : defm_pattern COLON binop_expr SEMI')
+def case_branch(p):
+    return [p[0], p[2]]
+
+
+# TODO
+# @pg.production('pattern : id_expr')
+# @pg.production('pattern : tuple_expr')
+# @pg.production('pattern : dict_expr')
+@pg.production('defm_pattern : app_nc_args')
+def pattern(p):
+    return p[0]
+
 
 
 @pg.production('fun_header : NAME args')
@@ -854,8 +889,7 @@ def case_branch(p):
 @pg.production('pattern : binop_expr')
 def pattern(p):
     return p[0]
-
-
+case
 @pg.production('receive_expr : RECEIVE COLON NEWLINE INDENT case_branches DEDENT')
 def case(p):
     return [Symbol('match'), [Symbol('recv'), [Symbol('self')]]] + p[4]

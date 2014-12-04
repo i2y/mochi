@@ -1,0 +1,12 @@
+from time import time
+
+def factorial:
+    n: factorial(n, 1)
+    0, acc: acc
+    n, acc: factorial(n - 1, acc * n)
+
+start = time()
+print(factorial(10000))
+print()
+print('factorial(10000)')
+print('time:', time() - start)
