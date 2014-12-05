@@ -344,7 +344,7 @@ Pattern-matching function definitions
     offset(Point3D(1, 2, 3), Point3D(4, 5, 6))
     # => Point3D(x=5, y=7, z=9)
 
-    defm show:
+    def show:
         int(x), message: print('int', x, message)
         float(x), message: print('float', x, message)
         _: None
