@@ -1053,7 +1053,6 @@ def binop_expr(p):
 @pg.production('binop_expr : binop_expr OPAND binop_expr')
 @pg.production('binop_expr : binop_expr OPOR binop_expr')
 @pg.production('binop_expr : binop_expr OPIS binop_expr')
-@pg.production('binop_expr : binop_expr IN binop_expr')
 def binop_expr(p):
     return [token_to_symbol(p[1]), p[0], p[2]]
 
