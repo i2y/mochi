@@ -6,5 +6,5 @@ macro aif(test, true_expr, false_expr):
         else:
             unquote(false_expr)
 
-print(aif(10 in [10, 20, 30], it / 10, it))
-print(aif(100 in [10, 20, 30], it / 10, it))
+print(aif(contains([10, 20, 30], 10), it / 2, it))
+print(aif(contains([10, 20, 30], 100), it / 2 , it))
