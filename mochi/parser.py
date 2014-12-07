@@ -137,13 +137,15 @@ klg.add('DATA', r'^data$')
 klg.add('YIELD', r'^yield$')
 klg.add('RETURN', r'^return$')
 klg.add('WITH', r'^with$')
-klg.add('MUTABLE', r'^mutable$')
-klg.add('DATATYPE', r'^datatype$')
+klg.add('MACRO', r'^macro$')
+klg.add('QUOTE', r'^quote$')
+klg.add('QUASI_QUOTE', r'^quasi_quote$')
+klg.add('UNQUOTE', r'^unquote$')
+klg.add('UNQUOTE_SPLICING', r'^unquote_splicing$')
 klg.add('FOR', r'^for$')
 klg.add('IN', r'^in$')
 klg.add('FROM', r'^from$')
 klg.add('END', r'^end$')
-klg.add('LAZY', r'^lazy$')
 klg.add('OPAND', r'^and$')
 klg.add('OPOR', r'^or$')
 klg.add('OPIS', r'^is$')
@@ -156,7 +158,7 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'PIPELINE_BIND', 'RETURN',
                       'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'THINARROW', 'RECEIVE',
                       'YIELD', 'FROM', 'FOR', 'IN', 'DOT', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT',
-                      'MODULE', 'AS', 'RAISE', 'WITH'],
+                      'MODULE', 'AS', 'RAISE', 'WITH', 'MACRO', 'QUOTE', 'QUASI_QUOTE', 'UNQUOTE', 'UNQUOTE_SPLICING'],
                      precedence=[('left', ['EQUALS']),
                                  ('left', ['NOT']),
                                  ('left', ['OPIS']),
@@ -215,6 +217,9 @@ def stmt_newline(p):
 @pg.production('stmt : with_stmt')
 @pg.production('stmt : raise_stmt')
 @pg.production('stmt : return_stmt')
+@pg.production('stmt : macro_stmt')
+@pg.production('stmt : q_stmt')
+@pg.production('stmt : qq_stmt')
 def stmt(p):
     return p[0]
 
@@ -344,9 +349,30 @@ def raise_stmt(p):
     return [Symbol('raise'), p[1]]
 
 
-#@pg.production('with_stmt : WITH binop_expr AS NAME COLON suite2')
-#def with_stmt(p):
-#    return [Symbol('with'), [[p[1], token_to_symbol(p[3])]]] + p[5]
+@pg.production('macro_stmt : MACRO fun_header COLON suite2')
+def macro_stmt(p):
+    fun_name, fun_args = p[1]
+    return [Symbol('mac'), fun_name, fun_args] + p[3]
+
+
+@pg.production('q_stmt : QUOTE COLON suite')
+def q_stmt(p):
+    return [Symbol('quote'), p[2]]
+
+
+@pg.production('qq_stmt : QUASI_QUOTE COLON suite')
+def qq_stmt(p):
+    return [Symbol('quasiquote'), p[2]]
+
+
+@pg.production('uq_expr : UNQUOTE LPAREN binop_expr RPAREN')
+def qq_stmt(p):
+    return [Symbol('unquote'), p[2]]
+
+
+@pg.production('uqs_expr : UNQUOTE_SPLICING LPAREN binop_expr RPAREN')
+def qq_stmt(p):
+    return [Symbol('unquote-splicing'), p[2]]
 
 
 @pg.production('with_stmt : WITH with_contexts COLON suite2')
@@ -396,6 +422,8 @@ def binding(p):
 @pg.production('expr : paren_expr')
 @pg.production('expr : if_expr')
 @pg.production('expr : prim_expr')
+@pg.production('expr : uq_expr')
+@pg.production('expr : uqs_expr')
 @pg.production('expr : app_expr')
 @pg.production('expr : left_app_expr')
 @pg.production('expr : right_app_expr')
