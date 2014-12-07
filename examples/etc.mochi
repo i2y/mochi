@@ -53,7 +53,6 @@ fff = match [1, 2, 3]:
 
 print("faf")
 print(fff)
-print("afaf")
 
 match {"x": [1, 2, 3]}:
     {"x": [1, _, y]}: y
@@ -131,15 +130,6 @@ Node(10, 15, 40)
 Node(20, 100, Leaf(40))
 
 
-#@lru_cache()
-def addAB(a, b):
-    if a == 0:
-        b
-    else:
-        addAB(a - 1, b + 1)
-
-print(addAB(1986, 27))
-
 import flask
 from PIL import Image
 
@@ -175,24 +165,6 @@ else:
     print("fafa")
 
 
-
-def addAB2(a, b):
-    try:
-        if a == 0:
-            b
-        else:
-            addAB2(a - 1, b + 1)
-    finally:
-        "finally"
-
-def addAB3(a, b):
-    if a == 0:
-        b
-    else:
-        addAB3(a - 1, b + 1)
-
-print(addAB3(100000000, 200000))
-
 from time import time
 
 #def tak(x, y, z):
@@ -208,7 +180,7 @@ def tak(x, y, z):
         return tak(tak(x - 1, y, z), tak(y - 1, z, x), tak(z - 1, x, y))
 
 start = time()
-res = tak(20, 10, 0)
+res = tak(10, 5, 0)
 print(time() - start, res)
 
 map(-> $1 * 2, [1, 2, 3])
@@ -237,3 +209,15 @@ def fafa():
     x
 
 print(fafa())
+
+def print_mochi_py:
+    0:
+        with open('./etc.mochi', 'r') as f:
+            print(f.readlines())
+    n:
+        with open('./etc.mochi', 'r') as f:
+            f.readlines()
+            print(n)
+            print_mochi_py(n - 1)
+
+print_mochi_py(2)

@@ -136,7 +136,7 @@ klg.add('RECORD', r'^record$')
 klg.add('DATA', r'^data$')
 klg.add('YIELD', r'^yield$')
 klg.add('RETURN', r'^return$')
-klg.add('WITH:', r'^with$')
+klg.add('WITH', r'^with$')
 klg.add('MUTABLE', r'^mutable$')
 klg.add('DATATYPE', r'^datatype$')
 klg.add('FOR', r'^for$')
@@ -156,7 +156,7 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'PIPELINE_BIND', 'RETURN',
                       'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'THINARROW', 'RECEIVE',
                       'YIELD', 'FROM', 'FOR', 'IN', 'DOT', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT',
-                      'MODULE', 'AS', 'RAISE'],
+                      'MODULE', 'AS', 'RAISE', 'WITH'],
                      precedence=[('left', ['EQUALS']),
                                  ('left', ['NOT']),
                                  ('left', ['OPIS']),
@@ -212,6 +212,7 @@ def stmt_newline(p):
 @pg.production('stmt : from_expr')
 # @pg.production('stmt : if_expr')
 @pg.production('stmt : try_stmt')
+@pg.production('stmt : with_stmt')
 @pg.production('stmt : raise_stmt')
 @pg.production('stmt : return_stmt')
 def stmt(p):
@@ -343,6 +344,31 @@ def raise_stmt(p):
     return [Symbol('raise'), p[1]]
 
 
+#@pg.production('with_stmt : WITH binop_expr AS NAME COLON suite2')
+#def with_stmt(p):
+#    return [Symbol('with'), [[p[1], token_to_symbol(p[3])]]] + p[5]
+
+
+@pg.production('with_stmt : WITH with_contexts COLON suite2')
+def with_stmt(p):
+    return [Symbol('with'), p[1]] + p[3]
+
+
+@pg.production('with_contexts : with_contexts COMMA with_context')
+def with_contexts(p):
+    return p[0] + [p[2]]
+
+
+@pg.production('with_contexts : with_context')
+def with_contexts_one(p):
+    return [p[0]]
+
+
+@pg.production('with_context : binop_expr AS NAME')
+def with_context(p):
+    return [p[0], token_to_symbol(p[2])]
+
+
 @pg.production('return_stmt : RETURN binop_expr')
 def raise_stmt(p):
     return [Symbol('return'), p[1]]
@@ -381,7 +407,7 @@ def binding(p):
 @pg.production('expr : yield_from_expr')
 @pg.production('expr : for_expr')
 @pg.production('expr : block_expr')
-@pg.production('expr : defm_expr')
+# @pg.production('expr : defm_expr')
 @pg.production('expr : dot_expr')
 @pg.production('expr : send_msg_expr')
 @pg.production('expr : id_expr')
@@ -607,9 +633,9 @@ def fun_expr(p):
     return [Symbol('def'), fun_name, fun_args, p[4]]
 
 
-@pg.production('defm_expr : DEF id_expr doc_string COLON NEWLINE INDENT defm_case_branches DEDENT')
+@pg.production('defm_expr : DEF NAME doc_string COLON NEWLINE INDENT defm_case_branches DEDENT')
 def fun_expr(p):
-    return [Symbol('defm'), p[1]] + p[6]
+    return [Symbol('defm'), token_to_symbol(p[1])] + p[6]
 
 
 @pg.production('defm_case_branches : defm_case_branches defm_case_branch')
@@ -895,44 +921,44 @@ def case(p):
     return [Symbol('match'), [Symbol('recv'), [Symbol('self')]]] + p[4]
 
 
-@pg.production('record_expr : RECORD id_expr')
+@pg.production('record_expr : RECORD NAME')
 def record_expr(p):
-    return [Symbol('record'), p[1], []]
+    return [Symbol('record'), token_to_symbol(p[1]), []]
 
 
-@pg.production('record_expr : RECORD id_expr OPLT id_expr')
+@pg.production('record_expr : RECORD NAME OPLT id_expr')
 def record_expr(p):
-    return [Symbol('record'), p[1], p[3], []]
+    return [Symbol('record'), token_to_symbol(p[1]), p[3], []]
 
 
-@pg.production('record_expr : RECORD id_expr LPAREN record_fields RPAREN')
+@pg.production('record_expr : RECORD NAME LPAREN record_fields RPAREN')
 def record_expr(p):
-    return [Symbol('record'), p[1], p[3]]
+    return [Symbol('record'), token_to_symbol(p[1]), p[3]]
 
 
-@pg.production('record_expr : RECORD id_expr LPAREN record_fields RPAREN OPLT id_expr')
+@pg.production('record_expr : RECORD NAME LPAREN record_fields RPAREN OPLT id_expr')
 def record_expr(p):
-    return [Symbol('record'), p[1], p[6], p[3]]
+    return [Symbol('record'), token_to_symbol(p[1]), p[6], p[3]]
 
 
-@pg.production('record_expr : RECORD id_expr COLON NEWLINE INDENT record_body DEDENT')
+@pg.production('record_expr : RECORD NAME COLON NEWLINE INDENT record_body DEDENT')
 def record_expr(p):
-    return [Symbol('record'), p[1], []] + p[5]
+    return [Symbol('record'), token_to_symbol(p[1]), []] + p[5]
 
 
-@pg.production('record_expr : RECORD id_expr OPLT id_expr COLON NEWLINE INDENT record_body DEDENT')
+@pg.production('record_expr : RECORD NAME OPLT id_expr COLON NEWLINE INDENT record_body DEDENT')
 def record_expr(p):
-    return [Symbol('record'), p[1], p[3], []] + p[7]
+    return [Symbol('record'), token_to_symbol(p[1]), p[3], []] + p[7]
 
 
-@pg.production('record_expr : RECORD id_expr LPAREN record_fields RPAREN COLON NEWLINE INDENT record_body DEDENT')
+@pg.production('record_expr : RECORD NAME LPAREN record_fields RPAREN COLON NEWLINE INDENT record_body DEDENT')
 def record_expr(p):
-    return [Symbol('record'), p[1], p[3]] + p[8]
+    return [Symbol('record'), token_to_symbol(p[1]), p[3]] + p[8]
 
 
-@pg.production('record_expr : RECORD id_expr LPAREN record_fields RPAREN OPLT id_expr COLON NEWLINE INDENT record_body DEDENT')
+@pg.production('record_expr : RECORD NAME LPAREN record_fields RPAREN OPLT id_expr COLON NEWLINE INDENT record_body DEDENT')
 def record_expr(p):
-    return [Symbol('record'), p[1], p[6], p[3]] + p[10]
+    return [Symbol('record'), token_to_symbol(p[1]), p[6], p[3]] + p[10]
 
 
 @pg.production('record_body : def_expr')
@@ -960,9 +986,9 @@ def record_expr(p):
     return p[0]
 
 
-@pg.production('data_expr : DATA id_expr COLON NEWLINE INDENT data_record_expr_list DEDENT')
+@pg.production('data_expr : DATA NAME COLON NEWLINE INDENT data_record_expr_list DEDENT')
 def data_expr(p):
-    return [Symbol('data'), p[1]] + p[5]
+    return [Symbol('data'), token_to_symbol(p[1])] + p[5]
 
 
 @pg.production('data_record_expr_list : data_record_expr')
@@ -975,9 +1001,9 @@ def record_expr(p):
     return [p[0]] + p[1]
 
 
-@pg.production('data_record_expr : id_expr LPAREN record_fields RPAREN NEWLINE')
+@pg.production('data_record_expr : NAME LPAREN record_fields RPAREN NEWLINE')
 def record_expr(p):
-    return [p[0]] + p[2]
+    return [token_to_symbol(p[0])] + p[2]
 
 
 @pg.production('binop_expr : NOT expr')

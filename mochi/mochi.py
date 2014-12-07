@@ -251,10 +251,10 @@ def gen_with(context, func):
             yield retval
 
 
-@builtin_rename('with')
-def _with(context, func):
-    with context:
-        return func(context)
+#@builtin_rename('with')
+#def _with(context, func):
+#    with context:
+#        return func(context)
 
 
 @builtin
@@ -2202,7 +2202,7 @@ class Translator(object):
         # expは末尾の式。
         # expがシーケンスではないとき、returnに変換。
         # expがシーケンスで、先頭がreturn、yield、yield fromのとき、そのまま。
-        # expがシーケンスで、先頭がif、do、try、matchのとき、中のシーケンスの末尾をreturnに変換。
+        # expがシーケンスで、先頭がif、do、with、try、matchのとき、中のシーケンスの末尾をreturnに変換。
         # expがシーケンスでそれ以外の場合、末尾の式をreturnに変換。
         exp = exps[-1]
         if not issequence_except_str(exp):
@@ -2229,7 +2229,7 @@ class Translator(object):
                 if exp_len % 2 == 0:
                     new_if_exp[-1] = self._tail_to_return_s([if_exp[-1]])[0]
                 exp = tuple(new_if_exp)
-        elif exp[0].name in {'do', 'finally', 'except'}:
+        elif exp[0].name in {'do', 'with', 'finally', 'except'}:
             exp = (exp[0], ) + self._tail_to_return_s(exp[1:])
         elif exp[0].name == 'try':
             exp = (exp[0], ) + self._tail_to_return_s(tuple(filter(lambda item: not (issequence_except_str(item)
@@ -2237,9 +2237,9 @@ class Translator(object):
                                                                                      and item[0].name in {'except',
                                                                                                           'finally'}),
                                                                    exp[1:]))) + \
-                  tuple(map(except_tail_to_return, filter(lambda item: issequence_except_str(item) and
-                                                                       isinstance(item[0], Symbol) and
-                                                                       item[0].name in {'except', 'finally'}, exp[1:])))
+                tuple(map(except_tail_to_return, filter(lambda item: issequence_except_str(item) and
+                                                                     isinstance(item[0], Symbol) and
+                                                                     item[0].name in {'except', 'finally'}, exp[1:])))
         elif exp[0].name == 'match':
             new_exp = list(exp)
             i = 3
@@ -2326,6 +2326,72 @@ class Translator(object):
                                        finalbody=final_body,
                                        lineno=exp[0].lineno,
                                        col_offset=0),), self.translate(EMPTY_SYM, False)[1]
+
+    @syntax('with')
+    def translate_with(self, exp):
+        if len(exp) < 3:
+            raise MochiSyntaxError(exp, self.filename)
+
+        if IS_PYTHON_34:
+            return self.translate_with_34(exp)
+        else:
+            return self.translate_with_old(exp)
+
+    def translate_with_34(self, exp):
+        keyword_with, items, *body = exp
+        pre = []
+        items_py = []
+        for item in items:
+            item_pre, item_value = self.translate(item[0], False)
+            pre.extend(item_pre)
+            var = item[1]
+            items_py.append(ast.withitem(context_expr=item_value,
+                                         optional_vars=ast.Name(id=var.name,
+                                                                ctx=ast.Store(),
+                                                                lineno=var.lineno,
+                                                                col_offset=0),
+                                         lineno=var.lineno,
+                                         col_offset=0))
+
+        body_py = self._translate_sequence(body, True)
+        pre.append(ast.With(items=items_py,
+                            body=body_py,
+                            lineno=keyword_with.lineno,
+                            col_offset=0))
+        return pre, self.translate(NONE_SYM, False)[1]
+
+    def translate_with_old(self, exp):
+        keyword_with, items, *body = exp
+        pre = []
+        first_with_py = None
+        with_py = None
+        for item in items:
+            item_pre, item_value = self.translate(item[0], False)
+            pre.extend(item_pre)
+            var = item[1]
+            if with_py is None:
+                with_py = ast.With(context_expr=item_value,
+                                   optional_vars=ast.Name(id=var.name,
+                                                          ctx=ast.Store(),
+                                                          lineno=var.lineno,
+                                                          col_offset=0),
+                                   lineno=var.lineno,
+                                   col_offset=0)
+                first_with_py = with_py
+            else:
+                inner_with_py = ast.With(context_expr=item_value,
+                                         optional_vars=ast.Name(id=var.name,
+                                                                ctx=ast.Store(),
+                                                                lineno=var.lineno,
+                                                                col_offset=0),
+                                         lineno=var.lineno,
+                                         col_offset=0)
+                with_py.body = [inner_with_py]
+                with_py = inner_with_py
+
+        with_py.body = self._translate_sequence(body, True)
+        pre.append(first_with_py)
+        return pre, self.translate(NONE_SYM, False)[1]
 
     @syntax('raise')
     def translate_raise(self, exp):
@@ -3307,8 +3373,8 @@ def main():
      (fn (lines) lines)))
 
 (def writelines (path lines)
-  (with (open path "w")
-    (fn (f) (f.writelines lines))))
+  (with (((open path) w))
+    (f.writelines lines)))
 
 (mac defseq (name iterable)
   `(_val ,name (lazyseq ,iterable)))
