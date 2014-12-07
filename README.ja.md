@@ -19,6 +19,7 @@ Python3のAST/バイトコードに変換し、Python仮想マシン上で実行
 - パイプライン演算子
 - 無名関数定義のシンタックスシュガー
 - Erlangに似たアクター(Eventletベース）
+- Lispの伝統的マクロと似たマクロ
 - Python3のitertools、functools、operatorモジュールの関数とitertoolsレシピの関数が組み込み
 
 
@@ -91,6 +92,22 @@ def hello():
     'Hello World!'
 
 app.run()
+```
+
+### aif
+```
+macro aif(test, true_expr, false_expr):
+    quasi_quote:
+        it = unquote(test)
+        if it:
+            unquote(true_expr)
+        else:
+            unquote(false_expr)
+
+print(aif([], first(it), "empty"))
+# => "empty"
+print(aif([10, 20], first(it), "empty"))
+# => 10
 ```
 
 ## 依存モジュール

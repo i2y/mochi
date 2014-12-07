@@ -12,7 +12,8 @@ Its interpreter is written in Python3. The interpreter translates a program writ
 - Pattern matching / Data types, like algebraic data types
 - Pipeline operator
 - Syntax sugar of anonymous function definition
-- Actor, like Erlang's actor（using Eventlet)
+- Actor, like the actor of Erlang（using Eventlet)
+- Macro, like the traditional macro of Lisp
 - Built-in Python3 itertools and functools, operator module functions and function in itertools recipes
 
 
@@ -81,6 +82,22 @@ def hello():
     'Hello World!'
 
 app.run()
+```
+
+### aif
+```
+macro aif(test, true_expr, false_expr):
+    quasi_quote:
+        it = unquote(test)
+        if it:
+            unquote(true_expr)
+        else:
+            unquote(false_expr)
+
+print(aif([], first(it), "empty"))
+# => "empty"
+print(aif([10, 20], first(it), "empty"))
+# => 10
 ```
 
 ## Requirements
