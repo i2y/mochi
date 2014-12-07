@@ -104,7 +104,7 @@ Flask
 aif
 ~~~
 
-::
+.. code:: python
 
     macro aif(test, true_expr, false_expr):
         quasi_quote:

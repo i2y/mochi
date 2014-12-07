@@ -95,7 +95,7 @@ app.run()
 ```
 
 ### aif
-```
+```python
 macro aif(test, true_expr, false_expr):
     quasi_quote:
         it = unquote(test)
