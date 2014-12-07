@@ -1,5 +1,5 @@
 __author__ = 'Yasushi Itoh'
-__version__ = '0.0.6'
+__version__ = '0.0.6.1'
 __license__ = 'MIT License'
 
 
