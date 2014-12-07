@@ -1,5 +1,7 @@
 Revision history
 ----------------
+v0.0.7, 2014-12-08
+  * Added the macro statement, the quote statement, the quasi_quote statement, the unquote expression and the unquote_splicing expression
 v0.0.6, 2014-12-08
   * Added the with statement
 v0.0.5, 2014-12-05
