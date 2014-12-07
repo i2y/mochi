@@ -2199,11 +2199,6 @@ class Translator(object):
                 return (except_exp[0],) + self._tail_to_return_s(except_exp[1:])
             return except_exp
 
-        # expは末尾の式。
-        # expがシーケンスではないとき、returnに変換。
-        # expがシーケンスで、先頭がreturn、yield、yield fromのとき、そのまま。
-        # expがシーケンスで、先頭がif、do、with、try、matchのとき、中のシーケンスの末尾をreturnに変換。
-        # expがシーケンスでそれ以外の場合、末尾の式をreturnに変換。
         exp = exps[-1]
         if not issequence_except_str(exp):
             exp = (Symbol('return'), exp)
