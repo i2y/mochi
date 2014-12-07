@@ -104,7 +104,7 @@ app.run()
 ## インストール
 
 ```sh
-$ pip install mochi
+$ pip3 install mochi
 ```
 
 

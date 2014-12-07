@@ -114,7 +114,7 @@ Installation
 
 .. code:: sh
 
-    $ pip install mochi
+    $ pip3 install mochi
 
 Usage
 -----
