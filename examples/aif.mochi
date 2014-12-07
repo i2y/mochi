@@ -1,0 +1,10 @@
+macro aif(test, true_expr, false_expr):
+    quasi_quote:
+        it = unquote(test)
+        if it:
+            unquote(true_expr)
+        else:
+            unquote(false_expr)
+
+print(aif(10 in [10, 20, 30], it / 10, it))
+print(aif(100 in [10, 20, 30], it / 10, it))

@@ -162,7 +162,7 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                      precedence=[('left', ['EQUALS']),
                                  ('left', ['NOT']),
                                  ('left', ['OPIS']),
-                                 ('left', ['OPEQ', 'OPLEQ', 'OPGEQ', 'OPNEQ', 'OPLT', 'OPGT', 'OPAND', 'OPOR']),
+                                 ('left', ['OPEQ', 'OPLEQ', 'OPGEQ', 'OPNEQ', 'OPLT', 'OPGT', 'OPAND', 'OPOR', 'IN']),
                                  ('left', ['OPPLUS', 'OPMINUS']),
                                  ('left', ['LBRACK', 'RBRACK']),
                                  ('left', ['OPTIMES', 'OPDIV', 'PERCENT'])],
@@ -1053,6 +1053,7 @@ def binop_expr(p):
 @pg.production('binop_expr : binop_expr OPAND binop_expr')
 @pg.production('binop_expr : binop_expr OPOR binop_expr')
 @pg.production('binop_expr : binop_expr OPIS binop_expr')
+@pg.production('binop_expr : binop_expr IN binop_expr')
 def binop_expr(p):
     return [token_to_symbol(p[1]), p[0], p[2]]
 
