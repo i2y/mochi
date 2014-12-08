@@ -319,8 +319,8 @@ Bindings
     d
     # => pvector([2, 3])
 
-Data types, like algebraic data types (sum type)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Data types, like algebraic data types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
