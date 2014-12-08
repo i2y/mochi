@@ -125,9 +125,14 @@ def make_default_env():
     env['spawn'] = actor.spawn
     env['send'] = actor.send
     env['recv'] = actor.recv
+    env['link'] = actor.link
+    env['unlink'] = actor.unlink
+    env['kill'] = actor.kill
+    env['cancel'] = actor.cancel
     env['self'] = actor.self
     env['sleep'] = actor.sleep
     env['wait_all'] = actor.wait_all
+    env['wait'] = actor.wait
     env['__name__'] = '__main__'
     try:
         env['__loader__'] = __loader__
