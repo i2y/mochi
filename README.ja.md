@@ -104,9 +104,9 @@ macro aif(test, true_expr, false_expr):
         else:
             unquote(false_expr)
 
-print(aif([], first(it), "empty"))
+aif([], first(it), "empty")
 # => "empty"
-print(aif([10, 20], first(it), "empty"))
+aif([10, 20], first(it), "empty")
 # => 10
 ```
 
