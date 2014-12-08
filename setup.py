@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-import sys
 from setuptools import setup, find_packages
-
 from mochi import __author__, __version__, __license__, IS_PYTHON_34
 
 install_requires = ['rply>=0.7.2',
@@ -14,14 +12,21 @@ if not IS_PYTHON_34:
     install_requires.append('pathlib>=1.0.1')
 
 
-def is_windows(platform):
+def is_windows():
+    from sys import platform
     return platform.startswith('win') or platform.startswith('cygwin')
+
+if is_windows():
+    readme = ''
+else:
+    with open('README.rst', 'r') as f:
+        readme = f.read()
 
 setup(
     name='mochi',
     version=__version__,
     description='Dynamically typed functional programming language',
-    long_description=open('README.rst').read() if not is_windows(sys.platform) else "",
+    long_description=readme,
     license=__license__,
     author=__author__,
     url='https://github.com/i2y/mochi',
