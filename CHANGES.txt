@@ -1,15 +1,18 @@
 Revision history
 ----------------
+v0.0.8, 2014-12-09
+  * Add some actor functions (link, unlink, cancel, kill, wait)
+  * Add the quote expression and the quasi_quote expression
 v0.0.7, 2014-12-08
-  * Added the macro statement, the quote statement, the quasi_quote statement, the unquote expression and the unquote_splicing expression
+  * Add the macro statement, the quote statement, the quasi_quote statement, the unquote expression and the unquote_splicing expression
 v0.0.6, 2014-12-08
-  * Added the with statement
+  * Add the with statement
 v0.0.5, 2014-12-05
-  * Changed defm syntax form
+  * Change defm syntax form
 v0.0.4, 2014-12-01
-  * Added Actor
-  * Added bind function and |>? operator
+  * Add Actor
+  * Add bind function and |>? operator
 v0.0.2, 2014-11-17
-  * Tweaked grammer of module syntax. Introduced export keyword
-  * Tweaked a meaning of the require syntax
-  * Added CHANGES.txt
+  * Tweak grammer of module syntax. Introduce export keyword
+  * Tweak a meaning of the require syntax
+  * Add CHANGES.txt

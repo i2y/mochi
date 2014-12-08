@@ -360,8 +360,18 @@ def q_stmt(p):
     return [Symbol('quote'), p[2]]
 
 
+@pg.production('quote_expr : QUOTE LPAREN binop_expr RPAREN')
+def quote_expr(p):
+    return [Symbol('quote'), p[2]]
+
+
 @pg.production('qq_stmt : QUASI_QUOTE COLON suite')
 def qq_stmt(p):
+    return [Symbol('quasiquote'), p[2]]
+
+
+@pg.production('quasi_quote_expr : QUASI_QUOTE LPAREN binop_expr RPAREN')
+def quasi_quote_expr(p):
     return [Symbol('quasiquote'), p[2]]
 
 
@@ -435,9 +445,10 @@ def binding(p):
 @pg.production('expr : yield_from_expr')
 @pg.production('expr : for_expr')
 @pg.production('expr : block_expr')
-# @pg.production('expr : defm_expr')
 @pg.production('expr : dot_expr')
 @pg.production('expr : send_msg_expr')
+@pg.production('expr : quote_expr')
+@pg.production('expr : quasi_quote_expr')
 @pg.production('expr : id_expr')
 #@pg.production('expr : app_nc_expr')
 def expr(p):
