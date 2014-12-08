@@ -1,0 +1,7 @@
+macro rest_if_first_is_true(first, &args):
+     match first:
+         quote(True): quasi_quote(v(unquote_splicing(args)))
+         _: quote(False)
+
+print(rest_if_first_is_true(True, 1, 2, 3))
+print(rest_if_first_is_true("foo", 1, 2, 3))
