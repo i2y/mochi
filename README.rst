@@ -65,8 +65,6 @@ FizzBuzz
             _: n
 
     range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
-    # or
-    range(1, 31) |> map(fizzbuzz) |> lazyseq() |> print()
 
 Actor
 ~~~~~
