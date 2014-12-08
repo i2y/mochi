@@ -50,8 +50,6 @@ def fizzbuzz(n):
         _: n
 
 range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
-# or
-range(1, 31) |> map(fizzbuzz) |> lazyseq() |> print()
 ```
 
 ### Actor
@@ -360,6 +358,36 @@ add = -> $1 + $2
 None |>? add(10) |>? add(12)
 # => None
 ```
+
+### Lazy sequences
+```python
+def fizzbuzz(n):
+    match [n % 3, n % 5]:
+        [0, 0]: "fizzbuzz"
+        [0, _]: "fizz"
+        [_, 0]: "buzz"
+        _: n
+
+
+result = range(1, 31) |> map(fizzbuzz)
+pvector(result)
+# => pvector([1, 2, fizz, 4, 'buzz', 'fizz', 7, 8, 'fizz', 'buzz', 11, 'fizz', 13, 14, 'fizzbuzz', 16, 17, 'fizz', 19, 'buzz', 'fizz', 22, 23, 'fizz', 'buzz', 26, 'fizz', 28, 29, 'fizzbuzz'])
+pvector(result)
+# => pvector([])
+pvector(result)
+# => pvector([])
+
+
+# Iterator -> lazyseq
+lazy_result = range(1, 31) |> map(fizzbuzz) |> lazyseq()
+pvector(lazy_result)
+# => pvector([1, 2, fizz, 4, 'buzz', 'fizz', 7, 8, 'fizz', 'buzz', 11, 'fizz', 13, 14, 'fizzbuzz', 16, 17, 'fizz', 19, 'buzz', 'fizz', 22, 23, 'fizz', 'buzz', 26, 'fizz', 28, 29, 'fizzbuzz'])
+pvector(lazy_result)
+# => pvector([1, 2, fizz, 4, 'buzz', 'fizz', 7, 8, 'fizz', 'buzz', 11, 'fizz', 13, 14, 'fizzbuzz', 16, 17, 'fizz', 19, 'buzz', 'fizz', 22, 23, 'fizz', 'buzz', 26, 'fizz', 28, 29, 'fizzbuzz'])
+pvector(lazy_result)
+# => pvector([1, 2, fizz, 4, 'buzz', 'fizz', 7, 8, 'fizz', 'buzz', 11, 'fizz', 13, 14, 'fizzbuzz', 16, 17, 'fizz', 19, 'buzz', 'fizz', 22, 23, 'fizz', 'buzz', 26, 'fizz', 28, 29, 'fizzbuzz'])
+```
+
 
 ### Including a file at compile time
 ```sh
