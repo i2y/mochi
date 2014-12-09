@@ -1,0 +1,8 @@
+def fizzbuzz(n):
+    match [n % 3, n % 5]:
+        [0, 0]: "fizzbuzz"
+        [0, _]: "fizz"
+        [_, 0]: "buzz"
+        _: n
+
+range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
