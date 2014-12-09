@@ -68,7 +68,6 @@ lg.add('DQUOTE_STR', r'(?x)"(?:|[^"\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\
 lg.add('UNTERMINATED_STRING', r"[\"\'].*")
 lg.add('NUMBER', r'-?[0-9]+(?:\.[0-9]+)?')
 lg.add('NAME', r'\&?[_a-zA-Z$][-_a-zA-Z0-9]*')
-lg.add('OPPAREN', r'" + operator_regex_str + "(?=\()')
 lg.add('PIPELINE_BIND', r'\|>\?')
 lg.add('PIPELINE', r'\|>')
 lg.add('BAR', r'\|')
@@ -162,11 +161,12 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                      precedence=[('left', ['EQUALS']),
                                  ('left', ['NOT']),
                                  ('left', ['OPIS']),
-                                 ('left', ['OPEQ', 'OPLEQ', 'OPGEQ', 'OPNEQ', 'OPLT', 'OPGT', 'OPAND', 'OPOR', 'IN']),
+                                 ('left', ['OPEQ', 'OPLEQ', 'OPGEQ', 'OPNEQ', 'OPLT', 'OPGT', 'OPAND', 'OPOR',
+                                           'PIPELINE', 'PIPELINE_BIND']),
                                  ('left', ['OPPLUS', 'OPMINUS']),
                                  ('left', ['LBRACK', 'RBRACK']),
                                  ('left', ['OPTIMES', 'OPDIV', 'PERCENT'])],
-                     cache_id='klon')
+                     cache_id='mochi')
 
 
 @pg.production('program : block')
@@ -436,7 +436,6 @@ def binding(p):
 @pg.production('expr : uqs_expr')
 @pg.production('expr : app_expr')
 @pg.production('expr : left_app_expr')
-@pg.production('expr : right_app_expr')
 @pg.production('expr : dict_expr')
 @pg.production('expr : tuple_expr')
 @pg.production('expr : match_expr')
@@ -853,25 +852,6 @@ def left_app_fun_expr(p):
     return p[0]
 
 
-@pg.production('right_app_expr : expr PIPELINE right_app_fun_expr app_args')
-def right_app_expr(p):
-    expr, _, right_app_fun_expr, app_args = p
-    return [right_app_fun_expr] + app_args + [expr]
-
-
-@pg.production('right_app_expr : expr PIPELINE_BIND right_app_fun_expr app_args')
-def right_app_bind_expr(p):
-    expr, _, right_app_fun_expr, app_args = p
-    return [Symbol('if'), [Symbol('is'), expr, Symbol('None')],
-            Symbol('None'),
-            [right_app_fun_expr] + app_args + [expr]]
-
-
-@pg.production('right_app_fun_expr : id_expr')
-def right_app_fun_expr(p):
-    return p[0]
-
-
 @pg.production('dict_expr : LBRACE RBRACE')
 def dict_expr_empty(p):
     return [Symbol('table')]
@@ -1066,6 +1046,18 @@ def binop_expr(p):
 @pg.production('binop_expr : binop_expr OPIS binop_expr')
 def binop_expr(p):
     return [token_to_symbol(p[1]), p[0], p[2]]
+
+
+@pg.production('binop_expr : binop_expr PIPELINE binop_expr')
+def binop_expr(p):
+    return [Symbol('->>'), p[0], p[2]]
+
+
+@pg.production('binop_expr : binop_expr PIPELINE_BIND binop_expr')
+def binop_expr(p):
+    left, _, right = p
+    return [Symbol('->>'), p[0], [Symbol('bind'),
+                                  [Symbol('fn'), [Symbol('input')], p[2] + [Symbol('input')]]]]
 
 
 @pg.production('binop_expr : expr')
