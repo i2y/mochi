@@ -3674,7 +3674,10 @@ def main():
       (if (not-in k seen)
         (do
           (seen-add k)
-          (yield element-b))))))""")
+          (yield element-b))))))
+(def distinct (iterable)
+  (unique-everseen iterable None))
+""")
     else:
         eval("""
 (mac call/cl (callable)
