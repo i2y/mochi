@@ -12,8 +12,8 @@ macro pipeline(&args):
 pipeline([1, 2, 3],
          map(-> $1 * 2),
          filter(-> $1 != 2),
-         pvector())
-# => pvector([4, 6])
+         pvector()) |> print()
+# -> pvector([4, 6])
 
 
 
