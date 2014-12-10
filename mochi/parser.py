@@ -1059,8 +1059,9 @@ def binop_expr(p):
 @pg.production('binop_expr : binop_expr PIPELINE_BIND binop_expr')
 def binop_expr(p):
     left, _, right = p
+    input_sym = get_temp_name()
     return [Symbol('|>'), p[0], [Symbol('bind'),
-                                 [Symbol('fn'), [Symbol('input')], p[2] + [Symbol('input')]]]]
+                                 [Symbol('fn'), [input_sym], p[2] + [input_sym]]]]
 
 
 @pg.production('binop_expr : binop_expr PIPELINE_FIRST binop_expr')
@@ -1071,13 +1072,25 @@ def binop_expr(p):
 @pg.production('binop_expr : binop_expr PIPELINE_FIRST_BIND binop_expr')
 def binop_expr(p):
     left, _, right = p
-    return [Symbol('|>1'), p[0], [Symbol('bind'),
-                                  [Symbol('fn'), [Symbol('input')], p[2] + [Symbol('input')]]]]
+    input_sym = get_temp_name()
+    return [Symbol('|>'), p[0], [Symbol('bind'),
+                                 [Symbol('fn'), [input_sym],
+                                  [p[2][0], input_sym] + p[2][(1 if len(p[2]) > 1 else len(p[2])):]]]]
 
 
 @pg.production('binop_expr : expr')
 def binop_expr(p):
     return p[0]
+
+
+name_seq = 0
+
+
+def get_temp_name():
+    global name_seq
+    name_seq += 1
+    name_symbol = Symbol('_gs%s' % name_seq)
+    return name_symbol
 
 
 REPL_CONTINUE = object()

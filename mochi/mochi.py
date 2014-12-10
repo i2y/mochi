@@ -22,7 +22,7 @@ import platform
 
 from pyrsistent import v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l, plist, pclass, freeze, thaw
 
-from mochi.parser import Symbol, Keyword, parse, lex, REPL_CONTINUE
+from mochi.parser import Symbol, Keyword, parse, lex, get_temp_name, REPL_CONTINUE
 from mochi import actor
 from mochi import __version__
 
@@ -121,6 +121,8 @@ def make_default_env():
     env['True'] = True
     env['False'] = False
     env['None'] = None
+    env['gensym'] = get_temp_name
+    env['uniq'] = get_temp_name
     env['Record'] = pclass((), 'Record')  # namedtuple('Record', ())
     env['spawn'] = actor.spawn
     env['send'] = actor.send
@@ -153,8 +155,6 @@ def make_default_env():
 
 global_env = make_default_env()
 
-name_seq = 0
-
 
 def builtin(func):
     global_env[func.__name__] = func
@@ -169,13 +169,8 @@ def builtin_rename(new_name):
     return _builtin
 
 
-@builtin_rename('uniq')
-@builtin_rename('gensym')
-def get_temp_name():
-    global name_seq
-    name_seq += 1
-    name_symbol = Symbol('_gs%s' % name_seq)
-    return name_symbol
+#@builtin_rename('uniq')
+#@builtin_rename('gensym')
 
 
 @builtin
