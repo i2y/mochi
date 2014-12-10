@@ -195,6 +195,9 @@ Persistent data structures
     y # => 2
     z # => 3
 
+    get(vec, 0) # => 1
+    get(vec, 0, 2) # => [1, 2]
+
     {'x': 100, 'y': 200}
     # => pmap({'y': 200, 'x': 100})
 
@@ -204,6 +207,7 @@ Persistent data structures
     ma2 = ma.set('x', 10000)
     # => pmap({'y': 200, 'x': 10000})
     ma # => pmap({'y': 200, 'x': 100})
+    get(ma, 'y') # => 200
 
     m(x=100, y=200)
     # => pmap({'y': 200, 'x': 100})
