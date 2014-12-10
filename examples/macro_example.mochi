@@ -5,3 +5,15 @@ macro rest_if_first_is_true(first, &args):
 
 print(rest_if_first_is_true(True, 1, 2, 3))
 print(rest_if_first_is_true("foo", 1, 2, 3))
+
+macro pipeline(&args):
+    [Symbol('|>')] + args
+
+pipeline([1, 2, 3],
+         map(-> $1 * 2),
+         filter(-> $1 != 2),
+         pvector())
+# => pvector([4, 6])
+
+
+

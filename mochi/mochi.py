@@ -469,9 +469,9 @@ class SexpReader(object):
         self.port = port
         self.nest_level = 0
         self.line = 1
-        self.commands = ("'", '(', ',', '`', '"', ';', '@', '|', '[', '{')
+        self.commands = ("'", '(', ',', '`', '"', ';', '@', '~', '[', '{')
         self.white_spaces = (' ', '\r', '\n', '\t')
-        self.separations = self.commands + self.white_spaces + (')', '|', ']', '}', EOF, '#')
+        self.separations = self.commands + self.white_spaces + (')', '~', ']', '}', EOF, '#')
         self.reader = SexpReader
         self.reader_macro_table = {
             '(': self.make_list_macro,
@@ -605,8 +605,8 @@ class SexpReader(object):
             return COMMENT
         elif self.port.next_char() == '(':
             return self.read_delimited_list(')')
-        elif self.port.next_char() == '|':
-            rest_exps = self.read_delimited_list('|')
+        elif self.port.next_char() == '~':
+            rest_exps = self.read_delimited_list('~')
             return [FN, self._create_underscore_args(rest_exps), rest_exps]
         elif self.port.next_char() == '[':
             sexp = [MAKE_TUPLE]
@@ -3278,7 +3278,7 @@ def main():
 
     (_val sym-num-seq (ref 0))
     (def gensym-match ()
-      (set! sym-num-seq |+ _ 1|)
+      (set! sym-num-seq ~+ _ 1~)
       (Symbol (+ "m" (str #!sym-num-seq))))
 
   (def table-pattern-bind (pattern target)
@@ -3340,7 +3340,7 @@ def main():
 
 (mac let (args & body)
  `((fn ()
-	,@(doall (map |cons 'val _| args))
+	,@(doall (map ~cons 'val _~ args))
 	,@body)))
 
 ;(mac and args
@@ -3364,7 +3364,7 @@ def main():
 (mac accum (accfn & body)
   (w/uniq gacc
     `(let ((,gacc #())
-           (,accfn |append ,gacc _|))
+           (,accfn ~append ,gacc _~))
       ,@body
       (tuple ,gacc))))
 
@@ -3379,23 +3379,26 @@ def main():
 (mac defseq (name iterable)
   `(_val ,name (lazyseq ,iterable)))
 
-(mac -> (operand & operators)
+(mac |>1 (operand & operators)
   (if (== (len operators) 0)
       operand
       (let ((operator (first operators))
 	    (rest-operators (rest operators)))
-	(if (isinstance operator tuple)
-	    `(-> (,(first operator) ,operand ,@(rest operator)) ,@rest-operators)
-	  `(-> (,operator ,operand) ,@rest-operators)))))
+ 	 (if (isinstance operator tuple)
+ 	     `(|>1 (,(first operator) ,operand ,@(rest operator)) ,@rest-operators)
+	   `(|>1 (,operator ,operand) ,@rest-operators)))))
 
-(mac ->> (operand & operators)
+(mac |> (operand & operators)
   (if (== (len operators) 0)
       operand
       (let ((operator (first operators))
 	    (rest-operators (rest operators)))
 	(if (isinstance operator tuple)
-	    `(->> (,(first operator) ,@(rest operator) ,operand) ,@rest-operators)
-	  `(->> (,operator ,operand) ,@rest-operators)))))
+	    `(|> (,(first operator) ,@(rest operator) ,operand) ,@rest-operators)
+	  `(|> (,operator ,operand) ,@rest-operators)))))
+
+(mac pipeline (& exps)
+  `(|> ,@exps))
 
 ;(mac import (& targets)
 ;  `(_require_py_module (quote ,targets)))
@@ -3495,7 +3498,7 @@ def main():
 
     (_val sym-num-seq (ref 0))
     (def gensym-match ()
-      (set! sym-num-seq |+ _ 1|)
+      (set! sym-num-seq ~+ _ 1~)
       (Symbol (+ "m" (str #!sym-num-seq))))
 
     (def table-pattern-bind (pattern target)
@@ -3581,13 +3584,13 @@ def main():
 
 (mac data (base-record-name & record-defs)
   `(do (record ,base-record-name ())
-       ,@(map |quasiquote (record ,(get _ 0) ,base-record-name ,(get _ 1 None))| record-defs)))
+       ,@(map ~quasiquote (record ,(get _ 0) ,base-record-name ,(get _ 1 None))~ record-defs)))
 
 (mac make-module (export & body)
   (def symbol->keyword (sym)
     (Keyword sym.name))
   (def make-exported-table (exported-symbols)
-    (+ '(table) (tuple (flatten (map |make-tuple (symbol->keyword _) _| exported-symbols)))))
+    (+ '(table) (tuple (flatten (map ~make-tuple (symbol->keyword _) _~ exported-symbols)))))
   (def make-exported-tuple (exported-symbols)
     (val tuple-name (gensym))
     (make-tuple
