@@ -26,6 +26,7 @@ def factorial(n, m):
     else:
         factorial(n - 1, n * m)
 
+
 factorial(10000, 1)
 # => 28462596809170545189064132121198688...
 
@@ -65,7 +66,21 @@ actor = spawn(show)
 send('foo', actor)
 actor ! 'bar' # send('bar', actor)
 
-wait_all()
+sleep(1)
+# -> foo
+# -> bar
+
+
+'foo' !> spawn(show)
+
+sleep(1)
+# -> foo
+
+['foo', 'bar'] !&> spawn(show)
+
+sleep(1)
+# -> foo
+# -> bar
 ```
 
 ### Flask

@@ -72,6 +72,8 @@ lg.add('PIPELINE_FIRST_BIND', r'\|>1\?')
 lg.add('PIPELINE_FIRST', r'\|>1')
 lg.add('PIPELINE_BIND', r'\|>\?')
 lg.add('PIPELINE', r'\|>')
+lg.add('PIPELINE_SEND', r'!>')
+lg.add('PIPELINE_MULTI_SEND', r'!&>')
 lg.add('BAR', r'\|')
 lg.add('LBRACK', r'\[')
 lg.add('RBRACK', r'\]')
@@ -157,7 +159,7 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                       'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'DQUOTE_STR', 'SQUOTE_STR', 'AT', 'BANG',
                       'NAME', 'EQUALS', 'IF', 'ELSEIF', 'ELSE', 'COLON', 'SEMI', 'DATA', 'IMPORT', 'REQUIRE',
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'PIPELINE_BIND', 'PIPELINE_FIRST',
-                      'PIPELINE_FIRST_BIND', 'RETURN',
+                      'PIPELINE_FIRST_BIND', 'PIPELINE_SEND', 'PIPELINE_MULTI_SEND', 'RETURN',
                       'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'THINARROW', 'RECEIVE',
                       'YIELD', 'FROM', 'FOR', 'IN', 'DOT', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT',
                       'MODULE', 'AS', 'RAISE', 'WITH', 'MACRO', 'QUOTE', 'QUASI_QUOTE', 'UNQUOTE', 'UNQUOTE_SPLICING'],
@@ -165,7 +167,8 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                                  ('left', ['NOT']),
                                  ('left', ['OPIS']),
                                  ('left', ['OPEQ', 'OPLEQ', 'OPGEQ', 'OPNEQ', 'OPLT', 'OPGT', 'OPAND', 'OPOR',
-                                           'PIPELINE', 'PIPELINE_BIND', 'PIPELINE_FIRST', 'PIPELINE_FIRST_BIND']),
+                                           'PIPELINE', 'PIPELINE_BIND', 'PIPELINE_FIRST', 'PIPELINE_FIRST_BIND',
+                                           'PIPELINE_SEND', 'PIPELINE_MULTI_SEND']),
                                  ('left', ['OPPLUS', 'OPMINUS']),
                                  ('left', ['LBRACK', 'RBRACK']),
                                  ('left', ['OPTIMES', 'OPDIV', 'PERCENT'])],
@@ -1076,6 +1079,20 @@ def binop_expr(p):
     return [Symbol('|>'), p[0], [Symbol('bind'),
                                  [Symbol('fn'), [input_sym],
                                   [p[2][0], input_sym] + p[2][(1 if len(p[2]) > 1 else len(p[2])):]]]]
+
+
+@pg.production('binop_expr : binop_expr PIPELINE_SEND binop_expr')
+def binop_expr(p):
+    return [Symbol('send'), p[0], p[2]]
+
+
+@pg.production('binop_expr : binop_expr PIPELINE_MULTI_SEND binop_expr')
+def binop_expr(p):
+    return [Symbol('tuple'),
+            [Symbol('filter'),
+             [Symbol('fn'), [Symbol('$1')],
+              [Symbol('send'), Symbol('$1'), p[2]]],
+             p[0]]]
 
 
 @pg.production('binop_expr : expr')

@@ -21,4 +21,15 @@ link(actor2, (&args) -> print("actor2", args))
 
 actor2 ! "bar"
 
-wait_all()
+sleep(1)
+
+'foo' !> spawn(show_loop)
+
+sleep(1)
+# -> foo
+
+['foo', 'bar'] !&> spawn(show_loop)
+
+sleep(1)
+# -> foo
+# -> bar

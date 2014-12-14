@@ -1,5 +1,7 @@
 Revision history
 ----------------
+v0.0.9, 2014-12-14
+  * Add the !> operator, the !&> operator and the distinct function
 v0.0.8, 2014-12-09
   * Add some actor functions (link, unlink, cancel, kill, wait)
   * Add the quote expression and the quasi_quote expression
