@@ -21,8 +21,8 @@ Features
 -  Syntax sugar of anonymous function definition
 -  Actor, like the actor of Erlang（using Eventlet)
 -  Macro, like the traditional macro of Lisp
--  Built-in Python3 itertools and functools, operator module functions
-   and function in itertools recipes
+-  Builtin functions includes functions exported by itertools module,
+   recipes, functools module and operator module
 
 Examples
 --------
