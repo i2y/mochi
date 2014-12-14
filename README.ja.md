@@ -86,6 +86,9 @@ sleep(1)
 # -> foo
 
 ['foo', 'bar'] !&> spawn(show)
+# 上記コードは、下記コードと同じ意味です。
+# spawn(show) ! 'foo'
+# spawn(show) ! 'bar'
 
 sleep(1)
 # -> foo

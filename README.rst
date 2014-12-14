@@ -93,6 +93,9 @@ Actor
     # -> foo
 
     ['foo', 'bar'] !&> spawn(show)
+    # The meaning of the above is the same as the meaning of the following.
+    # spawn(show) ! 'foo'
+    # spawn(show) ! 'bar'
 
     sleep(1)
     # -> foo
