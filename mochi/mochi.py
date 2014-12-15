@@ -3177,7 +3177,7 @@ for name in global_env.keys():
 binding_name_set_stack = [global_scope]
 
 
-def main():
+def init():
     import eventlet
     eventlet.monkey_patch(#os=True, # if 'os' is true, rply don't work.
                           socket=True,
@@ -3713,6 +3713,9 @@ def main():
         del syntax_table[syntax]
         del global_env[syntax]
         del global_scope[syntax]
+
+def main():
+    init()
 
     if len(sys.argv) > 1:
         arg_parser = argparse.ArgumentParser(
