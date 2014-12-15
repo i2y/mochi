@@ -961,6 +961,10 @@ def cddar(seq):
 def cdddr(seq):
     return seq[3:]
 
+@builtin
+def print(*args):
+    py_print(*args, file=current_output_port)
+
 
 @builtin
 def null(obj):
