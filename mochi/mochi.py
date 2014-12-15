@@ -1107,7 +1107,7 @@ def curried(func):
     l.append('func(')
     l.extend(['arg_{0}, '.format(n) for n in range(arg_count - 1)])
     l.extend(['arg_', str(arg_count - 1), ')'])
-    return py_eval(''.join(l), {'func': func})
+    return eval(''.join(l), {'func': func})
 
 
 @builtin
@@ -1117,7 +1117,7 @@ def rcurried(func):
     l.append('func(')
     l.extend(['arg_{0}, '.format(n) for n in range(argcount - 1)])
     l.extend(['arg_', str(argcount - 1), ')'])
-    return py_eval(''.join(l), {'func': func})
+    return eval(''.join(l), {'func': func})
 
 
 @builtin_rename('auto-partial')
@@ -3026,17 +3026,14 @@ def eval_tokens(tokens):
         print('*** ERROR: ' + str(e), file=current_error_port)
 
 
+@builtin_rename('eval')
 def eval_code_block(block):
     lexer = lex(block + '\n', repl_mode=True)
     eval_tokens(lexer)
 
 
-py_eval = eval
-
-
-@builtin
-def eval(str):
-    sr = SexpReader(InputPort(StringIO(str)))
+def eval_sexp_str(sexp_str):
+    sr = SexpReader(InputPort(StringIO(sexp_str)))
     while True:
         sexp = sr.get_sexp()
 
@@ -3178,7 +3175,7 @@ def init():
                           select=True,
                           thread=True,
                           time=True)
-    eval("""
+    eval_sexp_str("""
 (mac get! (ref)
   `((get ,ref 0)))
 
@@ -3664,7 +3661,7 @@ def init():
   (map next (map (itemgetter 1) (groupby iterable key))))""")
 
     if not IS_PYPY:
-        eval("""
+        eval_sexp_str("""
 (def powerset (iterable)
   (def combi (s)
     (for r (range (+ (len s) 1))
@@ -3688,7 +3685,7 @@ def init():
   (unique-everseen iterable None))
 """)
     else:
-        eval("""
+        eval_sexp_str("""
 (mac call/cl (callable)
   (val c (gensym))
   (val k (gensym))
@@ -3697,7 +3694,7 @@ def init():
     ((getattr ,c "switch"))))
         """)
 
-    eval("""
+    eval_sexp_str("""
 (del-hidden-vars)
 (del-hidden-vars-local)
 ;(val & &)
