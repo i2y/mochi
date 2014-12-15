@@ -851,7 +851,6 @@ class OutputPort(object):
 current_input_port = InputPort()
 current_output_port = OutputPort()
 current_error_port = OutputPort(file=sys.__stderr__)
-py_print = print
 
 
 @builtin
@@ -960,10 +959,6 @@ def cddar(seq):
 @builtin
 def cdddr(seq):
     return seq[3:]
-
-@builtin
-def print(*args):
-    py_print(*args, file=current_output_port)
 
 
 @builtin
@@ -3005,7 +3000,7 @@ def interact():
                 else:
                     break
             except Exception as e:
-                py_print(e, file=current_error_port)
+                print(e, file=current_error_port)
                 continuation_flag = False
                 buffer = ''
                 continue
@@ -3025,10 +3020,10 @@ def eval_tokens(tokens):
                 code = compile(py_ast, '<string>', 'exec')
                 if code is not None:
                     exec(code, global_env)
-                py_print(file=current_output_port)
+                print(file=current_output_port)
     except Exception as e:
         traceback.print_tb(sys.exc_info()[2], file=current_error_port)
-        py_print('*** ERROR: ' + str(e), file=current_error_port)
+        print('*** ERROR: ' + str(e), file=current_error_port)
 
 
 def eval_code_block(block):
