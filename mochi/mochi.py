@@ -3005,40 +3005,35 @@ def interact():
                 else:
                     break
             except Exception as e:
-                py_print(e,file=current_error_port)
+                py_print(e, file=current_error_port)
                 continuation_flag = False
                 buffer = ''
                 continue
-            eval_tokens(tokens)
+        eval_tokens(tokens)
+
 
 def eval_tokens(tokens):
-        try:
-            sexps = parse(tokens.__iter__())
-            for sexp in sexps:
-                if isinstance(sexp, MutableSequence):
-                    sexp = tuple_it(sexp)
-                if sexp is COMMENT:
-                    continue
-                py_ast = translator.translate_sexp_to_interact(sexp)
-                if py_ast is not None:
-                    code = compile(py_ast, '<string>', 'exec')
-                    if code is not None:
-                        exec(code, global_env)
-                    py_print(file=current_output_port)
-        except Exception as e:
-            traceback.print_tb(sys.exc_info()[2], file=current_error_port)
-            py_print('*** ERROR: ' + str(e), file=current_error_port)
+    try:
+        sexps = parse(tokens.__iter__())
+        for sexp in sexps:
+            if isinstance(sexp, MutableSequence):
+                sexp = tuple_it(sexp)
+            if sexp is COMMENT:
+                continue
+            py_ast = translator.translate_sexp_to_interact(sexp)
+            if py_ast is not None:
+                code = compile(py_ast, '<string>', 'exec')
+                if code is not None:
+                    exec(code, global_env)
+                py_print(file=current_output_port)
+    except Exception as e:
+        traceback.print_tb(sys.exc_info()[2], file=current_error_port)
+        py_print('*** ERROR: ' + str(e), file=current_error_port)
+
 
 def eval_code_block(block):
-    block = block +'\n'
-    tokens = []
-
-    lexer = lex(block, repl_mode=True)
-
-    for last in lexer:
-        tokens.append(last)
-    eval_tokens(tokens)
-
+    lexer = lex(block + '\n', repl_mode=True)
+    eval_tokens(lexer)
 
 
 py_eval = eval
@@ -3717,6 +3712,7 @@ def init():
         del syntax_table[syntax]
         del global_env[syntax]
         del global_scope[syntax]
+
 
 def main():
     init()
