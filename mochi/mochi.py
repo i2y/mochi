@@ -2999,8 +2999,8 @@ def interact():
                     continue
                 else:
                     break
-            except Exception as e:
-                print(e, file=current_error_port)
+            except Exception:
+                traceback.print_exc(file=current_error_port)
                 continuation_flag = False
                 buffer = ''
                 continue
@@ -3021,9 +3021,8 @@ def eval_tokens(tokens):
                 if code is not None:
                     exec(code, global_env)
                 print(file=current_output_port)
-    except Exception as e:
-        traceback.print_tb(sys.exc_info()[2], file=current_error_port)
-        print('*** ERROR: ' + str(e), file=current_error_port)
+    except Exception:
+        traceback.print_exc(file=current_error_port)
 
 
 @builtin_rename('eval')
