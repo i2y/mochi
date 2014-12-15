@@ -7,7 +7,7 @@ Its interpreter is written in Python3. The interpreter translates a program writ
 ## Features
 - Python-like syntax
 - Tail recursion optimization (self tail recursion only), and no loop syntax
-- Re-assignment are not allowed in function definition.
+- Re-assignments are not allowed in function definition.
 - Basic collection type is a persistent data structure. (using Pyrsistent)
 - Pattern matching / Data types, like algebraic data types
 - Pipeline operator
