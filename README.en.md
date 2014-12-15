@@ -204,7 +204,7 @@ b(1, 2, 3)
 ### Function definitions
 ```python
 def hoge(x):
-    hoge + str(x)
+    'hoge' + str(x)
 
 hoge(3)
 # => hoge3

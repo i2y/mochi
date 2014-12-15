@@ -13,13 +13,13 @@ Features
 -  Python-like syntax
 -  Tail recursion optimization (self tail recursion only), and no loop
    syntax
--  Re-assignment are not allowed in function definition.
+-  Re-assignments are not allowed in function definition.
 -  Basic collection type is a persistent data structure. (using
    Pyrsistent)
 -  Pattern matching / Data types, like algebraic data types
 -  Pipeline operator
 -  Syntax sugar of anonymous function definition
--  Actor, like the actor of Erlang（using Eventlet)
+-  Actor, like the actor of Erlang (using Eventlet)
 -  Macro, like the traditional macro of Lisp
 -  Builtin functions includes functions exported by itertools module,
    recipes, functools module and operator module
@@ -241,7 +241,7 @@ Function definitions
 .. code:: python
 
     def hoge(x):
-        hoge + str(x)
+        'hoge' + str(x)
 
     hoge(3)
     # => hoge3

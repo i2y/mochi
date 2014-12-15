@@ -215,7 +215,7 @@ b(1, 2, 3)
 ### 関数定義
 ```python
 def hoge(x):
-    hoge + str(x)
+    'hoge' + str(x)
      
 print(hoge(3))
 # hoge3を表示
