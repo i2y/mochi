@@ -3366,7 +3366,7 @@ def init():
     `(let ((,gacc #())
            (,accfn ~append ,gacc _~))
       ,@body
-      (tuple ,gacc))))
+      (pvector ,gacc))))
 
 (def readlines (path)
   (gen-with (open path "r")
@@ -3620,7 +3620,7 @@ def init():
 
 ; itertools - recipes
 (def take (n iterable)
-  (tuple (islice iterable n)))
+  (pvector (islice iterable n)))
 
 (def tabulate (func start)
   (map func (count start)))
