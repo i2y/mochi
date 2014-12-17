@@ -1,5 +1,9 @@
 Revision history
 ----------------
+v0.1.0, 2014-12-18
+  * Modify the type of the take function to pvector from tuple
+  * Modify the eval function
+  * Change the display contents of an exception information
 v0.0.9, 2014-12-14
   * Add the !> operator, the !&> operator and the distinct function
 v0.0.8, 2014-12-09
