@@ -1,0 +1,25 @@
+from eventlet.green import urllib
+import json
+
+urls = [
+    "http://weather.livedoor.com/forecast/webservice/json/v1?city=140010",
+    "http://weather.livedoor.com/forecast/webservice/json/v1?city=130010",
+    "http://weather.livedoor.com/forecast/webservice/json/v1?city=400040"
+]
+
+
+def read(url):
+    weather = urllib.urlopen(url).read() |>1 bytes.decode('utf-8') |> json.loads()
+    print(get(weather, 'title'))
+    map(-> print(get($1, 'dateLabel'),
+                 get($1, 'telop')),
+        get(weather, 'forecasts')) |> doall()
+    print('')
+
+
+def fetch():
+    receive:
+        url: read(url)
+
+urls !&> spawn(fetch)
+wait_all()
