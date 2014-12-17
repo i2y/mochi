@@ -51,6 +51,13 @@ def fizzbuzz(n):
         _: n
 
 range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
+
+# Or
+
+pipeline(range(1, 31),
+         map(fizzbuzz),
+         pvector(),
+         print())
 ```
 
 ### Actor
