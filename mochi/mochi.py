@@ -2673,7 +2673,8 @@ class Translator(object):
         names = [ast.alias(name=import_sym.name,
                            asname=None,
                            lineno=import_sym.lineno,
-                           col_offset=import_sym.col_offset) for import_sym in exp[2:]]
+                           col_offset=import_sym.col_offset) for import_sym_names in exp[2:]
+                                                             for import_sym in import_sym_names]
         return (ast.ImportFrom(module=exp[1].name,
                                names=names,
                                level=0,

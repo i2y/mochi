@@ -294,9 +294,9 @@ def tuple_elt(p):
     return p[0]
 
 
-@pg.production('from_expr : FROM names IMPORT NAME')
+@pg.production('from_expr : FROM names IMPORT namelist')
 def from_expr(p):
-    return [Symbol('from-import'), p[1], token_to_symbol(p[3])]
+    return [Symbol('from-import'), p[1], p[3]]
 
 
 @pg.production('suite : binop_expr')  # TODO multi
