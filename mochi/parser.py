@@ -1207,4 +1207,4 @@ def parse(lexer):
             print('ParsingError: lineno='
                   + str(source_pos.lineno)
                   + ' colno='
-                  + str(e.getsource_pos.colno))
+                  + str(source_pos.colno))
