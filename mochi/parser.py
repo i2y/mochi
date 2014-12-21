@@ -844,6 +844,13 @@ def app_args_elt(p):
     return [token_to_keyword(p[0]), p[2]]
 
 
+@pg.production('app_args_elt : EQUALS binop_expr')
+def app_args_elt_short(p):
+    s = p[1]
+    assert isinstance(s, Symbol)
+    return [Keyword(s.name, s.lineno, s.col_offset), p[1]]
+
+
 @pg.production('app_args_elt : binop_expr')
 def app_args_elt(p):
     return [p[0]]
@@ -918,6 +925,13 @@ def list_field(p):
 @pg.production('field : key COLON binop_expr')
 def field(p):
     return [p[0], p[2]]
+
+
+@pg.production('field : EQUALS binop_expr')
+def field(p):
+    s = p[1]
+    assert isinstance(s, Symbol)
+    return [p[1].name, p[1]]
 
 
 @pg.production('key : binop_expr')
