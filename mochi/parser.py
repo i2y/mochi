@@ -1200,4 +1200,11 @@ def parse(lexer):
             warnings.simplefilter('ignore')
             return pg.build().parse(lexer)
     except ParsingError as e:
-        print("ParsingError: lineno=" + str(e.getsourcepos().lineno) + " colno=" + str(e.getsourcepos().colno))
+        source_pos = e.getsourcepos()
+        if source_pos is None:
+            print('')
+        else:
+            print('ParsingError: lineno='
+                  + str(source_pos.lineno)
+                  + ' colno='
+                  + str(e.getsource_pos.colno))
