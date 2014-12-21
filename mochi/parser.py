@@ -67,6 +67,7 @@ lg.add('DQUOTE_STR', r'(?x)"(?:|[^"\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\
 
 lg.add('UNTERMINATED_STRING', r"[\"\'].*")
 lg.add('NUMBER', r'-?[0-9]+(?:\.[0-9]+)?')
+lg.add('DOT_NAME', r'\.\&?[_a-zA-Z$][-_a-zA-Z0-9]*')
 lg.add('NAME', r'\&?[_a-zA-Z$][-_a-zA-Z0-9]*')
 lg.add('PIPELINE_FIRST_BIND', r'\|>1\?')
 lg.add('PIPELINE_FIRST', r'\|>1')
@@ -81,7 +82,6 @@ lg.add('LBRACE', r'\{')
 lg.add('RBRACE', r'\}')
 lg.add('LPAREN', r'\(')
 lg.add('RPAREN', r'\)')
-lg.add('DOT', r'\.')
 lg.add('PERCENT', r'%')
 lg.add('COMMA', r',')
 lg.add('THINARROW', r'->')
@@ -155,12 +155,12 @@ klg.add('NOT', r'^not$')
 
 pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ', 'OPGEQ', 'OPEQ', 'OPNEQ',
                       'OPLT', 'OPGT', 'OPAND', 'OPOR', 'OPIS', 'NOT', 'NEWLINE', 'PERCENT', 'EXPORT',
-                      'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'DQUOTE_STR', 'SQUOTE_STR', 'AT', 'BANG',
+                      'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'DQUOTE_STR', 'SQUOTE_STR', 'AT', 'BANG', 'DOT_NAME',
                       'NAME', 'EQUALS', 'IF', 'ELSEIF', 'ELSE', 'COLON', 'SEMI', 'DATA', 'IMPORT', 'REQUIRE',
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'PIPELINE_BIND', 'PIPELINE_FIRST',
                       'PIPELINE_FIRST_BIND', 'PIPELINE_SEND', 'PIPELINE_MULTI_SEND', 'RETURN',
                       'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'THINARROW', 'RECEIVE',
-                      'YIELD', 'FROM', 'FOR', 'IN', 'DOT', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT',
+                      'YIELD', 'FROM', 'FOR', 'IN', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT',
                       'MODULE', 'AS', 'RAISE', 'WITH', 'MACRO', 'QUOTE', 'QUASI_QUOTE', 'UNQUOTE', 'UNQUOTE_SPLICING'],
                      precedence=[('left', ['EQUALS']),
                                  ('left', ['NOT']),
@@ -244,9 +244,9 @@ def _names_one(p):
     return [p[0].getstr()]
 
 
-@pg.production('_names : _names DOT NAME')
+@pg.production('_names : _names DOT_NAME')
 def _names(p):
-    return p[0] + [p[2].getstr()]
+    return p[0] + [p[1].getstr()[1:]]
 
 
 @pg.production('require_expr : REQUIRE string')
@@ -591,9 +591,9 @@ def _compute_underscore_max_num(exps):
     return max_num
 
 
-@pg.production('dot_expr : expr DOT NAME')
+@pg.production('dot_expr : expr DOT_NAME')
 def dot_expr(p):
-    return [Symbol('getattr'), p[0], p[2].getstr()]
+    return [Symbol('getattr'), p[0], p[1].getstr()[1:]]
 
 
 @pg.production('send_msg_expr : expr BANG expr')
