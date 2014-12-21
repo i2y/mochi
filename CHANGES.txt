@@ -1,5 +1,10 @@
 Revision history
 ----------------
+v0.1.1, 2014-12-21
+  * Implement raw strings. Fix a bug in strings
+  * Add support for multiple imports from single source
+  * Change the dot_expr to be able to specify a reserved word as a attribute name
+  * Modify REPL to be able to exit with CTRL-D
 v0.1.0, 2014-12-18
   * Modify the type of the take function to pvector from tuple
   * Modify the eval function
