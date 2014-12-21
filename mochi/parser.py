@@ -65,6 +65,9 @@ lg = LexerGenerator()
 lg.add('SQUOTE_STR', r"(?x)'(?:|[^'\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*'")
 lg.add('DQUOTE_STR', r'(?x)"(?:|[^"\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*"')
 
+lg.add('SQUOTE_RAW_STR', r"(?x)r'(?:|[^'\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*'")
+lg.add('DQUOTE_RAW_STR', r'(?x)r"(?:|[^"\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*"')
+
 lg.add('UNTERMINATED_STRING', r"[\"\'].*")
 lg.add('NUMBER', r'-?[0-9]+(?:\.[0-9]+)?')
 lg.add('DOT_NAME', r'\.\&?[_a-zA-Z$][-_a-zA-Z0-9]*')
@@ -155,7 +158,8 @@ klg.add('NOT', r'^not$')
 
 pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ', 'OPGEQ', 'OPEQ', 'OPNEQ',
                       'OPLT', 'OPGT', 'OPAND', 'OPOR', 'OPIS', 'NOT', 'NEWLINE', 'PERCENT', 'EXPORT',
-                      'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'DQUOTE_STR', 'SQUOTE_STR', 'AT', 'BANG', 'DOT_NAME',
+                      'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'DQUOTE_STR', 'SQUOTE_STR',
+                      'AT', 'BANG', 'DOT_NAME', 'DQUOTE_RAW_STR', 'SQUOTE_RAW_STR',
                       'NAME', 'EQUALS', 'IF', 'ELSEIF', 'ELSE', 'COLON', 'SEMI', 'DATA', 'IMPORT', 'REQUIRE',
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'PIPELINE_BIND', 'PIPELINE_FIRST',
                       'PIPELINE_FIRST_BIND', 'PIPELINE_SEND', 'PIPELINE_MULTI_SEND', 'RETURN',
@@ -479,13 +483,32 @@ def expr_string(p):
 
 
 @pg.production('string : DQUOTE_STR')
-def expr_dquote_str(p):
-    return p[0].getstr()[1:-1]
-
-
 @pg.production('string : SQUOTE_STR')
-def expr_squote_str(p):
-    return p[0].getstr()[1:-1]
+def expr_quote_str(p):
+    string = p[0].getstr()[1:-1]
+    new_string = ''
+    string_enumerator = enumerate(string)
+    for index, char in string_enumerator:
+        if char == '\\':
+            index, char = next(string_enumerator)
+            if char == 'n':
+                char = '\n'
+            elif char == 't':
+                char = '\t'
+            elif char == 'r':
+                char = '\r'
+            elif char in {'\\', "'", '"'}:
+                pass
+            else:
+                char = '\\' + char
+        new_string = new_string + char
+    return new_string
+
+
+@pg.production('string : DQUOTE_RAW_STR')
+@pg.production('string : SQUOTE_RAW_STR')
+def expr_quote_raw_str(p):
+    return p[0].getstr()[2:-1]
 
 
 @pg.production('prim_expr : bool_expr')
