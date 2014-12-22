@@ -1,0 +1,9 @@
+def foo(a, b, c):
+    a + b + c
+    
+a = 1
+b = 2
+c = 3
+
+print(foo(=a, =b, =c))  # This is the same as foo(a=a, b=b, c=c)
+print({=a, =b})  # This is the same as {'a': a, 'b': b}

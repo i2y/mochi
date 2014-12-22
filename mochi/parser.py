@@ -844,6 +844,11 @@ def app_args_elt(p):
     return [token_to_keyword(p[0]), p[2]]
 
 
+@pg.production('app_args_elt : EQUALS NAME')
+def app_args_elt_short(p):
+    return [token_to_keyword(p[1]), token_to_symbol(p[1])]
+
+
 @pg.production('app_args_elt : binop_expr')
 def app_args_elt(p):
     return [p[0]]
@@ -918,6 +923,12 @@ def list_field(p):
 @pg.production('field : key COLON binop_expr')
 def field(p):
     return [p[0], p[2]]
+
+
+@pg.production('field : EQUALS NAME')
+def field(p):
+    s = token_to_symbol(p[1])
+    return [s.name, s]
 
 
 @pg.production('key : binop_expr')
