@@ -1,3 +1,4 @@
+from queue import Queue
 import warnings
 from collections import Sequence
 
@@ -88,7 +89,6 @@ lg.add('RPAREN', r'\)')
 lg.add('PERCENT', r'%')
 lg.add('COMMA', r',')
 lg.add('THINARROW', r'->')
-lg.add('COLONCOLON', r'::')
 lg.add('COLON', r':')
 lg.add('CALET', r'\^')
 lg.add('OPPLUS', r'\+')
@@ -454,6 +454,7 @@ def binding(p):
 @pg.production('expr : for_expr')
 @pg.production('expr : block_expr')
 @pg.production('expr : dot_expr')
+@pg.production('expr : get_expr')
 @pg.production('expr : send_msg_expr')
 @pg.production('expr : quote_expr')
 @pg.production('expr : quasi_quote_expr')
@@ -617,6 +618,65 @@ def _compute_underscore_max_num(exps):
 @pg.production('dot_expr : expr DOT_NAME')
 def dot_expr(p):
     return [Symbol('getattr'), p[0], p[1].getstr()[1:]]
+
+
+@pg.production('get_expr : binop_expr LBRACK binop_expr RBRACK')
+def get_expr(p):
+    return [Symbol('get'), p[0], p[2]]
+
+
+@pg.production('get_expr : binop_expr LBRACK range_start COLON range_end RBRACK')
+def get_slice_expr(p):
+    return [Symbol('get'), p[0], p[2], p[4]]
+
+
+@pg.production('get_expr : binop_expr LBRACK range_start COLON range_end COLON range_interval RBRACK')
+def get_slice_expr(p):
+    return [Symbol('get'), p[0], p[2], p[4], p[6]]
+
+
+@pg.production('range_start : ')
+@pg.production('range_end : ')
+@pg.production('range_interval : ')
+def range_start_none(p):
+    return Symbol('None')
+
+
+@pg.production('range_start : binop_expr')
+@pg.production('range_end : binop_expr')
+@pg.production('range_interval : binop_expr')
+def range_start_none(p):
+    return p[0]
+
+
+#@pg.production('get_expr : binop_expr LBRACK binop_expr COLON binop_expr RBRACK')
+#def get_slice_expr(p):
+#    return [Symbol('get'), p[0], p[2], p[4]]
+
+
+#@pg.production('get_expr : binop_expr LBRACK binop_expr COLON RBRACK')
+#def get_slice_expr(p):
+#    return [Symbol('get'), p[0], p[2], Symbol('None')]
+
+
+#@pg.production('get_expr : binop_expr LBRACK COLON binop_expr RBRACK')
+#def get_slice_expr(p):
+#    return [Symbol('get'), p[0], Symbol('None'), p[4]]
+
+
+#@pg.production('get_expr : binop_expr LBRACK COLON RBRACK')
+#def get_slice_expr(p):
+#    return [Symbol('get'), p[0], Symbol('None'), Symbol('None')]
+
+
+#@pg.production('get_expr : binop_expr LBRACK binop_expr COLON binop_expr COLON binop_expr RBRACK')
+#def get_slice_expr(p):
+#    return [Symbol('get'), p[0], p[2], p[4], p[6]]
+
+
+#@pg.production('get_expr : binop_expr LBRACK binop_expr COLON binop_expr COLON RBRACK')
+#def get_slice_expr(p):
+#    return [Symbol('get'), p[0], p[2], p[4], p[6]]
 
 
 @pg.production('send_msg_expr : expr BANG expr')
@@ -1150,7 +1210,7 @@ def mod_lex(lexer, repl_mode=False):
     paren_openers = {'LPAREN', 'LBRACE', 'LBRACK'}
     paren_closers = {'RPAREN', 'RBRACE', 'RBRACK'}
 
-    token_queue = []
+    token_queue = Queue()
     indent_level = [0]
     ignore_newline = False
     paren_level = 0
@@ -1164,17 +1224,17 @@ def mod_lex(lexer, repl_mode=False):
             indent_level.append(indent)
             indent_token = Token('INDENT', indent_str)
             indent_token.source_pos = token.getsourcepos()
-            token_queue.append(indent_token)
+            token_queue.put(indent_token)
         else:
             while indent < indent_level[-1]:
                 indent_level.pop()
                 dedent_token = Token('DEDENT', indent_str)
-                token_queue.append(dedent_token)
+                token_queue.put(dedent_token)
         return token
 
     for token in lexer:
-        while len(token_queue) > 0:
-            queued_token = token_queue.pop()
+        while not token_queue.empty():
+            queued_token = token_queue.get()
             if queued_token.gettokentype() in paren_openers:
                 paren_level += 1
             elif queued_token.gettokentype() in paren_closers:
@@ -1220,8 +1280,8 @@ def mod_lex(lexer, repl_mode=False):
             indent_level.pop()
             yield Token('DEDENT', '')
 
-        for token in token_queue:
-            yield token
+        while not token_queue.empty():
+            yield token_queue.get()
 
 
 def lex(input, repl_mode=False):

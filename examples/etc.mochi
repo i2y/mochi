@@ -19,10 +19,13 @@ if True:
 else:
    "fafa"
 
-[]
+;[]
+# The semicolon at the beginning of the line is to avoid to combine "if" with "[]".
 [1]
 [1, 2]
 [w, 2, 3]
+
+print([1, 2, 3][2])
 
 def f():
     print("f" + "a")
