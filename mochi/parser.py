@@ -874,11 +874,6 @@ def app_expr(p):
     return [p[0]] + p[1]
 
 
-@pg.production('app_expr : expr app_args')
-def app_expr(p):
-    return [p[0]] + p[1]
-
-
 @pg.production('app_args : LPAREN app_args_elts RPAREN')
 def app_args(p):
     return p[1]
@@ -912,6 +907,12 @@ def app_args_elt_short(p):
 @pg.production('app_args_elt : binop_expr')
 def app_args_elt(p):
     return [p[0]]
+
+
+@pg.production('app_expr : expr app_args fn_expr')
+@pg.production('app_expr : expr app_args block_expr')
+def trailing_closure_expr(p):
+    return [p[0]] + p[1] + [p[2]]
 
 
 @pg.production('app_nc_expr : expr app_nc_args')
