@@ -73,19 +73,6 @@ z2
 
 get(z2, 0, 2)
 
-xxxxx = 33333
-#def fafafafafafa():
-#    loop:
-#        print(100)
-#        yield 10
-#
-#g = fafafafafafa()
-#next(g)
-
-#[for item in range(1, 31): item * 2] |> map({ $1 * 2 }) |> tuple() |> print()
-#[for item in range(1, 31): item * 2] |> map({ $1 * 2 }) |> print()
-#[for item in range(1, 31): item * 2] |> print()
-#[for item in range(1, 31): item * 2] |> print()
 [item * 2 for item in range(1, 31)] |> map(-> $1 * 2) |> tuple() |> print()
 [item * 2 for item in range(1, 31)] |> print()
 

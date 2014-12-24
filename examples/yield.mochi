@@ -1,0 +1,14 @@
+def one_two_three():
+   yield 1
+   yield 2
+   yield 3
+
+one_two_three = one_two_three()
+
+try:
+    print(next(one_two_three))
+    print(next(one_two_three))
+    print(next(one_two_three))
+    print(next(one_two_three))
+except StopIteration as e:
+    print(e)
