@@ -1,4 +1,4 @@
-from eventlet.green import urllib
+from eventlet.green.urllib import urlopen
 import json
 
 urls = [
@@ -9,11 +9,10 @@ urls = [
 
 
 def read(url):
-    weather = urllib.urlopen(url).read() |>1 bytes.decode('utf-8') |> json.loads()
-    print(get(weather, 'title'))
-    map(-> print(get($1, 'dateLabel'),
-                 get($1, 'telop')),
-        get(weather, 'forecasts')) |> doall()
+    weather = urlopen(url).read().decode('utf-8') |> json.loads()
+    print(weather['title'])
+    map(-> print($1['dateLabel'], $1['telop']),
+        weather['forecasts']) |> doall()
     print('')
 
 
