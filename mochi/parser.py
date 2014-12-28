@@ -1045,9 +1045,9 @@ def record_expr(p):
     return [Symbol('record'), token_to_symbol(p[1]), []]
 
 
-@pg.production('record_expr : RECORD NAME OPLT id_expr')
+@pg.production('record_expr : RECORD NAME OPLT NAME')
 def record_expr(p):
-    return [Symbol('record'), token_to_symbol(p[1]), p[3], []]
+    return [Symbol('record'), token_to_symbol(p[1]), token_to_symbol(p[3]), []]
 
 
 @pg.production('record_expr : RECORD NAME LPAREN record_fields RPAREN')
@@ -1055,9 +1055,9 @@ def record_expr(p):
     return [Symbol('record'), token_to_symbol(p[1]), p[3]]
 
 
-@pg.production('record_expr : RECORD NAME LPAREN record_fields RPAREN OPLT id_expr')
+@pg.production('record_expr : RECORD NAME LPAREN record_fields RPAREN OPLT NAME')
 def record_expr(p):
-    return [Symbol('record'), token_to_symbol(p[1]), p[6], p[3]]
+    return [Symbol('record'), token_to_symbol(p[1]), token_to_symbol(p[6]), p[3]]
 
 
 @pg.production('record_expr : RECORD NAME COLON NEWLINE INDENT record_body DEDENT')
@@ -1065,9 +1065,9 @@ def record_expr(p):
     return [Symbol('record'), token_to_symbol(p[1]), []] + p[5]
 
 
-@pg.production('record_expr : RECORD NAME OPLT id_expr COLON NEWLINE INDENT record_body DEDENT')
+@pg.production('record_expr : RECORD NAME OPLT NAME COLON NEWLINE INDENT record_body DEDENT')
 def record_expr(p):
-    return [Symbol('record'), token_to_symbol(p[1]), p[3], []] + p[7]
+    return [Symbol('record'), token_to_symbol(p[1]), token_to_symbol(p[3]), []] + p[7]
 
 
 @pg.production('record_expr : RECORD NAME LPAREN record_fields RPAREN COLON NEWLINE INDENT record_body DEDENT')
@@ -1075,9 +1075,9 @@ def record_expr(p):
     return [Symbol('record'), token_to_symbol(p[1]), p[3]] + p[8]
 
 
-@pg.production('record_expr : RECORD NAME LPAREN record_fields RPAREN OPLT id_expr COLON NEWLINE INDENT record_body DEDENT')
+@pg.production('record_expr : RECORD NAME LPAREN record_fields RPAREN OPLT NAME COLON NEWLINE INDENT record_body DEDENT')
 def record_expr(p):
-    return [Symbol('record'), token_to_symbol(p[1]), p[6], p[3]] + p[10]
+    return [Symbol('record'), token_to_symbol(p[1]), token_to_symbol(p[6]), p[3]] + p[10]
 
 
 @pg.production('record_body : def_expr')
