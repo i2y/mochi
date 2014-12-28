@@ -537,7 +537,6 @@ X.foobar()
 - Improve documentation
 - Improve parsing
 - Support type annotation
-- Support class definition
 
 ## License
 MIT License

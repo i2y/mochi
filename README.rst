@@ -598,7 +598,6 @@ TODO
 -  Improve documentation
 -  Improve parsing
 -  Support type annotation
--  Support class definition
 
 License
 -------
