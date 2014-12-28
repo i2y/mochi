@@ -1125,7 +1125,7 @@ def record_expr(p):
     return [token_to_symbol(p[0])] + p[2]
 
 
-@pg.production('binop_expr : NOT expr')
+@pg.production('binop_expr : NOT binop_expr')
 def binop_expr(p):
     return [token_to_symbol(p[0]), p[1]]
 
