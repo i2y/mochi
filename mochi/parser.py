@@ -300,7 +300,7 @@ def tuple_elt(p):
 
 @pg.production('from_expr : FROM names IMPORT namelist')
 def from_expr(p):
-    return [Symbol('from-import'), p[1], p[3]]
+    return [Symbol('from_import'), p[1], p[3]]
 
 
 @pg.production('suite : binop_expr')  # TODO multi
@@ -391,7 +391,7 @@ def qq_stmt(p):
 
 @pg.production('uqs_expr : UNQUOTE_SPLICING LPAREN binop_expr RPAREN')
 def qq_stmt(p):
-    return [Symbol('unquote-splicing'), p[2]]
+    return [Symbol('unquote_splicing'), p[2]]
 
 
 @pg.production('with_stmt : WITH with_contexts COLON suite2')
@@ -580,7 +580,7 @@ def yield_expr(p):
 
 @pg.production('yield_from_expr : YIELD FROM binop_expr')
 def yield_from_expr(p):
-    return [Symbol('yield-from'), p[1]]
+    return [Symbol('yield_from'), p[1]]
 
 
 def issequence(obj):
@@ -689,32 +689,32 @@ def for_expr(p):
     pattern = p[3]
     items = p[5]
     body = p[1]
-    return [Symbol('tuple-of')] + [body] + [[pattern, items]]
+    return [Symbol('tuple_of')] + [body] + [[pattern, items]]
 
 
 @pg.production('tuple_expr : LBRACK tuple_elts binop_expr RBRACK')
 def tuple_expr(p):
-    return [Symbol('make-tuple')] + p[1] + [p[2]]
+    return [Symbol('make_tuple')] + p[1] + [p[2]]
 
 
 @pg.production('tuple_expr : LBRACK binop_expr RBRACK')
 def tuple_expr_one(p):
-    return [Symbol('make-tuple'), p[1]]
+    return [Symbol('make_tuple'), p[1]]
 
 
 @pg.production('tuple_expr : LBRACK tuple_elts binop_expr RBRACK')
 def tuple_expr(p):
-    return [Symbol('make-tuple')] + p[1] + [p[2]]
+    return [Symbol('make_tuple')] + p[1] + [p[2]]
 
 
 @pg.production('tuple_expr : LBRACK binop_expr RBRACK')
 def tuple_expr_one(p):
-    return [Symbol('make-tuple'), p[1]]
+    return [Symbol('make_tuple'), p[1]]
 
 
 @pg.production('tuple_expr : LBRACK RBRACK')
 def tuple_expr_empty(p):
-    return [Symbol('make-tuple')]
+    return [Symbol('make_tuple')]
 
 
 @pg.production('tuple_elts : tuple_elts tuple_elt')
@@ -735,7 +735,7 @@ def tuple_elt(p):
 @pg.production('deco_expr : decorators def_expr')
 def deco_expr(p):
     # return p[1][:2] + p[0] + p[1][2:]
-    return [Symbol('with-decorator')] + p[0] + [p[1]]
+    return [Symbol('with_decorator')] + p[0] + [p[1]]
 
 
 @pg.production('decorators : decorators decorator')
