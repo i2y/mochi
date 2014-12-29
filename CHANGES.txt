@@ -1,5 +1,9 @@
 Revision history
 ----------------
+v0.1.3, 2014-12-29
+  * Modify the record statement to be able to specify a non-record class as a parent
+  * Replace '-' in name of the builtin functions with '_'
+  * Fix some bugs
 v0.1.2, 2014-12-24
   * Support the trailing closure syntax
   * Support the slicing and indexing syntax
