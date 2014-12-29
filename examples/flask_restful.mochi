@@ -1,0 +1,20 @@
+# https://flask-restful.readthedocs.org/en/0.3.1/quickstart.html#resourceful-routing
+
+from flask import Flask, request
+from flask.ext.restful import Resource, Api
+
+app = Flask(__name__)
+api = Api(app)
+
+todos = dict()
+
+record TodoSimple < Resource:
+    def get(self, todo_id):
+        thaw({todo_id: todos[todo_id]})
+
+    def put(self, todo_id):
+        todos.update({todo_id : request.form['data']})
+        thaw({todo_id: todos[todo_id]})
+
+api.add_resource(TodoSimple, '/<string:todo_id>')
+app.run(debug=True)
