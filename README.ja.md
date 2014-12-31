@@ -115,7 +115,7 @@ def hello():
 app.run()
 ```
 
-### aif
+### aif（アナフォリックマクロ）
 ```python
 macro aif(test, true_expr, false_expr):
     quasi_quote:
@@ -438,26 +438,42 @@ pvector(lazy_result)
 
 ### Trailing closures
 ```python
-def rmap(seq, closure):
-    map(closure, seq)
-
-result = rmap([1, 2, 3]) ->
+# 下記の関数呼び出しの末尾（後ろ）の無名関数（クロージャ）は、関数の最初の引数として扱われる。
+result = map([1, 2, 3]) ->
     print($1)
     $1 * 2
 
 print(doall(result))
+
 # -> 1
 # -> 2
 # -> 3
 # => pvector([2, 4, 6])
 
 
-def foreach(seq, closure):
+def foreach(closure, seq):
     doall(filter(closure, seq))
 
+# 下記の関数呼び出しの末尾（後ろ）の無名関数（クロージャ）は、関数の最初の引数として扱われる。
 foreach([1, 2, 3]) (item) ->
     new_item = item * 100
     print(new_item)
+
+# -> 100
+# -> 200
+# -> 300
+# => pvector([])
+
+# Or
+
+def foreach(seq, closure):
+    doall(filter(closure, seq))
+
+# 下記の関数呼び出しの末尾（後ろ）の無名関数（クロージャ）は、関数の最後の引数として扱われる。
+foreach([1, 2, 3]) : (item) ->
+    new_item = item * 100
+    print(new_item)
+
 # -> 100
 # -> 200
 # -> 300
