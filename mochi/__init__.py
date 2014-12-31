@@ -5,4 +5,4 @@ __license__ = 'MIT License'
 
 import sys
 
-IS_PYTHON_34 = sys.version_info.major == 3 and sys.version_info.minor == 4
+IS_PYTHON_34 = sys.version_info >= (3, 4)
