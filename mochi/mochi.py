@@ -28,7 +28,7 @@ from mochi import actor
 from mochi import __version__
 
 
-IS_PYTHON_34 = sys.version_info.major == 3 and sys.version_info.minor == 4
+IS_PYTHON_34 = sys.version_info >= (3, 4)
 IS_PYPY = platform.python_implementation() == 'PyPy'
 
 
