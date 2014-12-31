@@ -1,17 +1,21 @@
-def rmap(seq, closure):
-    map(closure, seq)
-
-result = rmap([1, 2, 3]) ->
+result = map([1, 2, 3]) ->
     print($1)
     $1 * 2
 
 print(doall(result))
 
 
-def foreach(seq, closure):
+def foreach(closure, seq):
     doall(filter(closure, seq))
 
 foreach([1, 2, 3]) (item) ->
     new_item = item * 100
     print(new_item)
 
+
+def foreach(seq, closure):
+    doall(filter(closure, seq))
+
+foreach([1, 2, 3]) : (item) ->
+    new_item = item * 100
+    print(new_item)

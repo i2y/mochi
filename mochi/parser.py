@@ -649,36 +649,6 @@ def range_start_none(p):
     return p[0]
 
 
-#@pg.production('get_expr : binop_expr LBRACK binop_expr COLON binop_expr RBRACK')
-#def get_slice_expr(p):
-#    return [Symbol('get'), p[0], p[2], p[4]]
-
-
-#@pg.production('get_expr : binop_expr LBRACK binop_expr COLON RBRACK')
-#def get_slice_expr(p):
-#    return [Symbol('get'), p[0], p[2], Symbol('None')]
-
-
-#@pg.production('get_expr : binop_expr LBRACK COLON binop_expr RBRACK')
-#def get_slice_expr(p):
-#    return [Symbol('get'), p[0], Symbol('None'), p[4]]
-
-
-#@pg.production('get_expr : binop_expr LBRACK COLON RBRACK')
-#def get_slice_expr(p):
-#    return [Symbol('get'), p[0], Symbol('None'), Symbol('None')]
-
-
-#@pg.production('get_expr : binop_expr LBRACK binop_expr COLON binop_expr COLON binop_expr RBRACK')
-#def get_slice_expr(p):
-#    return [Symbol('get'), p[0], p[2], p[4], p[6]]
-
-
-#@pg.production('get_expr : binop_expr LBRACK binop_expr COLON binop_expr COLON RBRACK')
-#def get_slice_expr(p):
-#    return [Symbol('get'), p[0], p[2], p[4], p[6]]
-
-
 @pg.production('send_msg_expr : expr BANG expr')
 def dot_expr(p):
     return [Symbol('send'), p[2], p[0]]
@@ -912,7 +882,19 @@ def app_args_elt(p):
 @pg.production('app_expr : expr app_args fn_expr')
 @pg.production('app_expr : expr app_args block_expr')
 def trailing_closure_expr(p):
-    return [p[0]] + p[1] + [p[2]]
+    return [p[0], p[2]] + p[1]
+
+
+@pg.production('app_expr : expr app_args app_args')
+@pg.production('app_expr : expr app_args app_args')
+def trailing_closure_expr(p):
+    return [[p[0]] + p[1]] + p[2]
+
+
+@pg.production('app_expr : expr app_args COLON fn_expr')
+@pg.production('app_expr : expr app_args COLON block_expr')
+def trailing_closure_expr(p):
+    return [p[0]] + p[1] + [p[3]]
 
 
 @pg.production('app_nc_expr : expr app_nc_args')
