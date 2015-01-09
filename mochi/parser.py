@@ -233,9 +233,19 @@ def stmt(p):
     return p[0]
 
 
-@pg.production('import_expr : IMPORT names')
+@pg.production('import_expr : IMPORT names_list')
 def import_expr(p):
-    return [Symbol('import'), p[1]]
+    return [Symbol('import')] + p[1]
+
+
+@pg.production('names_list : names_list COMMA names')
+def names(p):
+    return p[0] + [p[2]]
+
+
+@pg.production('names_list : names')
+def names_single(p):
+    return [p[0]]
 
 
 @pg.production('names : _names')
