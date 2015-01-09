@@ -859,8 +859,10 @@ def display(obj):
 
 
 @builtin
-def write(obj):
-    return current_output_port.write(obj)
+def write(obj, end='\n'):
+    if obj is not None:
+        current_output_port.write(obj)
+        current_output_port.write(end)
 
 
 @builtin
@@ -3053,7 +3055,7 @@ def eval_tokens(tokens):
                 code = compile(py_ast, '<string>', 'exec')
                 if code is not None:
                     exec(code, global_env)
-                print(file=current_output_port)
+                # print(file=current_output_port)
     except Exception:
         traceback.print_exc(file=current_error_port)
 
