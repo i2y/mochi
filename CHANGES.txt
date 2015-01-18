@@ -1,5 +1,9 @@
 Revision history
 ----------------
+v0.1.5, 2015-01-18
+  * Add support for multiple imports (e.g. import math, time)
+  * Implement that 'None' does not appear at the REPL
+  * Update version of requirements (eventlet >= 0.16.1, pyrsistent >= 0.7.1)
 v0.1.4, 2014-12-31
   * Change the trailing closure syntax so that a trailing closure expression is passed to a function as the function’s first argument
     * func() (args) -> closure_body
