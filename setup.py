@@ -2,10 +2,10 @@
 from setuptools import setup, find_packages
 from mochi import __author__, __version__, __license__, IS_PYTHON_34
 
-install_requires = ['rply>=0.7.2',
-                    'pyrsistent>=0.6.3',
-                    'greenlet>=0.4.5',
-                    'eventlet>=0.15.2']
+install_requires = ['rply==0.7.3',
+                    'pyrsistent==0.7.1',
+                    'greenlet==0.4.5',
+                    'eventlet==0.16.1']
 
 
 if not IS_PYTHON_34:
