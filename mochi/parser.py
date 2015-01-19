@@ -63,13 +63,14 @@ class Keyword(object):
 
 lg = LexerGenerator()
 
+lg.add('TQUOTE_STR', r'(?x)"""(?:|[^\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*"""')
 lg.add('SQUOTE_STR', r"(?x)'(?:|[^'\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*'")
 lg.add('DQUOTE_STR', r'(?x)"(?:|[^"\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*"')
 
+lg.add('TQUOTE_RAW_STR', r'(?x)r"""(?:|[^\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*"""')
 lg.add('SQUOTE_RAW_STR', r"(?x)r'(?:|[^'\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*'")
 lg.add('DQUOTE_RAW_STR', r'(?x)r"(?:|[^"\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*"')
 
-lg.add('UNTERMINATED_STRING', r"[\"\'].*")
 lg.add('NUMBER', r'-?[0-9]+(?:\.[0-9]+)?')
 lg.add('DOT_NAME', r'\.\&?[_a-zA-Z$][-_a-zA-Z0-9]*')
 lg.add('NAME', r'\&?[_a-zA-Z$][-_a-zA-Z0-9]*')
@@ -158,8 +159,8 @@ klg.add('NOT', r'^not$')
 
 pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ', 'OPGEQ', 'OPEQ', 'OPNEQ',
                       'OPLT', 'OPGT', 'OPAND', 'OPOR', 'OPIS', 'NOT', 'NEWLINE', 'PERCENT', 'EXPORT',
-                      'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'DQUOTE_STR', 'SQUOTE_STR',
-                      'AT', 'BANG', 'DOT_NAME', 'DQUOTE_RAW_STR', 'SQUOTE_RAW_STR',
+                      'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'TQUOTE_STR', 'DQUOTE_STR', 'SQUOTE_STR',
+                      'AT', 'BANG', 'DOT_NAME', 'TQUOTE_RAW_STR', 'DQUOTE_RAW_STR', 'SQUOTE_RAW_STR',
                       'NAME', 'EQUALS', 'IF', 'ELSEIF', 'ELSE', 'COLON', 'SEMI', 'DATA', 'IMPORT', 'REQUIRE',
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'PIPELINE_BIND', 'PIPELINE_FIRST',
                       'PIPELINE_FIRST_BIND', 'PIPELINE_SEND', 'PIPELINE_MULTI_SEND', 'RETURN',
@@ -496,7 +497,15 @@ def expr_string(p):
 @pg.production('string : DQUOTE_STR')
 @pg.production('string : SQUOTE_STR')
 def expr_quote_str(p):
-    string = p[0].getstr()[1:-1]
+    return quote_str(p[0].getstr()[1:-1])
+
+
+@pg.production('string : TQUOTE_STR')
+def expr_triple_quote_str(p):
+    return quote_str(p[0].getstr()[3:-3])
+
+
+def quote_str(string):
     new_string = ''
     string_enumerator = enumerate(string)
     for index, char in string_enumerator:
@@ -520,6 +529,11 @@ def expr_quote_str(p):
 @pg.production('string : SQUOTE_RAW_STR')
 def expr_quote_raw_str(p):
     return p[0].getstr()[2:-1]
+
+
+@pg.production('string : TQUOTE_RAW_STR')
+def expr_triple_quote_raw_str(p):
+    return p[0].getstr()[4:-3]
 
 
 @pg.production('prim_expr : bool_expr')
