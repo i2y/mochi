@@ -16,6 +16,6 @@ foreach([1, 2, 3]) (item) ->
 def foreach(seq, closure):
     doall(filter(closure, seq))
 
-foreach([1, 2, 3]) : (item) ->
+foreach([1, 2, 3]) @ (item) ->
     new_item = item * 100
     print(new_item)

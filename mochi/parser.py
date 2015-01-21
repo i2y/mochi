@@ -133,7 +133,6 @@ klg.add('AS', r'^as$')
 klg.add('FINALLY', r'^finally$')
 klg.add('RAISE', r'^raise$')
 klg.add('IF', r'^if$')
-klg.add('THENCOLON', r'^then:$')
 klg.add('ELSE', r'^else$')
 klg.add('ELSEIF', r'^elif$')
 klg.add('MATCH', r'^match$')
@@ -915,8 +914,8 @@ def trailing_closure_expr(p):
     return [[p[0]] + p[1]] + p[2]
 
 
-@pg.production('app_expr : expr app_args COLON fn_expr')
-@pg.production('app_expr : expr app_args COLON block_expr')
+@pg.production('app_expr : expr app_args AT fn_expr')
+@pg.production('app_expr : expr app_args AT block_expr')
 def trailing_closure_expr(p):
     return [p[0]] + p[1] + [p[3]]
 
