@@ -146,9 +146,9 @@ Requirements
 
 -  CPython >= 3.2 or PyPy >= 3.2.1
 -  rply >= 0.7.2
--  pyrsistent >= 0.6.3
+-  pyrsistent >= 0.7.1
 -  pathlib >= 1.0.1
--  eventlet >= 0.15.2
+-  eventlet >= 0.16.1
 
 Installation
 ------------
@@ -511,7 +511,7 @@ Trailing closures
         doall(filter(closure, seq))
 
     # The following trailing closure expression is passed to a function as the function’s final argument.
-    foreach([1, 2, 3]) : (item) ->
+    foreach([1, 2, 3]) @ (item) ->
         new_item = item * 100
         print(new_item)
 

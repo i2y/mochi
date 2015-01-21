@@ -134,9 +134,9 @@ aif([10, 20], first(it), "empty")
 ## 依存モジュール
 - CPython >= 3.2 or PyPy >= 3.2.1 
 - rply >= 0.7.2
-- pyrsistent >= 0.6.3
+- pyrsistent >= 0.7.1
 - pathlib >= 1.0.1
-- eventlet >= 0.15.2
+- eventlet >= 0.16.1
 
 
 ## インストール
@@ -470,7 +470,7 @@ def foreach(seq, closure):
     doall(filter(closure, seq))
 
 # 下記の関数呼び出しの末尾（後ろ）の無名関数（クロージャ）は、関数の最後の引数として扱われる。
-foreach([1, 2, 3]) : (item) ->
+foreach([1, 2, 3]) @ (item) ->
     new_item = item * 100
     print(new_item)
 
