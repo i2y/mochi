@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 from mochi import __author__, __version__, __license__, IS_PYTHON_34
 
 install_requires = ['rply>=0.7.3',
-                    'pyrsistent>=0.7.1',
+                    'pyrsistent>=0.8.0',
                     'greenlet>=0.4.5',
                     'eventlet>=0.16.1']
 

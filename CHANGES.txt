@@ -1,5 +1,13 @@
 Revision history
 ----------------
+v0.1.6, 2015-01-22
+  * Change the trailing closure syntax so that a trailing closure expression is passed to a function as the function’s final argument
+     [old]
+      func() : (args) -> closure_body
+     [new]
+      func() @ (args) -> closure_body
+  * Support triple-quoted string literal
+  * Update version of requirements (pyrsistent >= 0.8.0)
 v0.1.5, 2015-01-18
   * Add support for multiple imports (e.g. import math, time)
   * Implement that 'None' does not appear at the REPL

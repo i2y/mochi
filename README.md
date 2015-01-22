@@ -125,7 +125,7 @@ aif([10, 20], first(it), "empty")
 ## Requirements
 - CPython >= 3.2 or PyPy >= 3.2.1
 - rply >= 0.7.2
-- pyrsistent >= 0.7.1
+- pyrsistent >= 0.8.0
 - pathlib >= 1.0.1
 - eventlet >= 0.16.1
 
