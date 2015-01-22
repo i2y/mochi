@@ -274,7 +274,7 @@ Pattern matching
         [1, &rest]: rest
         _: None
 
-    # => pvector (2, 3)
+    # => pvector([2, 3])
 
     foo_map = {'foo' : 'bar'}
 
@@ -296,6 +296,33 @@ Pattern matching
         [1, int(x), 3]: 'int'
         _: 'other'
     # => 'int'
+
+    # Active pattern
+    match 100:
+        -> $1 > 10: 'OK'
+        _: 'NG'
+    # => 'OK'
+
+    match 100:
+        (x) -> x > 10: 'OK'
+        _: 'NG'
+    # => 'OK'
+
+    # Or pattern
+    match ['foo', 100]:
+        ['foo' or 'bar', value]: value
+        _: 10000
+    # => 100
+
+    match ['foo', 100]:
+        [str(x) or int(x), value]: value
+        _: 10000
+    # => 100
+
+    # And pattern
+    match 100:
+        x and (x) -> x > 10: 'OK'
+        _: 'NG'
 
 Records
 ~~~~~~~
