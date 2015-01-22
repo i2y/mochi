@@ -323,6 +323,7 @@ Pattern matching
     match 100:
         x and (x) -> x > 10: 'OK'
         _: 'NG'
+    # => 'OK'
 
 Records
 ~~~~~~~
