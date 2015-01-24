@@ -24,7 +24,7 @@ import platform
 from pyrsistent import v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l, plist, pclass, freeze, thaw
 
 from mochi.parser import Symbol, Keyword, parse, lex, get_temp_name, REPL_CONTINUE
-from mochi import actor
+from mochi.actor import actor
 from mochi import __version__
 
 
