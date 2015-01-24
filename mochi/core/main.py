@@ -6,10 +6,11 @@ from pathlib import Path
 import sys
 
 from mochi import __version__, IS_PYTHON_34, IS_PYPY
-from .builtins import (current_error_port, global_env, global_scope,
-                       eval_sexp_str, syntax_table, eval_tokens, load_file)
+from .builtins import (current_error_port,
+                       eval_sexp_str, eval_tokens, load_file)
 from mochi.parser.parser import lex, REPL_CONTINUE
-
+from .global_env import global_env
+from .translation import syntax_table, translator, global_scope
 
 
 def interact():
