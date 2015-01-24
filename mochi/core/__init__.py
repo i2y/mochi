@@ -1,1 +1,1 @@
-from .builtins import *
+from .main import main
