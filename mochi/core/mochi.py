@@ -3218,7 +3218,7 @@ def init():
                           select=True,
                           thread=True,
                           time=True)
-    expr_path = Path(__file__).absolute().parent / 'sexpressions'
+    expr_path = Path(__file__).absolute().parents[1] / 'sexpressions'
     eval_from_file(expr_path / 'main.expr')
     if not IS_PYPY:
         eval_from_file(expr_path / 'cpython.expr')

@@ -33,7 +33,7 @@ setup(
     platforms=['any'],
     entry_points={
         'console_scripts': [
-            'mochi = mochi.mochi:main'
+            'mochi = mochi.core:main'
         ]
     },
     packages=find_packages(),
