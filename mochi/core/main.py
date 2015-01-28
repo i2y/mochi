@@ -1,5 +1,3 @@
-#from .builtins import *
-
 import argparse
 import traceback
 from pathlib import Path
@@ -7,7 +5,8 @@ import sys
 
 from mochi import __version__, IS_PYTHON_34, IS_PYPY
 from .builtins import (current_error_port,
-                       eval_sexp_str, eval_tokens, load_file)
+                       eval_sexp_str, eval_tokens, load_file,
+                       builtin_rename)
 from mochi.parser.parser import lex, REPL_CONTINUE
 from .global_env import global_env
 from .translation import syntax_table, translator, global_scope

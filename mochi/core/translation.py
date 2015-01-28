@@ -22,6 +22,14 @@ else:
 
 syntax_table = {}
 
+
+record_ids = ['Record']
+
+
+def is_record(name):
+    return name in record_ids
+
+
 #-- double builtins :(
 def chunks(l, n):
     for i in range(0, len(l), n):

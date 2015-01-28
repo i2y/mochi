@@ -1,10 +1,4 @@
 #!/usr/bin/env python
-#
-# Copyright (c) 2014 Yasushi Itoh
-#
-# This software is released under the MIT License.
-# http://opensource.org/licenses/mit-license.php
-
 import sys
 import traceback
 from types import FunctionType
@@ -22,6 +16,7 @@ from .exceptions import (UnquoteSplicingError,
                          DuplicatedDefError, ReadError)
 from .global_env import global_env
 from .translation import (binding_name_set_stack, translator,
+                          is_record,
                           issequence,
                           issequence_except_str, is_tuple_or_list)
 
@@ -983,14 +978,6 @@ def is_struct_id(name):
     return name in struct_ids
 
 
-record_ids = ['Record']
-
-
-@builtin_rename('record_id?')
-def is_record(name):
-    return name in record_ids
-
-
 def _check_duplicated_binding_name(symbol, filename, lis):
     constant_name = symbol.name
     for constant_name_set in reversed(lis):
@@ -1166,6 +1153,10 @@ def is_macro(func):
 @builtin
 def is_function(func):
     return isinstance(func, FunctionType) and (not translator.has_macro(func.__name__))
+
+@builtin_rename('record_id?')
+def _is_record(name):
+    return is_record(name)
 
 
 @builtin
