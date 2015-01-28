@@ -1154,9 +1154,8 @@ def is_macro(func):
 def is_function(func):
     return isinstance(func, FunctionType) and (not translator.has_macro(func.__name__))
 
-@builtin_rename('record_id?')
-def _is_record(name):
-    return is_record(name)
+
+builtin_rename('record_id?')(is_record)
 
 
 @builtin
