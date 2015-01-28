@@ -37,6 +37,9 @@ setup(
         ]
     },
     packages=find_packages(),
+    package_data = {
+        'mochi': ['sexpressions/*'],
+    },
     install_requires=install_requires,
     classifiers=[
         "Development Status :: 4 - Beta",
