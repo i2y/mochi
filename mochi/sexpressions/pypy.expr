@@ -1,0 +1,6 @@
+(mac call/cl (callable)
+  (val c (gensym))
+  (val k (gensym))
+  `(do
+    (val ,c (continulet (fn (,k) (,callable (getattr ,k "switch")))))
+    ((getattr ,c "switch"))))

@@ -1,0 +1,21 @@
+(def powerset (iterable)
+  (def combi (s)
+    (for r (range (+ (len s) 1))
+      (yield (combinations s r))))
+  (chain.from_iterable (combi (tuple iterable))))
+
+(def unique_everseen (iterable key)
+  (_val seen (set))
+  (_val seen_add seen.add)
+  (if (is key None)
+    (for element_a (filterfalse seen.__contains__ iterable)
+      (seen_add element_a)
+      (yield element_a))
+    (for element_b iterable
+      (_val k (key element_b))
+      (if (not_in k seen)
+        (do
+          (seen_add k)
+          (yield element_b))))))
+(def distinct (iterable)
+  (unique_everseen iterable None))
