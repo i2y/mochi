@@ -3,13 +3,35 @@ import traceback
 from pathlib import Path
 import sys
 
-from mochi import __version__, IS_PYTHON_34, IS_PYPY
+from mochi import __version__, IS_PYPY
 from .builtins import (current_error_port,
-                       eval_sexp_str, eval_tokens, load_file,
-                       builtin_rename)
+                       eval_sexp_str, eval_tokens)
 from mochi.parser.parser import lex, REPL_CONTINUE
 from .global_env import global_env
-from .translation import syntax_table, translator, global_scope
+from .translation import syntax_table, global_scope, translator
+
+
+def output_code(code):
+    import marshal
+
+    marshal.dump(code, sys.stdout.buffer)
+
+
+def compile_file(src_path, optimize=-1):
+    # binding_name_set_stack[0].update(global_env.keys())
+    py_ast = translator.translate_file(src_path)
+    return compile(py_ast, src_path, 'exec', optimize=optimize)
+
+
+def load_file(path, env):
+    return exec(compile_file(path), env)
+
+
+def execute_compiled_file(path):
+    import marshal
+
+    with open(path, 'rb') as compiled_file:
+        return exec(marshal.load(compiled_file), global_env)
 
 
 def interact():

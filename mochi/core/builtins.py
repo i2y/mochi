@@ -1106,29 +1106,6 @@ def _del(name, env):
     del env[name]
 
 
-def output_code(code):
-    import marshal
-
-    marshal.dump(code, sys.stdout.buffer)
-
-
-def compile_file(src_path, optimize=-1):
-    # binding_name_set_stack[0].update(global_env.keys())
-    py_ast = translator.translate_file(src_path)
-    return compile(py_ast, src_path, 'exec', optimize=optimize)
-
-
-def load_file(path, env):
-    return exec(compile_file(path), env)
-
-
-def execute_compiled_file(path):
-    import marshal
-
-    with open(path, 'rb') as compiled_file:
-        return exec(marshal.load(compiled_file), global_env)
-
-
 @builtin_rename('macex1')
 @builtin_rename('macroexpand_1')
 def macroexpand1(exp):
