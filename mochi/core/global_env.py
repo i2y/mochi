@@ -1,6 +1,5 @@
 
-from collections import (Iterator, Iterable, Mapping, MutableMapping, Sequence,
-                         MutableSequence, namedtuple)
+from collections import Iterable, Mapping, MutableMapping, Sequence, MutableSequence
 import functools
 import itertools
 from numbers import Number
@@ -10,7 +9,7 @@ import re
 from pyrsistent import (v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l,
                         plist, pclass, freeze, thaw)
 
-from mochi import __version__, IS_PYTHON_34, IS_PYPY
+from mochi import IS_PYPY
 from mochi.actor import actor
 from mochi.parser.parser import Symbol, Keyword, get_temp_name
 
