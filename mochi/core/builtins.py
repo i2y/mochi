@@ -10,11 +10,11 @@ from io import StringIO
 
 from pyrsistent import pmap, pclass
 
+from .utils import issequence, issequence_except_str, is_tuple_or_list
 from .constants import *
 from .exceptions import UnquoteSplicingError, DuplicatedDefError, ReadError
 from .global_env import global_env
-from .translation import binding_name_set_stack, translator, is_record
-from .utils import issequence, issequence_except_str, is_tuple_or_list
+from .translation import binding_name_set_stack, translator, is_record, Keyword, parse
 
 
 def builtin(func):
