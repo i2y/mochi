@@ -5,10 +5,13 @@ from pathlib import Path
 from os import chdir
 from os.path import normpath, abspath
 
+from .utils import issequence_except_str
 from .constants import *
 from .exceptions import MochiSyntaxError, DuplicatedDefError
 from .global_env import global_env
+from mochi import IS_PYTHON_34
 from mochi.parser.parser import Symbol, Keyword, parse, lex, get_temp_name
+
 
 if IS_PYTHON_34:
     expr_and_stmt_ast = (ast.Expr, ast.If, ast.For, ast.FunctionDef, ast.Assign, ast.Delete, ast.Try, ast.Raise,
@@ -79,18 +82,6 @@ def lexical_scope(quasi=False):
 
     return _lexical_scope
 
-def issequence(obj):
-    return isinstance(obj, Sequence)
-
-
-def issequence_except_str(obj):
-    if isinstance(obj, str):
-        return False
-    return isinstance(obj, Sequence)
-
-
-def is_tuple_or_list(obj):
-    return type(obj) in {tuple, list}
 
 def flatten_list(lis):
     i = 0

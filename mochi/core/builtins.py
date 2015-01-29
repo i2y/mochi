@@ -10,15 +10,11 @@ from io import StringIO
 
 from pyrsistent import pmap, pclass
 
-from mochi.parser.parser import Symbol, Keyword, parse, lex
 from .constants import *
-from .exceptions import (UnquoteSplicingError,
-                         DuplicatedDefError, ReadError)
+from .exceptions import UnquoteSplicingError, DuplicatedDefError, ReadError
 from .global_env import global_env
-from .translation import (binding_name_set_stack, translator,
-                          is_record,
-                          issequence,
-                          issequence_except_str, is_tuple_or_list)
+from .translation import binding_name_set_stack, translator, is_record
+from .utils import issequence, issequence_except_str, is_tuple_or_list
 
 
 def builtin(func):
@@ -447,39 +443,6 @@ class SexpReader(object):
             return with_decorator_sexp
         else:
             return EOF
-
-
-def emit_sexp(sexpr):
-    ol = []
-    stack = [sexpr]
-
-    while len(stack) > 0:
-        sexpr = stack.pop()
-        if is_tuple_or_list(sexpr):
-            stack.append(RPARA)
-            rsexpr = []
-            for sub in sexpr:
-                rsexpr.insert(0, sub)
-            stack.extend(rsexpr)
-            stack.append(LPARA)
-        else:
-            ol.append(sexpr)
-
-    retval = ''
-    oldsitem = ''
-    for item in ol:
-        sitem = repr(item)
-        if sitem[0] == "'" and sitem[-1] == "'":
-            sitem = sitem.replace('"', "\\\"")
-            sitem = '"' + sitem[1:-1] + '"'
-        if not ((sitem == ')') or (oldsitem == '(')):
-            oldsitem = sitem
-            sitem = ' ' + sitem
-        else:
-            oldsitem = sitem
-        retval += sitem
-    return retval[1:]
-
 
 
 #---------------------------------------------------------
@@ -1044,7 +1007,6 @@ def unquote_splice(lis):
 @builtin
 def tuple_it(obj):
     return tuple(map(tuple_it, obj)) if isinstance(obj, MutableSequence) else obj
-
 
 
 def eval_tokens(tokens):
