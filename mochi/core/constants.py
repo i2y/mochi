@@ -1,9 +1,8 @@
 import ast
 
-from mochi import __version__, IS_PYTHON_34, IS_PYPY
 from .global_env import global_env
-from mochi.parser.parser import (Symbol, Keyword, parse, lex, get_temp_name,
-                                 REPL_CONTINUE)
+from mochi.parser.parser import Symbol
+
 
 # -----------------------------------------------
 # EOF Class
@@ -68,9 +67,6 @@ class Char(object):
     def __init__(self, str, lineno=0):
         self.value = str
         self.lineno = lineno
-
-
-
 
 op_ast_map = {'+': ast.Add(),
               '-': ast.Sub(),
