@@ -14,7 +14,7 @@ from .utils import issequence, issequence_except_str, is_tuple_or_list
 from .constants import *
 from .exceptions import UnquoteSplicingError, DuplicatedDefError, ReadError
 from .global_env import global_env
-from .translation import binding_name_set_stack, translator, is_record, Keyword, parse
+from .translation import binding_name_set_stack, translator, Keyword, parse
 
 
 def builtin(func):
@@ -1092,9 +1092,6 @@ def is_macro(func):
 @builtin
 def is_function(func):
     return isinstance(func, FunctionType) and (not translator.has_macro(func.__name__))
-
-
-builtin_rename('record_id?')(is_record)
 
 
 @builtin

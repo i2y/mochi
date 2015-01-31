@@ -437,7 +437,7 @@ def token_to_keyword(token):
     return Keyword(token.getstr(), token.getsourcepos().lineno, token.getsourcepos().colno)
 
 
-@pg.production('let_expr : pattern EQUALS binop_expr')
+@pg.production('let_expr : binop_expr EQUALS binop_expr')
 def let_expr(p):
     return [Symbol('val', 0, 0), p[0], p[2]]
 
@@ -782,14 +782,19 @@ def case_branch(p):
     return [p[0], p[2]]
 
 
-# TODO
-# @pg.production('pattern : id_expr')
-# @pg.production('pattern : tuple_expr')
-# @pg.production('pattern : dict_expr')
 @pg.production('defm_pattern : app_nc_args')
 def pattern(p):
     return p[0]
 
+
+@pg.production('defm_pattern : pattern')
+def app_args(p):
+    return [p[0]]
+
+
+@pg.production('defm_pattern : pattern COMMA defm_pattern')
+def app_args(p):
+    return [p[0]] + p[2]
 
 
 @pg.production('fun_header : NAME args')
@@ -1032,14 +1037,161 @@ def case_branch(p):
     return [p[0], p[2]]
 
 
-# TODO
-# @pg.production('pattern : id_expr')
-# @pg.production('pattern : tuple_expr')
-# @pg.production('pattern : dict_expr')
-@pg.production('pattern : binop_expr')
+# @pg.production('pattern : fn_expr')
+@pg.production('pattern : prim_pattern')
+@pg.production('pattern : dict_pattern')
+@pg.production('pattern : sequence_pattern')
+@pg.production('pattern : sequence_type_pattern')
+@pg.production('pattern : type_pattern')
+@pg.production('pattern : id_pattern')
+@pg.production('pattern : and_pattern')
+@pg.production('pattern : or_pattern')
+@pg.production('pattern : quote_pattern')
+# TODO @pg.production('defm_pattern : app_nc_args')
 def pattern(p):
     return p[0]
-case
+
+
+@pg.production('prim_pattern : NUMBER')
+def pattern_num(p):
+    num_repr = p[0].getstr()
+    try:
+        return int(num_repr)
+    except ValueError as _:
+        return float(num_repr)
+
+
+@pg.production('prim_pattern : string')
+def pattern_string(p):
+    return p[0]
+
+
+@pg.production('prim_pattern : bool_expr')
+def pattern_bool(p):
+    return p[0]
+
+
+@pg.production('dict_pattern : LBRACE RBRACE')
+def dict_pattern_empty(p):
+    return [Symbol('table')]
+
+
+@pg.production('dict_pattern : LBRACE dict_pattern_fields RBRACE')
+def dict_pattern(p):
+    return [Symbol('table')] + p[1]
+
+
+@pg.production('dict_pattern_fields : dict_pattern_field')
+def fields_one(p):
+    return p[0]
+
+
+@pg.production('dict_pattern_fields : dict_pattern_list_fields dict_pattern_field')
+def fields(p):
+    return p[0] + p[1]
+
+
+@pg.production('dict_pattern_list_fields : dict_pattern_list_field')
+def list_fields_one(p):
+    return p[0]
+
+
+@pg.production('dict_pattern_list_fields : dict_pattern_list_fields dict_pattern_list_field')
+def list_fields(p):
+    return p[0] + p[1]
+
+
+@pg.production('dict_pattern_list_field : dict_pattern_field COMMA')
+def list_field(p):
+    return p[0]
+
+
+@pg.production('dict_pattern_field : dict_pattern_key COLON pattern')
+def field(p):
+    return [p[0], p[2]]
+
+
+@pg.production('dict_pattern_field : EQUALS NAME')
+def field(p):
+    s = token_to_symbol(p[1])
+    return [s.name, s]
+
+
+@pg.production('dict_pattern_key : binop_expr')
+def key(p):
+    return p[0]
+
+
+@pg.production('id_pattern : NAME')
+def id_pattern(p):
+    return token_to_symbol(p[0])
+
+
+@pg.production('id_pattern : AMP')
+def id_pattern(p):
+    return Symbol('&')
+
+
+@pg.production('sequence_pattern : LBRACK sequence_pattern_elts pattern RBRACK')
+def sequence_pattern(p):
+    return [Symbol('make_tuple')] + p[1] + [p[2]]
+
+
+@pg.production('sequence_pattern : LBRACK pattern RBRACK')
+def sequence_pattern_one(p):
+    return [Symbol('make_tuple'), p[1]]
+
+
+@pg.production('sequence_pattern : LBRACK RBRACK')
+def sequence_pattern_empty(p):
+    return [Symbol('make_tuple')]
+
+
+@pg.production('sequence_pattern_elts : sequence_pattern_elts sequence_pattern_elt')
+def sequence_pattern_elts(p):
+    return p[0] + [p[1]]
+
+
+@pg.production('sequence_pattern_elts : sequence_pattern_elt')
+def sequence_pattern_elts_elt(p):
+    return [p[0]]
+
+
+@pg.production('sequence_pattern_elt : pattern COMMA')
+def sequence_pattern_elt(p):
+    return p[0]
+
+
+@pg.production('sequence_type_pattern : NAME LPAREN sequence_pattern_elts pattern RPAREN')
+def sequence_type_pattern(p):
+    return [Symbol('sequence_type'), token_to_symbol(p[0])] + p[2] + [p[3]]
+
+
+@pg.production('sequence_type_pattern : NAME LPAREN pattern RPAREN')
+def sequence_type_pattern_one(p):
+    return [Symbol('sequence_type'), token_to_symbol(p[0]), p[2]]
+
+
+@pg.production('and_pattern : pattern OPAND pattern')
+def and_pattern(p):
+    return [token_to_symbol(p[1]), p[0], p[2]]
+
+
+@pg.production('or_pattern : pattern OPOR pattern')
+def or_pattern(p):
+    return [token_to_symbol(p[1]), p[0], p[2]]
+
+
+@pg.production('type_pattern : NAME pattern')
+def type_pattern(p):
+    return [Symbol('type'), token_to_symbol(p[0]), p[1]]
+
+
+@pg.production('quote_pattern : QUOTE LPAREN pattern RPAREN')
+def quote_pattern(p):
+    return [Symbol('quote'), p[2]]
+
+
 @pg.production('receive_expr : RECEIVE COLON NEWLINE INDENT case_branches DEDENT')
 def case(p):
     return [Symbol('match'), [Symbol('recv'), [Symbol('self')]]] + p[4]

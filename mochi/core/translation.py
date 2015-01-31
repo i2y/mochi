@@ -25,13 +25,6 @@ else:
 syntax_table = {}
 
 
-record_ids = ['Record']
-
-
-def is_record(name):
-    return name in record_ids
-
-
 #-- double builtins :(
 def chunks(l, n):
     for i in range(0, len(l), n):
@@ -1208,7 +1201,7 @@ class Translator(object):
                 pre.extend(body_pre)
                 body.append(body_py_exp)
 
-        if is_record(record_name.name):
+        if parent_record is not RECORD_SYM:
             record_def = ast.ClassDef(name=record_name.name,
                                       bases=[ast.Call(func=ast.Name(id='pclass',
                                                                     lineno=lineno,
@@ -1282,7 +1275,6 @@ class Translator(object):
 
         pre.append(record_def)
         _, def_ref = self.translate_ref(record_name)
-        record_ids.append(record_name.name)
         return pre, def_ref
 
     @syntax('class')

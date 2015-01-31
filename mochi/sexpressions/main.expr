@@ -33,8 +33,6 @@
               (_val len_pattern (len pattern))
                 (if
                   (== len_pattern 0) `(and (isinstance ,target Sequence) (== (len ,target) 0))
-                  (record_id? (str (car pattern))) `(and (isinstance ,target ,(car pattern))
-                                                   ,(match? target (cdr pattern)))
                   (== (car pattern) 'make_list) (match? target (cdr pattern))
                   (== (car pattern) 'make_tuple) (match? target (cdr pattern))
                   (== (car pattern) 'table)
@@ -47,46 +45,6 @@
                       (== len_pattern 1) `(isinstance ,target Mapping)
                       (> len_pattern 1) `(and (isinstance ,target Mapping) ,(mapping_match? target (cdr pattern)))
                       'False)
-                  (== (car pattern) 'bool)
-                    (if
-                      (== len_pattern 1) `(isinstance ,target bool)
-                      (== len_pattern 2) `(and (isinstance ,target bool) ,(match? target (cadr pattern)))
-                      'False)
-                  (== (car pattern) 'int)
-                    (if
-                      (== len_pattern 1) `(isinstance ,target int)
-                      (== len_pattern 2) `(and (isinstance ,target int) ,(match? target (cadr pattern)))
-                      'False)
-                  (== (car pattern) 'float)
-                    (if
-                      (== len_pattern 1) `(isinstance ,target float)
-                      (== len_pattern 2) `(and (isinstance ,target float) ,(match? target (cadr pattern)))
-                      'False)
-                  (== (car pattern) 'Number)
-                    (if
-                      (== len_pattern 1) `(isinstance ,target Number)
-                      (== len_pattern 2) `(and (isinstance ,target Number) ,(match? target (cadr pattern)))
-                      'False)
-                  (== (car pattern) 'str)
-                    (if
-                      (== len_pattern 1) `(isinstance ,target str)
-                      (== len_pattern 2) `(and (isinstance ,target str) ,(match? target (cadr pattern)))
-                      'False)
-                  (and (== (car pattern) 'not) (== len_pattern 2))
-                    `(not ,(match? target (cadr pattern)))
-                  (== (car pattern) 'or)
-                    (if
-                      (== len_pattern 1) 'False
-                      (== len_pattern 2) (match? target (cadr pattern))
-                      `(or ,(match? target (cadr pattern)) ,(match? target (cons 'or (cddr pattern)))))
-                  (== (car pattern) 'and)
-                    (if
-                      (== len_pattern 1) 'False
-                      (== len_pattern 2) (match? target (cadr pattern))
-                      `(and ,(match? target (cadr pattern)) ,(match? target (cons 'and (cddr pattern)))))
-                  (== (car pattern) 'fn) `(,pattern ,target)
-                  (== (car pattern) 'quote) `(== ,pattern ,target)
-                  (== (car pattern) 'type) `(isinstance ,target ,(get pattern 1))
                   (== len_pattern 1) `(and (isinstance ,target Sequence) (== (len ,target) 1) ,(match? (v 'car target)
                                                                                                      (car pattern)))
                   (in (Symbol "&") pattern) (do
@@ -253,8 +211,6 @@
               (_val len_pattern (len pattern))
                 (if
                   (== len_pattern 0) `(and (isinstance ,target Sequence) (== (len ,target) 0))
-                  (record_id? (str (car pattern))) `(and (isinstance ,target ,(car pattern))
-                                                   ,(match? target (cdr pattern)))
                   (== (car pattern) 'make_list) (match? target (cdr pattern))
                   (== (car pattern) 'make_tuple) (match? target (cdr pattern))
                   (== (car pattern) 'table)
@@ -266,31 +222,6 @@
                     (if
                       (== len_pattern 1) `(isinstance ,target Mapping)
                       (> len_pattern 1) `(and (isinstance ,target Mapping) ,(mapping_match? target (cdr pattern)))
-                      'False)
-                  (== (car pattern) 'bool)
-                    (if
-                      (== len_pattern 1) `(isinstance ,target bool)
-                      (== len_pattern 2) `(and (isinstance ,target bool) ,(match? target (cadr pattern)))
-                      'False)
-                  (== (car pattern) 'int)
-                    (if
-                      (== len_pattern 1) `(isinstance ,target int)
-                      (== len_pattern 2) `(and (isinstance ,target int) ,(match? target (cadr pattern)))
-                      'False)
-                  (== (car pattern) 'float)
-                    (if
-                      (== len_pattern 1) `(isinstance ,target float)
-                      (== len_pattern 2) `(and (isinstance ,target float) ,(match? target (cadr pattern)))
-                      'False)
-                  (== (car pattern) 'Number)
-                    (if
-                      (== len_pattern 1) `(isinstance ,target Number)
-                      (== len_pattern 2) `(and (isinstance ,target Number) ,(match? target (cadr pattern)))
-                      'False)
-                  (== (car pattern) 'str)
-                    (if
-                      (== len_pattern 1) `(isinstance ,target str)
-                      (== len_pattern 2) `(and (isinstance ,target str) ,(match? target (cadr pattern)))
                       'False)
                   (and (== (car pattern) 'not) (== len_pattern 2))
                     `(not ,(match? target (cadr pattern)))
@@ -306,7 +237,10 @@
                       `(and ,(match? target (cadr pattern)) ,(match? target (cons 'and (cddr pattern)))))
                   (== (car pattern) 'fn) `(,pattern ,target)
                   (== (car pattern) 'quote) `(== ,pattern ,target)
-                  (== (car pattern) 'type) `(isinstance ,target ,(get pattern 1))
+                  (== (car pattern) 'type) `(and (isinstance ,target ,(cadr pattern))
+                                                 ,(match? target (caddr pattern)))
+                  (== (car pattern) 'sequence_type) `(and (isinstance ,target ,(cadr pattern))
+                                                          ,(match? target (cddr pattern)))
                   (== len_pattern 1) `(and (isinstance ,target Sequence) (== (len ,target) 1) ,(match? (v 'car target)
                                                                                                      (car pattern)))
                   (in (Symbol "&") pattern) (do
@@ -350,19 +284,14 @@
                     (pattern_bind (cadr pattern) target)
                     (+ (pattern_bind (cadr pattern) target)
                        (pattern_bind (cons 'and (cddr pattern)) target)))
-                (record_id? (str (car pattern))) (pattern_bind (cdr pattern) target)
                 (== (car pattern) 'make_list) (pattern_bind (get pattern 1 None) target)
                 (== (car pattern) 'make_tuple) (pattern_bind (get pattern 1 None) target)
                 (== (car pattern) 'table) (if (> len_pattern 2) (table_pattern_bind (cdr pattern) target))
                 (== (car pattern) 'dict*) (if (> len_pattern 2) (table_pattern_bind (cdr pattern) target))
-                (== (car pattern) 'bool) (if (> len_pattern 1) (pattern_bind (cadr pattern) target))
-                (== (car pattern) 'int) (if (> len_pattern 1) (pattern_bind (cadr pattern) target))
-                (== (car pattern) 'float) (if (> len_pattern 1) (pattern_bind (cadr pattern) target))
-                (== (car pattern) 'Number) (if (> len_pattern 1) (pattern_bind (cadr pattern) target))
-                (== (car pattern) 'str) (if (> len_pattern 1) (pattern_bind (cadr pattern) target))
                 (== (car pattern) 'fn) `((_val ,(gensym_match) ,target))
                 (== (car pattern) 'quote) (pattern_bind (get pattern 1) target)
-                (== (car pattern) 'type) `((_val ,(gensym_match) ,target))
+                (== (car pattern) 'type) (pattern_bind (caddr pattern) target)
+                (== (car pattern) 'sequence_type) (pattern_bind (cddr pattern) target)
                 (== len_pattern 1) (pattern_bind (car pattern) `(car ,target))
                 (in (Symbol "&") pattern) (do
                                             (_val len_pattern_fixed (pattern.index (Symbol "&")))
