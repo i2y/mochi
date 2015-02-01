@@ -1162,14 +1162,14 @@ def sequence_pattern_elt(p):
     return p[0]
 
 
-@pg.production('sequence_type_pattern : NAME LPAREN sequence_pattern_elts pattern RPAREN')
+@pg.production('sequence_type_pattern : names LPAREN sequence_pattern_elts pattern RPAREN')
 def sequence_type_pattern(p):
-    return [Symbol('sequence_type'), token_to_symbol(p[0])] + p[2] + [p[3]]
+    return [Symbol('sequence_type'), p[0]] + p[2] + [p[3]]
 
 
-@pg.production('sequence_type_pattern : NAME LPAREN pattern RPAREN')
+@pg.production('sequence_type_pattern : names LPAREN pattern RPAREN')
 def sequence_type_pattern_one(p):
-    return [Symbol('sequence_type'), token_to_symbol(p[0]), p[2]]
+    return [Symbol('sequence_type'), p[0], p[2]]
 
 
 @pg.production('and_pattern : pattern OPAND pattern')
