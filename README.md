@@ -244,30 +244,20 @@ match foo_map:
     _: None
 # => 'bar'
 
+# Type pattern
 match 10:
-    int(x): 'int'
-    float(x): 'float'
-    str(x): 'str'
-    bool(x): 'bool'
+    int x: 'int'
+    float x: 'float'
+    str x: 'str'
+    bool x: 'bool'
     _: 'other'
 # => 'int'
 
 match [1, 2, 3]:
-    [1, str(x), 3]: 'str'
-    [1, int(x), 3]: 'int'
+    [1, str x, 3]: 'str'
+    [1, int x, 3]: 'int'
     _: 'other'
 # => 'int'
-
-# Active pattern
-match 100:
-    -> $1 > 10: 'OK'
-    _: 'NG'
-# => 'OK'
-
-match 100:
-    (x) -> x > 10: 'OK'
-    _: 'NG'
-# => 'OK'
 
 # Or pattern
 match ['foo', 100]:
@@ -276,15 +266,9 @@ match ['foo', 100]:
 # => 100
 
 match ['foo', 100]:
-    [str(x) or int(x), value]: value
+    [str x or int x, value]: value
     _: 10000
 # => 100
-
-# And pattern
-match 100:
-    x and (x) -> x > 10: 'OK'
-    _: 'NG'
-# => 'OK'
 ```
 
 ### Records
@@ -376,8 +360,8 @@ offset(Point3D(1, 2, 3), Point3D(4, 5, 6))
 # => Point3D(x=5, y=7, z=9)
 
 def show:
-    int(x), message: print('int', x, message)
-    float(x), message: print('float', x, message)
+    int x, message: print('int', x, message)
+    float x, message: print('float', x, message)
     _: None
 
 show(1.0, 'msg')
