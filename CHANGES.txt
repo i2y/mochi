@@ -1,5 +1,13 @@
 Revision history
 ----------------
+v0.1.7, 2015-02-01
+  * Change the type-pattern syntax form
+     [old]
+      typename(pattern)
+     [new]
+      typename pattern
+      # the typename is name of any type.
+  * Fix some bugs
 v0.1.6, 2015-01-22
   * Change the trailing closure syntax so that a trailing closure expression is passed to a function as the function’s final argument
      [old]
