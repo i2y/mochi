@@ -927,21 +927,6 @@ def ref(value):
 #    return ref[1](update_func)
 
 
-struct_ids = []
-
-
-@builtin
-def define_struct(typename, field_names, verbose=False, rename=False):
-    struct_ids.append(typename)
-    # return namedtuple(typename, field_names, verbose, rename)
-    return pclass(field_names, typename, verbose)
-
-
-@builtin_rename('struct_id?')
-def is_struct_id(name):
-    return name in struct_ids
-
-
 def _check_duplicated_binding_name(symbol, filename, lis):
     constant_name = symbol.name
     for constant_name_set in reversed(lis):
