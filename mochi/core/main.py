@@ -2,8 +2,9 @@ import argparse
 import traceback
 from pathlib import Path
 import sys
+import os
 
-from mochi import __version__, IS_PYPY
+from mochi import __version__, IS_PYPY, IS_PYTHON_34
 from .builtins import current_error_port, eval_sexp_str, eval_tokens
 from mochi.parser.parser import lex, REPL_CONTINUE
 from .global_env import global_env
@@ -14,6 +15,22 @@ def output_code(code):
     import marshal
 
     marshal.dump(code, sys.stdout.buffer)
+
+
+def output_pyc(code):
+    import marshal
+
+    if IS_PYTHON_34:
+        from importlib.util import MAGIC_NUMBER
+    else:
+        import imp
+        MAGIC_NUMBER = imp.get_magic()
+
+    buffer = sys.stdout.buffer
+    buffer.write(MAGIC_NUMBER)
+    buffer.write(b'0' * 8)
+    marshal.dump(code, buffer)
+    buffer.flush()
 
 
 def compile_file(src_path, optimize=-1):
@@ -112,6 +129,8 @@ def init():
         del global_env[syntax]
         del global_scope[syntax]
 
+    sys.path.append(os.getcwd())
+
 
 def main():
     init()
@@ -121,6 +140,7 @@ def main():
             description='Mochi is a programming language.')
         arg_parser.add_argument('-v', '--version', action='version', version=__version__)
         arg_parser.add_argument('-c', '--compile', action='store_true')
+        arg_parser.add_argument('-pyc', '--pyc-compile', action='store_true')
         arg_parser.add_argument('-e', '--execute-compiled-file', action='store_true')
         arg_parser.add_argument('file', nargs='?', type=str)
         args = arg_parser.parse_args()
@@ -130,6 +150,12 @@ def main():
                 output_code(compile_file(args.file, optimize=2))
             elif args.execute_compiled_file:
                 execute_compiled_file(args.file)
+            elif args.pyc_compile:
+                target_ast = translator.translate_file(args.file)
+                import_env_file = Path(__file__).absolute().parents[0] / 'import_global_env.mochi'
+                import_env_ast = translator.translate_file(import_env_file.as_posix())
+                target_ast.body = import_env_ast.body + target_ast.body
+                output_pyc(compile(target_ast, args.file, 'exec', optimize=2))
             else:
                 load_file(args.file, global_env)
             sys.exit(0)

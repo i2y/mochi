@@ -1,0 +1,2 @@
+import mochi.core.builtins
+globals().update(mochi.core.builtins.global_env)

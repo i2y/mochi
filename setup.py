@@ -38,7 +38,8 @@ setup(
     },
     packages=find_packages(),
     package_data = {
-        'mochi': ['sexpressions/*'],
+        'mochi': ['sexpressions/*',
+                  'core/import_global_env.mochi'],
     },
     install_requires=install_requires,
     classifiers=[
