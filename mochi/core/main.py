@@ -28,7 +28,10 @@ def output_pyc(code):
 
     buffer = sys.stdout.buffer
     buffer.write(MAGIC_NUMBER)
-    buffer.write(b'0' * 8)
+    if IS_PYTHON_34:
+        buffer.write(b'0' * 8)
+    else:
+        buffer.write(b'0' * 4)
     marshal.dump(code, buffer)
     buffer.flush()
 

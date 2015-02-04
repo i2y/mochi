@@ -7,4 +7,5 @@ import platform
 import sys
 
 IS_PYTHON_34 = sys.version_info >= (3, 4)
+IS_PYTHON_33 = sys.version_info >= (3, 3)
 IS_PYPY = platform.python_implementation() == 'PyPy'
