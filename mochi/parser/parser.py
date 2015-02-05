@@ -683,12 +683,21 @@ def dot_expr(p):
     return [Symbol('send'), p[2], p[0]]
 
 
-@pg.production('for_expr : LBRACK binop_expr FOR pattern IN binop_expr RBRACK')  # TODO
+@pg.production('for_expr : LBRACK binop_expr FOR pattern IN binop_expr RBRACK')
 def for_expr(p):
     pattern = p[3]
     items = p[5]
     body = p[1]
-    return [Symbol('tuple_of')] + [body] + [[pattern, items]]
+    return [Symbol('tuple_of'), body, [pattern, items]]
+
+
+@pg.production('for_expr : LBRACK binop_expr FOR pattern IN binop_expr IF binop_expr RBRACK')
+def for_expr_if(p):
+    pattern = p[3]
+    items = p[5]
+    body = p[1]
+    when = p[7]
+    return [Symbol('tuple_of'), body, [pattern, items, Keyword('when'), when]]
 
 
 @pg.production('tuple_expr : LBRACK tuple_elts binop_expr RBRACK')
