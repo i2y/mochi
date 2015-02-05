@@ -144,6 +144,7 @@ def main():
         arg_parser.add_argument('-v', '--version', action='version', version=__version__)
         arg_parser.add_argument('-c', '--compile', action='store_true')
         arg_parser.add_argument('-pyc', '--pyc-compile', action='store_true')
+        arg_parser.add_argument('-pyc-no-mp', '--pyc-compile-no-monkeypatch', action='store_true')
         arg_parser.add_argument('-e', '--execute-compiled-file', action='store_true')
         arg_parser.add_argument('file', nargs='?', type=str)
         args = arg_parser.parse_args()
@@ -154,6 +155,12 @@ def main():
             elif args.execute_compiled_file:
                 execute_compiled_file(args.file)
             elif args.pyc_compile:
+                target_ast = translator.translate_file(args.file)
+                import_env_file = Path(__file__).absolute().parents[0] / 'import_global_env_and_monkey_patch.mochi'
+                import_env_ast = translator.translate_file(import_env_file.as_posix())
+                target_ast.body = import_env_ast.body + target_ast.body
+                output_pyc(compile(target_ast, args.file, 'exec', optimize=2))
+            elif args.pyc_compile_no_monkeypatch:
                 target_ast = translator.translate_file(args.file)
                 import_env_file = Path(__file__).absolute().parents[0] / 'import_global_env.mochi'
                 import_env_ast = translator.translate_file(import_env_file.as_posix())
