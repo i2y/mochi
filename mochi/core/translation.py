@@ -9,11 +9,11 @@ from .utils import issequence_except_str
 from .constants import *
 from .exceptions import MochiSyntaxError, DuplicatedDefError
 from .global_env import global_env
-from mochi import IS_PYTHON_34, IS_PYPY
+from mochi import GE_PYTHON_34, IS_PYPY
 from mochi.parser.parser import Symbol, Keyword, parse, lex, get_temp_name
 
 
-if IS_PYTHON_34:
+if GE_PYTHON_34:
     expr_and_stmt_ast = (ast.Expr, ast.If, ast.For, ast.FunctionDef, ast.Assign, ast.Delete, ast.Try, ast.Raise,
                          ast.With, ast.While, ast.Break, ast.Return, ast.Continue, ast.ClassDef,
                          ast.Import, ast.ImportFrom, ast.Pass)
@@ -800,7 +800,7 @@ class Translator(object):
                         result.append(arg_re_assign)
                     if self.target_func.args.vararg is not None:
                         vararg = self.target_func.args.vararg
-                        arg_name = ast.Name(id=vararg.arg if IS_PYTHON_34 else vararg,
+                        arg_name = ast.Name(id=vararg.arg if GE_PYTHON_34 else vararg,
                                             ctx=ast.Store(),
                                             lineno=0,
                                             col_offset=0)
@@ -955,7 +955,7 @@ class Translator(object):
         handlers = self._translate_handlers(handler_exps)
         orelse = self._translate_sequence(orelse_exp, True)
         final_body = self._translate_sequence(final_body_exp, True)
-        if IS_PYTHON_34:
+        if GE_PYTHON_34:
             return (ast.Try(body=body,
                             handlers=handlers,
                             orelse=orelse,
@@ -983,7 +983,7 @@ class Translator(object):
         if len(exp) < 3:
             raise MochiSyntaxError(exp, self.filename)
 
-        if IS_PYTHON_34:
+        if GE_PYTHON_34:
             return self.translate_with_34(exp)
         else:
             return self.translate_with_old(exp)
@@ -1111,13 +1111,13 @@ class Translator(object):
             vararg = None
         else:
             vararg = ast.arg(arg=vararg_exp.name,
-                             annotation=None) if IS_PYTHON_34 else vararg_exp.name
+                             annotation=None) if GE_PYTHON_34 else vararg_exp.name
 
         if varkwarg_exp is None:
             varkwarg = None
         else:
             varkwarg = ast.arg(arg=varkwarg_exp.name,
-                               annotation=None) if IS_PYTHON_34 else varkwarg_exp.name
+                               annotation=None) if GE_PYTHON_34 else varkwarg_exp.name
 
         # 末尾のS式をreturnに変換する。
         # 末尾がif式やdo式の場合はその中まで変換する。
@@ -1125,7 +1125,7 @@ class Translator(object):
         body = self._translate_sequence(exp[3:])
 
         if varkwarg is not None:
-            node = ast.parse('{0} = pmap({0})'.format(varkwarg.arg if IS_PYTHON_34 else varkwarg))
+            node = ast.parse('{0} = pmap({0})'.format(varkwarg.arg if GE_PYTHON_34 else varkwarg))
             body = node.body + body
 
         pre = []

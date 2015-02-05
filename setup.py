@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
-from mochi import __author__, __version__, __license__, IS_PYTHON_34
+from mochi import __author__, __version__, __license__, GE_PYTHON_34
 
 install_requires = ['rply>=0.7.3',
                     'pyrsistent>=0.8.0',
@@ -8,7 +8,7 @@ install_requires = ['rply>=0.7.3',
                     'eventlet>=0.16.1']
 
 
-if not IS_PYTHON_34:
+if not GE_PYTHON_34:
     install_requires.append('pathlib>=1.0.1')
 
 

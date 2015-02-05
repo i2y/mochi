@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 import os
 
-from mochi import __version__, IS_PYPY, IS_PYTHON_34
+from mochi import __version__, IS_PYPY, GE_PYTHON_34, GE_PYTHON_33
 from .builtins import current_error_port, eval_sexp_str, eval_tokens
 from mochi.parser.parser import lex, REPL_CONTINUE
 from .global_env import global_env
@@ -20,7 +20,7 @@ def output_code(code):
 def output_pyc(code):
     import marshal
 
-    if IS_PYTHON_34:
+    if GE_PYTHON_34:
         from importlib.util import MAGIC_NUMBER
     else:
         import imp
@@ -28,7 +28,7 @@ def output_pyc(code):
 
     buffer = sys.stdout.buffer
     buffer.write(MAGIC_NUMBER)
-    if IS_PYTHON_34:
+    if GE_PYTHON_33:
         buffer.write(b'0' * 8)
     else:
         buffer.write(b'0' * 4)
