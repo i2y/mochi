@@ -221,7 +221,7 @@ def stmt_newline(p):
 @pg.production('stmt : require_expr')
 @pg.production('stmt : module_expr')
 @pg.production('stmt : from_expr')
-# @pg.production('stmt : if_expr')
+@pg.production('stmt : if_expr')
 @pg.production('stmt : try_stmt')
 @pg.production('stmt : with_stmt')
 @pg.production('stmt : raise_stmt')
@@ -449,7 +449,8 @@ def binding(p):
 
 @pg.production('expr : fn_expr')
 @pg.production('expr : paren_expr')
-@pg.production('expr : if_expr')
+# @pg.production('expr : if_expr')
+@pg.production('expr : trailing_if_expr')
 @pg.production('expr : prim_expr')
 @pg.production('expr : uq_expr')
 @pg.production('expr : uqs_expr')
@@ -594,6 +595,11 @@ def elseif_expr(p):
 @pg.production('elseif_expr :')
 def elseif_expr_empty(p):
     return None
+
+
+@pg.production('trailing_if_expr : binop_expr IF binop_expr ELSE binop_expr')
+def trailing_if_expr(p):
+    return [Symbol('if'), p[2], p[0], p[4]]
 
 
 @pg.production('yield_expr : YIELD binop_expr')

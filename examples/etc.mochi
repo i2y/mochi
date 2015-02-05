@@ -87,7 +87,7 @@ else:
 
 print(str(1) + str(2), 10)
 
-tuple(map(-> if True: $1 + 10 else: $1 + 20, [1, 2, 3]))
+tuple(map(-> $1 + 10 if True else $1 + 20, [1, 2, 3]))
 
 match ["faa", 200]:
     ["aaa", xx]: print(xx + 200)
