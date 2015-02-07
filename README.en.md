@@ -240,6 +240,7 @@ hoge(3)
 ```python
 lis = [1, 2, 3]
 
+# Sequence pattern
 match lis:
     [1, 2, x]: x
     _: None
@@ -251,12 +252,15 @@ match lis:
 
 # => pvector([2, 3])
 
+
 foo_map = {'foo' : 'bar'}
 
+# Mapping pattern
 match foo_map:
     {'foo' : value}: value
     _: None
 # => 'bar'
+
 
 # Type pattern
 match 10:
@@ -288,6 +292,7 @@ match 10:
 
 # => 10:Even and Positive
 
+
 # Or pattern
 match ['foo', 100]:
     ['foo' or 'bar', value]: value
@@ -298,6 +303,18 @@ match ['foo', 100]:
     [str x or int x, value]: value
     _: 10000
 # => 100
+
+
+# Record pattern
+record Person(name, age)
+
+match foo:
+    Person('bar', age):
+        'bar:' + age
+    Person('foo', age):
+        'foo:' + age
+    _: None
+# => 'foo:32'
 ```
 
 ### Records
@@ -329,14 +346,6 @@ record Person(name, age):
 foo = Person('foo', '32')
 foo.show()
 # -> foo: 32
-
-match foo:
-    Person('bar', age):
-        'bar:' + age
-    Person('foo', age):
-        'foo:' + age
-    _: None
-# => 'foo:32'
 ```
 
 ### Bindings
