@@ -195,6 +195,22 @@ running a byte-compiled file
     kinako
     $
 
+generating .pyc
+~~~~~~~~~~~~~~~
+
+.. code:: sh
+
+    $ cat kagami.mochi
+    print('kagami')
+    $ mochi -pyc kagami.mochi > kagami.pyc
+    $ python3 kagami.pyc
+    kagami
+    $ python3
+    >>> import kagami
+    kagami
+    >>> eixt()
+    $
+
 Examples for each feature
 -------------------------
 
@@ -298,6 +314,21 @@ Pattern matching
         _: 'other'
     # => 'int'
 
+
+    # import https://github.com/ceronman/typeannotations
+    from annotation.typed import predicate
+
+    Positive = predicate(-> $1 > 0)
+    Even = predicate(-> $1 % 2 == 0)
+    EvenAndPositive = Even and Positive
+
+    match 10:
+        EvenAndPositive n: str(n) + ':Even and Positive'
+        Even n: str(n) + ':Even'
+        Positive n: str(n) + ':Positive'
+
+    # => 10:Even and Positive
+
     # Or pattern
     match ['foo', 100]:
         ['foo' or 'bar', value]: value
@@ -341,6 +372,14 @@ Records
     foo = Person('foo', '32')
     foo.show()
     # -> foo: 32
+
+    match foo:
+        Person('bar', age):
+            'bar:' + age
+        Person('foo', age):
+            'foo:' + age
+        _: None
+    # => 'foo:32'
 
 Bindings
 ~~~~~~~~
@@ -414,6 +453,17 @@ Pattern-matching function definitions
     show(1.0, 'msg')
     # -> float 1.0 msg
     # => None
+
+    # import https://github.com/ceronman/typeannotations
+    from annotation.typed import options
+
+    FileMode = options('r', 'w', 'a', 'r+', 'w+', 'a+')
+
+    def open_file:
+        str path, FileMode mode: 
+            open(path, mode)
+        str path:
+            open(path, 'r')
 
 Anonymous function
 ~~~~~~~~~~~~~~~~~~
@@ -531,6 +581,26 @@ Trailing closures
     # -> 200
     # -> 300
     # => pvector([])
+
+Short form for keyword arguments and dict keys
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    def foo(a, b, c):
+        a + b + c
+        
+    a = 1
+    b = 2
+    c = 3
+
+    # This is the same as foo(a=a, b=b, c=c)
+    foo(=a, =b, =c))
+    # => 6
+
+    # This is the same as {'a': a, 'b': b}
+    {=a, =b}
+    # => pmap({'a': 1, 'b': 2})
 
 Macros
 ~~~~~~

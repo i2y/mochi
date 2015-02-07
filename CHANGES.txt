@@ -1,5 +1,11 @@
 Revision history
 ----------------
+v0.1.8, 2015-02-07
+  * Support the trailing if-expression (Fix #12)
+  * Support the list comprehension with a conditional expression (Fix #11)
+  * Support generating .pyc file
+    mochi -pyc foo.mochi > foo.pyc
+  * Fix some bugs
 v0.1.7, 2015-02-01
   * Change the type-pattern syntax form
      [old]
