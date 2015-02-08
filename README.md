@@ -312,9 +312,9 @@ foo = Person('foo', 32)
 
 match foo:
     Person('bar', age):
-        'bar:' + age
+        'bar:' + str(age)
     Person('foo', age):
-        'foo:' + age
+        'foo:' + str(age)
     _: None
 # => 'foo:32'
 ```
