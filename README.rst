@@ -349,6 +349,8 @@ Pattern matching
     # Record pattern
     record Person(name, age)
 
+    foo = Person('foo', 32)
+
     match foo:
         Person('bar', age):
             'bar:' + age
