@@ -8,7 +8,7 @@ from operator import concat, add
 from collections import Iterator, Iterable, Sequence, MutableSequence
 from io import StringIO
 
-from pyrsistent import pmap, pclass
+from pyrsistent import pmap
 
 from .utils import issequence, issequence_except_str, is_tuple_or_list
 from .constants import *
