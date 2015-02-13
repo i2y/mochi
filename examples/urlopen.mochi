@@ -1,4 +1,4 @@
-from eventlet.green.urllib import urlopen
+from eventlet.green.urllib.request import urlopen
 import json
 
 urls = [

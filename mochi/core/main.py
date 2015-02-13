@@ -113,11 +113,7 @@ def init():
             expr = fobj.read()
         eval_sexp_str(expr)
 
-    eventlet.monkey_patch(#os=True, # if 'os' is true, rply don't work.
-                          socket=True,
-                          select=True,
-                          thread=True,
-                          time=True)
+    eventlet.monkey_patch()
     expr_path = Path(__file__).absolute().parents[1] / 'sexpressions'
     eval_from_file(expr_path / 'main.expr')
     if not IS_PYPY:
