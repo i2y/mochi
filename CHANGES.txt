@@ -1,5 +1,7 @@
 Revision history
 ----------------
+v0.1.8.1, 2015-02-14
+  * Install Eventlet from GitHub for Py3
 v0.1.8, 2015-02-07
   * Support the trailing if-expression (Fix #12)
   * Support the list comprehension with a conditional expression (Fix #11)
