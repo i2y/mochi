@@ -4,6 +4,8 @@ from collections import Sequence
 
 from rply import ParserGenerator, LexerGenerator, Token, ParsingError
 
+from mochi import __version__
+
 
 class Symbol(object):
     def __init__(self, name, lineno=0, col_offset=0):
@@ -175,7 +177,7 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                                  ('left', ['OPPLUS', 'OPMINUS']),
                                  ('left', ['LBRACK', 'RBRACK']),
                                  ('left', ['OPTIMES', 'OPDIV', 'PERCENT'])],
-                     cache_id='mochi')
+                     cache_id='mochi_'+__version__)
 
 
 @pg.production('program : block')

@@ -5,11 +5,7 @@ from mochi import __author__, __version__, __license__, GE_PYTHON_34
 install_requires = ['rply>=0.7.3',
                     'pyrsistent>=0.8.0',
                     'greenlet>=0.4.5',
-                    'eventlet']
-
-dependency_links = [
-    'git+https://github.com/eventlet/eventlet#egg=eventlet'
-]
+                    'eventlet>=0.17.1']
 
 if not GE_PYTHON_34:
     install_requires.append('pathlib>=1.0.1')
@@ -46,7 +42,6 @@ setup(
                   'core/import_global_env_and_monkey_patch.mochi'],
     },
     install_requires=install_requires,
-    dependency_links=dependency_links,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
