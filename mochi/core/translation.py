@@ -1165,7 +1165,7 @@ class Translator(object):
                 member_name_exp, member_type_exp = member_exp
                 check_type_sexpr += ((Symbol('if'), (Symbol('not'),
                                                      (Symbol('isinstance'), member_name_exp, member_type_exp)),
-                                      (Symbol('raise'), (Symbol('Exception'),
+                                      (Symbol('raise'), (Symbol('TypeError'),
                                                          member_name_exp.name +
                                                          ' is not an instance of ' +
                                                          str(member_type_exp)))),)
