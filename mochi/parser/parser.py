@@ -1279,6 +1279,11 @@ def record_expr(p):
     return p[0]
 
 
+@pg.production('record_field : id_expr COLON binop_expr')
+def record_expr(p):
+    return [p[0], p[2]]
+
+
 @pg.production('data_expr : DATA NAME COLON NEWLINE INDENT data_record_expr_list DEDENT')
 def data_expr(p):
     return [Symbol('data'), token_to_symbol(p[1])] + p[5]

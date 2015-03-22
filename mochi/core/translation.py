@@ -1156,6 +1156,23 @@ class Translator(object):
         _, ref = self.translate_ref(exp[1])
         return pre, ref
 
+    def _generate_new_method_def(self, cls_name, members_exp):
+        member_names = tuple(map(lambda member_exp: member_exp if isinstance(member_exp, Symbol) else member_exp[0],
+                                 members_exp))
+        check_type_sexpr = ()
+        for member_exp in members_exp:
+            if issequence_except_str(member_exp):
+                member_name_exp, member_type_exp = member_exp
+                check_type_sexpr += ((Symbol('if'), (Symbol('not'),
+                                                     (Symbol('isinstance'), member_name_exp, member_type_exp)),
+                                      (Symbol('raise'), (Symbol('Exception'),
+                                                         member_name_exp.name +
+                                                         ' is not an instance of ' +
+                                                         str(member_type_exp)))),)
+        return (Symbol('def'), Symbol('__new__'), (Symbol('cls'),) + member_names,
+                (Symbol('val'), Symbol('super_cls'), (Symbol('super'), cls_name, Symbol('cls')))) + \
+               check_type_sexpr + ((Symbol('super_cls.__new__'), Symbol('cls')) + member_names,)
+
     @syntax('record')
     def translate_record(self, exp):
         exp_length = len(exp)
@@ -1184,12 +1201,22 @@ class Translator(object):
                            lineno=record_name.lineno,
                            col_offset=record_name.col_offset)]
 
-        # check_duplicated_binding_name_outer(record_name, self.filename)
-
         for member_exp in members_exp:
-            member_pre, member = self.translate(member_exp.name, False)
-            pre.extend(member_pre)
-            members.append(member)
+            if issequence_except_str(member_exp):
+                if len(member_exp) != 2 and not isinstance(member_exp[0], Symbol):
+                    raise MochiSyntaxError(member_exp, self.filename)
+                member_name_exp, member_type_exp = member_exp
+                member_pre, member = self.translate(member_name_exp.name, False)
+                pre.extend(member_pre)
+                members.append(member)
+            else:
+                member_pre, member = self.translate(member_exp.name, False)
+                pre.extend(member_pre)
+                members.append(member)
+
+        new_method_def = self._generate_new_method_def(record_name, members_exp)
+        if new_method_def is not None:
+            body_exps = (new_method_def,) + body_exps
 
         for body_exp in body_exps:
             if isinstance(body_exp, (tuple, list)) and body_exp[0] == DEF:
