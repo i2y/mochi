@@ -178,7 +178,7 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                                  ('left', ['OPPLUS', 'OPMINUS']),
                                  ('left', ['LBRACK', 'RBRACK']),
                                  ('left', ['OPTIMES', 'OPDIV', 'PERCENT'])],
-                     cache_id='mochi_'+__version__)
+                     cache_id='mochi_' + __version__)
 
 
 @pg.production('program : block')

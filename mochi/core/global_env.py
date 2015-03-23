@@ -7,10 +7,11 @@ import re
 
 from pyrsistent import (v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l,
                         plist, pclass, freeze, thaw, CheckedPVector)
-from annotation.typed import union, options, optional, only, predicate
 from mochi import IS_PYPY
 from mochi.actor import actor
 from mochi.parser.parser import Symbol, Keyword, get_temp_name
+if not IS_PYPY:
+    from annotation.typed import union, options, optional, only, predicate
 
 
 def make_default_env():
@@ -41,11 +42,12 @@ def make_default_env():
     env['thaw'] = thaw
     env['freeze'] = freeze
     env['pclass'] = pclass
-    env['union'] = union
-    env['options'] = options
-    env['optional'] = optional
-    env['only'] = only
-    env['predicate'] = predicate
+    if not IS_PYPY:
+        env['union'] = union
+        env['options'] = options
+        env['optional'] = optional
+        env['only'] = only
+        env['predicate'] = predicate
     env[Number.__name__] = Number
     env['append'] = MutableSequence.append
     # env['clear'] = MutableSequence.clear # not supported (pypy)
