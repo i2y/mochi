@@ -7,7 +7,7 @@ import operator
 import re
 
 from pyrsistent import (v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l,
-                        plist, pclass, freeze, thaw)
+                        plist, pclass, freeze, thaw, CheckedPVector)
 
 from mochi import IS_PYPY
 from mochi.actor import actor
@@ -29,6 +29,7 @@ def make_default_env():
     env[Mapping.__name__] = Mapping
     env['v'] = v
     env['pvector'] = pvector
+    env['CheckedPVector'] = CheckedPVector
     env['m'] = m
     env['pmap'] = pmap
     env['s'] = s

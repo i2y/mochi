@@ -140,6 +140,7 @@ klg.add('ELSEIF', r'^elif$')
 klg.add('MATCH', r'^match$')
 klg.add('RECEIVE', r'^receive$')
 klg.add('OF', r'^of$')
+klg.add('VECTOR', r'^vector$')
 klg.add('RECORD', r'^record$')
 klg.add('DATA', r'^data$')
 klg.add('YIELD', r'^yield$')
@@ -164,7 +165,7 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                       'AT', 'BANG', 'DOT_NAME', 'TQUOTE_RAW_STR', 'DQUOTE_RAW_STR', 'SQUOTE_RAW_STR',
                       'NAME', 'EQUALS', 'IF', 'ELSEIF', 'ELSE', 'COLON', 'SEMI', 'DATA', 'IMPORT', 'REQUIRE',
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'PIPELINE_BIND', 'PIPELINE_FIRST',
-                      'PIPELINE_FIRST_BIND', 'PIPELINE_SEND', 'PIPELINE_MULTI_SEND', 'RETURN',
+                      'PIPELINE_FIRST_BIND', 'PIPELINE_SEND', 'PIPELINE_MULTI_SEND', 'RETURN', 'VECTOR',
                       'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'THINARROW', 'RECEIVE',
                       'YIELD', 'FROM', 'FOR', 'IN', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT',
                       'MODULE', 'AS', 'RAISE', 'WITH', 'MACRO', 'QUOTE', 'QUASI_QUOTE', 'UNQUOTE', 'UNQUOTE_SPLICING'],
@@ -217,6 +218,7 @@ def stmt_newline(p):
 @pg.production('stmt : deco_expr')
 @pg.production('stmt : def_expr')
 @pg.production('stmt : defm_expr')
+@pg.production('stmt : vector_expr')
 @pg.production('stmt : record_expr')
 @pg.production('stmt : data_expr')
 @pg.production('stmt : import_expr')
@@ -1212,6 +1214,16 @@ def quote_pattern(p):
 @pg.production('receive_expr : RECEIVE COLON NEWLINE INDENT case_branches DEDENT')
 def case(p):
     return [Symbol('match'), [Symbol('recv'), [Symbol('self')]]] + p[4]
+
+
+@pg.production('vector_expr : VECTOR NAME LBRACK type RBRACK')
+def vector_expr(p):
+    return [Symbol('vector'), token_to_symbol(p[1]), p[3]]
+
+
+@pg.production('type : binop_expr')
+def vector_type(p):
+    return p[0]
 
 
 @pg.production('record_expr : RECORD NAME')

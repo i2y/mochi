@@ -1173,6 +1173,40 @@ class Translator(object):
                 (Symbol('val'), Symbol('super_cls'), (Symbol('super'), cls_name, Symbol('cls')))) + \
                check_type_sexpr + ((Symbol('super_cls.__new__'), Symbol('cls')) + member_names,)
 
+    @syntax('vector')
+    def translate_vector(self, exp):
+        if not (len(exp) == 3 and isinstance(exp[1], Symbol)):
+            raise MochiSyntaxError(exp, self.filename)
+
+        _, vector_name, item_type = exp
+        pre = []
+        item_type_pre, item_type_value = self.translate(item_type, False)
+        pre.extend(item_type_pre)
+        lineno = vector_name.lineno
+        col_offset = 0
+        vector_def = ast.ClassDef(name=vector_name.name,
+                                  bases=[ast.Name(id='CheckedPVector',
+                                                  ctx=ast.Load(),
+                                                  lineno=lineno,
+                                                  col_offset=col_offset)],
+                                  keywords=[],
+                                  starargs=None,
+                                  kwargs=None,
+                                  body=[ast.Assign(targets=[ast.Name(id='__type__',
+                                                                     ctx=ast.Store(),
+                                                                     lineno=lineno,
+                                                                     col_offset=col_offset)],
+                                                   value=item_type_value,
+                                                   lineno=lineno,
+                                                   col_offset=col_offset)],
+                                  decorator_list=[],
+                                  lineno=lineno,
+                                  col_offset=col_offset)
+
+        pre.append(vector_def)
+        _, def_ref = self.translate_ref(vector_name)
+        return pre, def_ref
+
     @syntax('record')
     def translate_record(self, exp):
         exp_length = len(exp)
