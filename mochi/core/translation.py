@@ -1170,7 +1170,7 @@ class Translator(object):
                                                          ' is not an instance of ' +
                                                          str(member_type_exp)))),)
         return (Symbol('def'), Symbol('__new__'), (Symbol('cls'),) + member_names,
-                (Symbol('val'), Symbol('super_cls'), (Symbol('super'), cls_name, Symbol('cls')))) + \
+                (Symbol('val'), Symbol('super_cls'), (Symbol('super'), Symbol('cls'), Symbol('cls')))) + \
                check_type_sexpr + ((Symbol('super_cls.__new__'), Symbol('cls')) + member_names,)
 
     @syntax('vector')
@@ -1269,21 +1269,10 @@ class Translator(object):
                                                                     col_offset=col_offset,
                                                                     ctx=ast.Load()),
                                                       args=[
-                                                          ast.BinOp(left=ast.Attribute(value=ast.Name(id=parent_record.name,
-                                                                                                      lineno=parent_record.lineno,
-                                                                                                      col_offset=parent_record.col_offset,
-                                                                                                      ctx=ast.Load()),
-                                                                                       attr='_fields',
-                                                                                       lineno=parent_record.lineno,
-                                                                                       col_offset=parent_record.col_offset,
-                                                                                       ctx=ast.Load()),
-                                                                    op=ast.Add(),
-                                                                    right=ast.Tuple(elts=members,
-                                                                                    lineno=parent_record.lineno,
-                                                                                    col_offset=parent_record.col_offset,
-                                                                                    ctx=ast.Load()),
+                                                          ast.Tuple(elts=members,
                                                                     lineno=parent_record.lineno,
-                                                                    col_offset=parent_record.col_offset),
+                                                                    col_offset=parent_record.col_offset,
+                                                                    ctx=ast.Load()),
                                                           ast.Str(s=record_name.name,
                                                                   lineno=lineno,
                                                                   col_offset=col_offset)],
@@ -1321,11 +1310,7 @@ class Translator(object):
                                                       starargs=None,
                                                       kwargs=None,
                                                       lineno=parent_record.lineno,
-                                                      col_offset=parent_record.col_offset),
-                                             ast.Name(id=parent_record.name,
-                                                      lineno=parent_record.lineno,
-                                                      col_offset=parent_record.col_offset,
-                                                      ctx=ast.Load())],
+                                                      col_offset=parent_record.col_offset)],
                                       keywords=[],
                                       starargs=None,
                                       kwargs=None,

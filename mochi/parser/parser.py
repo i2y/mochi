@@ -1216,12 +1216,12 @@ def case(p):
     return [Symbol('match'), [Symbol('recv'), [Symbol('self')]]] + p[4]
 
 
-@pg.production('vector_expr : VECTOR NAME LBRACK type RBRACK')
+@pg.production('vector_expr : VECTOR NAME LBRACK vector_type RBRACK')
 def vector_expr(p):
     return [Symbol('vector'), token_to_symbol(p[1]), p[3]]
 
 
-@pg.production('type : binop_expr')
+@pg.production('vector_type : binop_expr')
 def vector_type(p):
     return p[0]
 
