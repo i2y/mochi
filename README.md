@@ -432,9 +432,6 @@ show(1.0, 'msg')
 # -> float 1.0 msg
 # => None
 
-# import https://github.com/ceronman/typeannotations
-from annotation.typed import options
-
 FileMode = options('r', 'w', 'a', 'r+', 'w+', 'a+')
 
 def open_file:
