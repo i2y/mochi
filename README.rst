@@ -146,9 +146,10 @@ Requirements
 
 -  CPython >= 3.2 or PyPy >= 3.2.1
 -  rply >= 0.7.2
--  pyrsistent >= 0.8.0
+-  pyrsistent >= 0.9.1
 -  pathlib >= 1.0.1
--  eventlet >= 0.16.1
+-  eventlet >= 0.17.1
+-  typeannotations >= 0.1.0
 
 Installation
 ------------
@@ -304,6 +305,7 @@ Pattern matching
 
 
     # Type pattern
+    # <name of variable refers to type> <pattern>: <action>
     match 10:
         int x: 'int'
         float x: 'float'
@@ -318,13 +320,17 @@ Pattern matching
         _: 'other'
     # => 'int'
 
+    vector nums[num]
+    vector strs[str]
 
-    # import https://github.com/ceronman/typeannotations
-    from annotation.typed import predicate
+    match nums([1, 2, 3]):
+        nums[x, y, z]: z
+        strs[x, y, z]: x
+    # => 3
 
     Positive = predicate(-> $1 > 0)
     Even = predicate(-> $1 % 2 == 0)
-    EvenAndPositive = Even and Positive
+    EvenAndPositive = predicate(-> ($1 % 2 == 0) and ($1 >= 0)) 
 
     match 10:
         EvenAndPositive n: str(n) + ':Even and Positive'
@@ -391,6 +397,15 @@ Records
     foo = Person('foo', '32')
     foo.show()
     # -> foo: 32
+
+    # runtime type checking
+    record Point(x:int, y:int, z:optional(int))
+    Point(1, 2, None)
+    # => Point(x=1, y=2, z=None)
+    Point(1, 2, 3)
+    # => Point(x=1, y=2, z=3)
+    Point(1, None, 3)
+    # => TypeError
 
 Bindings
 ~~~~~~~~

@@ -333,7 +333,7 @@ d
 # => pvector([2, 3])
 ```
 
-### 代数的データ型(sum type)ライクなデータ型
+### 代数的データ型ライクなデータ型
 ```python
 data Point:
     Point2D(x, y)
