@@ -280,6 +280,7 @@ match [1, 2, 3]:
     _: 'other'
 # => 'int'
 
+num = union(int, float)
 vector nums[num]
 vector strs[str]
 
