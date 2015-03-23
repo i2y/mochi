@@ -1,5 +1,14 @@
 Revision history
 ----------------
+v0.1.9, 2015-03-23
+  * Support type annotation to each fields of a record
+  * Support checking type of each fields at runtime
+  * Add typed vector syntax
+    [example]
+    >>> vector IntVector[int]
+    >>> IntVector([1, 2, 3])
+    IntVector([1, 2, 3])
+  * Add functions in typeannotations module to builtin functions
 v0.1.8.2, 2015-02-26
   * Change required version of Eventlet to 0.17.1
 v0.1.8.1, 2015-02-14

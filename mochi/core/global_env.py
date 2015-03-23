@@ -1,4 +1,3 @@
-
 from collections import Iterable, Mapping, MutableMapping, Sequence, MutableSequence
 import functools
 import itertools
@@ -8,14 +7,13 @@ import re
 
 from pyrsistent import (v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l,
                         plist, pclass, freeze, thaw, CheckedPVector)
-
+from annotation.typed import union, options, optional, only, predicate
 from mochi import IS_PYPY
 from mochi.actor import actor
 from mochi.parser.parser import Symbol, Keyword, get_temp_name
 
 
 def make_default_env():
-
     env = {'Symbol': Symbol, 'Keyword': Keyword}
     env.update(__builtins__.__dict__) if hasattr(__builtins__, '__dict__') else env.update(__builtins__)
     del env['exec']
@@ -43,6 +41,11 @@ def make_default_env():
     env['thaw'] = thaw
     env['freeze'] = freeze
     env['pclass'] = pclass
+    env['union'] = union
+    env['options'] = options
+    env['optional'] = optional
+    env['only'] = only
+    env['predicate'] = predicate
     env[Number.__name__] = Number
     env['append'] = MutableSequence.append
     # env['clear'] = MutableSequence.clear # not supported (pypy)
