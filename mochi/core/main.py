@@ -3,6 +3,7 @@ import traceback
 from pathlib import Path
 import sys
 import os
+from platform import platform
 
 from mochi import __version__, IS_PYPY, GE_PYTHON_34, GE_PYTHON_33
 from .builtins import current_error_port, eval_sexp_str, eval_tokens
@@ -113,7 +114,10 @@ def init():
             expr = fobj.read()
         eval_sexp_str(expr)
 
-    eventlet.monkey_patch()
+    if platform().lower().startswith('win'):
+        eventlet.monkey_patch(os=False)
+    else:
+        eventlet.monkey_patch()
     expr_path = Path(__file__).absolute().parents[1] / 'sexpressions'
     eval_from_file(expr_path / 'main.expr')
     if not IS_PYPY:
