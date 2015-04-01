@@ -91,6 +91,37 @@ sleep(1)
 sleep(1)
 # -> foo
 # -> bar
+
+def show_loop():
+    receive:
+        [tag, value]:
+            print(tag, value)
+            show_loop()
+
+actor2 = spawn(show_loop)
+
+actor2 ! ["bar", 2000]
+sleep(1)
+# -> bar 2000
+
+['foo', 1000] !> spawn(show_loop)
+sleep(1)
+# -> foo 1000
+
+[['foo', 1000],['bar', 2000]] !&> spawn(show_loop)
+sleep(1)
+# -> foo 1000
+# -> bar 2000
+
+remote_actor = RemoteActor('tcp://localhost:9999/test')
+remote_actor ! ['remote!', 3000]
+
+hub = ActorHub('tcp://*:9999')
+hub.register('test', actor2)
+hub.run()
+
+wait_all()
+# -> remote! 3000
 ```
 
 ### Flask
@@ -280,6 +311,7 @@ match [1, 2, 3]:
     _: 'other'
 # => 'int'
 
+num = union(int, float)
 vector nums[num]
 vector strs[str]
 
@@ -431,9 +463,6 @@ def show:
 show(1.0, 'msg')
 # -> float 1.0 msg
 # => None
-
-# import https://github.com/ceronman/typeannotations
-from annotation.typed import options
 
 FileMode = options('r', 'w', 'a', 'r+', 'w+', 'a+')
 

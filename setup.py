@@ -6,6 +6,7 @@ install_requires = ['rply>=0.7.3',
                     'pyrsistent>=0.9.1',
                     'greenlet>=0.4.5',
                     'eventlet>=0.17.1',
+                    'pyzmq>=14.5.0',
                     'typeannotations>=0.1.0']
 
 if not GE_PYTHON_34:

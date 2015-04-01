@@ -95,6 +95,8 @@ def make_default_env():
     env['gensym'] = get_temp_name
     env['uniq'] = get_temp_name
     env['Record'] = pclass((), 'Record')  # namedtuple('Record', ())
+    env['ActorHub'] = actor.ActorHub
+    env['RemoteActor'] = actor.RemoteActor
     env['spawn'] = actor.spawn
     env['send'] = actor.send
     env['recv'] = actor.recv
