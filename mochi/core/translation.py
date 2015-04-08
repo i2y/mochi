@@ -1264,7 +1264,7 @@ class Translator(object):
 
         if parent_record is not RECORD_SYM:
             record_def = ast.ClassDef(name=record_name.name,
-                                      bases=[ast.Call(func=ast.Name(id='pclass',
+                                      bases=[ast.Call(func=ast.Name(id='immutable',
                                                                     lineno=lineno,
                                                                     col_offset=col_offset,
                                                                     ctx=ast.Load()),
@@ -1294,7 +1294,7 @@ class Translator(object):
                                       decorator_list=[])
         else:
             record_def = ast.ClassDef(name=record_name.name,
-                                      bases=[ast.Call(func=ast.Name(id='pclass',
+                                      bases=[ast.Call(func=ast.Name(id='immutable',
                                                                     lineno=lineno,
                                                                     col_offset=col_offset,
                                                                     ctx=ast.Load()),

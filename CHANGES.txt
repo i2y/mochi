@@ -1,5 +1,18 @@
 Revision history
 ----------------
+v0.2.1, 2015-04-09
+  * Use 'MessagePack' instead of 'Pickle' to encode messages for a remote actor
+  * Add ActorAddressBook
+    [example:server]
+    >>> hub = ActorHub() # equals to ActorHub('tcp://*:9999')
+    >>> hub.register('test', spawn(() -> print('test!')))
+    >>> hub.run()
+    >>> address_book = ActorAddressBook('127.0.0.1:2181') # specify ZooKeeper's address
+    >>> address_book.register('print_test', 'tcp://127.0.0.1:9999/test')
+    [example:client]
+    >>> address_book = ActorAddressBook('127.0.0.1:2181')
+    >>> actor = address_book.lookup('print_test')
+    >>> actor ! 'any message'
 v0.2.0.1, 2015-04-02
   * Add a workaround for a monkey_patch's bug on Windows
 v0.2.0, 2015-04-02

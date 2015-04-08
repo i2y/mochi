@@ -4,9 +4,11 @@ import itertools
 from numbers import Number
 import operator
 import re
+import sys
 
 from pyrsistent import (v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l,
-                        plist, pclass, freeze, thaw, CheckedPVector)
+                        plist, immutable, freeze, thaw, CheckedPVector, PVector, PMap, PSet,
+                        _PList, _PBag)
 from mochi import IS_PYPY
 from mochi.actor import actor
 from mochi.parser.parser import Symbol, Keyword, get_temp_name
@@ -14,8 +16,18 @@ if not IS_PYPY:
     from annotation.typed import union, options, optional, only, predicate
 
 
+class AttrDict(dict):
+    def __getattr__(self, attr):
+        return self[attr]
+
+    def __setattr__(self, attr, value):
+        self[attr] = value
+
+
 def make_default_env():
-    env = {'Symbol': Symbol, 'Keyword': Keyword}
+    env = AttrDict()
+    env['Symbol'] = Symbol
+    env['Keyword'] = Keyword
     env.update(__builtins__.__dict__) if hasattr(__builtins__, '__dict__') else env.update(__builtins__)
     del env['exec']
     # del env['globals']
@@ -41,7 +53,12 @@ def make_default_env():
     env['pdeque'] = pdeque
     env['thaw'] = thaw
     env['freeze'] = freeze
-    env['pclass'] = pclass
+    env['immutable'] = immutable
+    env['PVector'] = PVector
+    env['PMap'] = PMap
+    env['PSet'] = PSet
+    env['_PList'] = _PList
+    env['_PBag'] = _PBag
     if not IS_PYPY:
         env['union'] = union
         env['options'] = options
@@ -94,7 +111,8 @@ def make_default_env():
     env['None'] = None
     env['gensym'] = get_temp_name
     env['uniq'] = get_temp_name
-    env['Record'] = pclass((), 'Record')  # namedtuple('Record', ())
+    env['Record'] = immutable((), 'Record')
+    env['ActorAddressBook'] = actor.ActorAddressBook
     env['ActorHub'] = actor.ActorHub
     env['RemoteActor'] = actor.RemoteActor
     env['spawn'] = actor.spawn
@@ -109,6 +127,7 @@ def make_default_env():
     env['wait_all'] = actor.wait_all
     env['wait'] = actor.wait
     env['__name__'] = '__main__'
+    sys.modules['__main__'] = env
     try:
         env['__loader__'] = __loader__
     except:
