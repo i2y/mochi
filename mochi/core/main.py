@@ -40,16 +40,20 @@ def output_pyc(code):
 def compile_file(src_path, optimize=-1):
     # binding_name_set_stack[0].update(global_env.keys())
     py_ast = translator.translate_file(src_path)
+    sys.modules['__main__'] = global_env
     return compile(py_ast, src_path, 'exec', optimize=optimize)
 
 
 def load_file(path, env):
+    env['__name__'] = '__main__'
+    sys.modules['__main__'] = env
     return exec(compile_file(path), env)
 
 
 def execute_compiled_file(path):
     import marshal
-
+    global_env['__name__'] = '__main__'
+    sys.modules['__main__'] = global_env
     with open(path, 'rb') as compiled_file:
         return exec(marshal.load(compiled_file), global_env)
 

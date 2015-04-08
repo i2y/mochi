@@ -1,2 +1,4 @@
 import mochi.core.builtins
+module_name =  __name__
 globals().update(mochi.core.builtins.global_env)
+__name__ = module_name

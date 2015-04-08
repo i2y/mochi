@@ -126,8 +126,6 @@ def make_default_env():
     env['sleep'] = actor.sleep
     env['wait_all'] = actor.wait_all
     env['wait'] = actor.wait
-    env['__name__'] = '__main__'
-    sys.modules['__main__'] = env
     try:
         env['__loader__'] = __loader__
     except:
