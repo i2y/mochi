@@ -21,4 +21,4 @@ def fetch():
         url: read(url)
 
 urls !&> spawn(fetch)
-wait_all()
+wait_all()  
