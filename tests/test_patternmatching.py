@@ -1,8 +1,9 @@
 import os
 
-from mochi.utils.pycloader import get_function
+from mochi.utils.pycloader import PycLoader
 
-factorial = get_function('factorial', __file__)
+loader = PycLoader(__file__)
+factorial = loader.get_function('factorial')
 
 def test_factorial_1():
     assert factorial(1) == 1
