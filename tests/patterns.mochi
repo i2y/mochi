@@ -1,0 +1,15 @@
+def list_seq():
+    lis = [1, 2, 3]
+    # Sequence pattern
+    match lis:
+        [1, 2, x]: x
+        _: None
+
+def result_list_seq():
+    3
+
+def match_rest():
+    lis = [1, 2, 3]
+    match lis:
+        [1, &rest]: rest
+        _: None
