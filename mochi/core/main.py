@@ -18,7 +18,7 @@ def output_code(code):
     marshal.dump(code, sys.stdout.buffer)
 
 
-def output_pyc(code):
+def output_pyc(code, buffer=sys.stdout.buffer):
     import marshal
 
     if GE_PYTHON_34:
@@ -27,7 +27,6 @@ def output_pyc(code):
         import imp
         MAGIC_NUMBER = imp.get_magic()
 
-    buffer = sys.stdout.buffer
     buffer.write(MAGIC_NUMBER)
     if GE_PYTHON_33:
         buffer.write(b'0' * 8)
@@ -139,17 +138,44 @@ def init():
     sys.path.append(os.getcwd())
 
 
-def main():
-    init()
+def _pyc_compile(in_file_name, env, out_file_name):
+    """Compile a Mochi file into a Python bytecode file.
+    """
+    if not out_file_name:
+        out_file = sys.stdout.buffer
+    else:
+        out_file = open(out_file_name, 'wb')
+    target_ast = translator.translate_file(in_file_name)
+    import_env_file = Path(__file__).absolute().parents[0] / env
+    import_env_ast = translator.translate_file(import_env_file.as_posix())
+    target_ast.body = import_env_ast.body + target_ast.body
+    output_pyc(compile(target_ast, in_file_name, 'exec', optimize=2),
+               buffer=out_file)
 
+
+def pyc_compile_monkeypatch(in_file_name, out_file_name=None):
+    env='import_global_env_and_monkey_patch.mochi'
+    _pyc_compile(in_file_name, env, out_file_name)
+
+
+def pyc_compile_no_monkeypatch(in_file_name, out_file_name=None):
+    env='import_global_env.mochi'
+    _pyc_compile(in_file_name, env, out_file_name)
+
+
+
+def main():
     if len(sys.argv) > 1:
         arg_parser = argparse.ArgumentParser(
-            description='Mochi is a programming language.')
-        arg_parser.add_argument('-v', '--version', action='version', version=__version__)
+            description='Mochi is a functional programming language.')
+        arg_parser.add_argument('-v', '--version', action='version',
+                                version=__version__)
         arg_parser.add_argument('-c', '--compile', action='store_true')
         arg_parser.add_argument('-pyc', '--pyc-compile', action='store_true')
-        arg_parser.add_argument('-pyc-no-mp', '--pyc-compile-no-monkeypatch', action='store_true')
-        arg_parser.add_argument('-e', '--execute-compiled-file', action='store_true')
+        arg_parser.add_argument('-pyc-no-mp', '--pyc-compile-no-monkeypatch',
+                                action='store_true')
+        arg_parser.add_argument('-e', '--execute-compiled-file',
+                                action='store_true')
         arg_parser.add_argument('file', nargs='?', type=str)
         args = arg_parser.parse_args()
 
@@ -159,23 +185,16 @@ def main():
             elif args.execute_compiled_file:
                 execute_compiled_file(args.file)
             elif args.pyc_compile:
-                target_ast = translator.translate_file(args.file)
-                import_env_file = Path(__file__).absolute().parents[0] / 'import_global_env_and_monkey_patch.mochi'
-                import_env_ast = translator.translate_file(import_env_file.as_posix())
-                target_ast.body = import_env_ast.body + target_ast.body
-                output_pyc(compile(target_ast, args.file, 'exec', optimize=2))
+                pyc_compile_monkeypatch(in_file_name=args.file)
             elif args.pyc_compile_no_monkeypatch:
-                target_ast = translator.translate_file(args.file)
-                import_env_file = Path(__file__).absolute().parents[0] / 'import_global_env.mochi'
-                import_env_ast = translator.translate_file(import_env_file.as_posix())
-                target_ast.body = import_env_ast.body + target_ast.body
-                output_pyc(compile(target_ast, args.file, 'exec', optimize=2))
+                pyc_compile_no_monkeypatch(in_file_name=args.file)
             else:
                 load_file(args.file, global_env)
             sys.exit(0)
     else:
         interact()
 
+init()
 
 if __name__ == '__main__':
     main()
