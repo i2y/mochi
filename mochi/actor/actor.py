@@ -4,8 +4,7 @@ from eventlet.queue import Queue
 import eventlet
 from eventlet.green import zmq
 from urllib.parse import urlparse
-from kazoo.client import KazooClient, KazooState, KazooRetry
-import kazoo.exceptions
+from kazoo.client import KazooClient, KazooRetry
 from msgpack import packb, unpackb, ExtType
 from pyrsistent import (PVector, _PList, _PBag,
                         pvector, pmap, pset, plist, pbag)
