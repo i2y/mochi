@@ -1,10 +1,11 @@
-from queue import Queue
 import warnings
+from queue import Queue
 from collections import Sequence
 
-from rply import ParserGenerator, LexerGenerator, Token, ParsingError
+from rply import ParserGenerator, Token, ParsingError
 
 from mochi import __version__
+from mochi.parser.lexer import lg, klg
 
 
 class Symbol(object):
@@ -62,102 +63,6 @@ class Keyword(object):
     def __hash__(self):
         return self.name.__hash__()
 
-
-lg = LexerGenerator()
-
-lg.add('TQUOTE_STR', r'(?x)"""(?:|[^\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*"""')
-lg.add('SQUOTE_STR', r"(?x)'(?:|[^'\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*'")
-lg.add('DQUOTE_STR', r'(?x)"(?:|[^"\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*"')
-
-lg.add('TQUOTE_RAW_STR', r'(?x)r"""(?:|[^\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*"""')
-lg.add('SQUOTE_RAW_STR', r"(?x)r'(?:|[^'\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*'")
-lg.add('DQUOTE_RAW_STR', r'(?x)r"(?:|[^"\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*"')
-
-lg.add('NUMBER', r'-?[0-9]+(?:\.[0-9]+)?')
-lg.add('DOT_NAME', r'\.\&?[_a-zA-Z$][-_a-zA-Z0-9]*')
-lg.add('NAME', r'\&?[_a-zA-Z$][-_a-zA-Z0-9]*')
-lg.add('PIPELINE_FIRST_BIND', r'\|>1\?')
-lg.add('PIPELINE_FIRST', r'\|>1')
-lg.add('PIPELINE_BIND', r'\|>\?')
-lg.add('PIPELINE', r'\|>')
-lg.add('PIPELINE_SEND', r'!>')
-lg.add('PIPELINE_MULTI_SEND', r'!&>')
-lg.add('BAR', r'\|')
-lg.add('LBRACK', r'\[')
-lg.add('RBRACK', r'\]')
-lg.add('LBRACE', r'\{')
-lg.add('RBRACE', r'\}')
-lg.add('LPAREN', r'\(')
-lg.add('RPAREN', r'\)')
-lg.add('PERCENT', r'%')
-lg.add('COMMA', r',')
-lg.add('THINARROW', r'->')
-lg.add('COLON', r':')
-lg.add('CALET', r'\^')
-lg.add('OPPLUS', r'\+')
-lg.add('OPMINUS', r'-')
-lg.add('OPTIMES', r'\*')
-lg.add('OPDIV', r'/')
-lg.add('OPLEQ', r'<=')
-lg.add('OPGEQ', r'>=')
-lg.add('OPEQ', r'==')
-lg.add('OPNEQ', r'!=')
-lg.add('OPLT', r'<')
-lg.add('OPGT', r'>')
-lg.add('BANG', r'!')
-
-lg.add('EQUALS', r'=')
-lg.add('SEMI', r';')
-lg.add('AT', r'@')
-lg.add('AMP', r'\&')
-lg.add('BACKSLASH', r'\\')
-
-lg.add('NEWLINE', r'(?:(?:\r?\n)[\t ]*)+')
-lg.ignore(r'[ \t\f\v]+')
-lg.ignore(r'#.*(?:\n|\r|\r\n|\n\r|$)')  # comment
-
-klg = LexerGenerator()
-klg.add('IMPORT', r'^import$')
-klg.add('MODULE', r'^module$')
-klg.add('REQUIRE', r'^require$')
-klg.add('EXPORT', r'^export$')
-klg.add('VAR', r'^var$')
-klg.add('LET', r'^let$')
-klg.add('DEF', r'^def$')
-klg.add('DEFM', r'^defm$')
-klg.add('FN', r'^fn$')
-klg.add('TRUE', r'^True$')
-klg.add('FALSE', r'^False$')
-klg.add('DOC', r'^doc:$')
-klg.add('TRY', r'^try$')
-klg.add('EXCEPT', r'^except$')
-klg.add('AS', r'^as$')
-klg.add('FINALLY', r'^finally$')
-klg.add('RAISE', r'^raise$')
-klg.add('IF', r'^if$')
-klg.add('ELSE', r'^else$')
-klg.add('ELSEIF', r'^elif$')
-klg.add('MATCH', r'^match$')
-klg.add('RECEIVE', r'^receive$')
-klg.add('OF', r'^of$')
-klg.add('VECTOR', r'^vector$')
-klg.add('RECORD', r'^record$')
-klg.add('DATA', r'^data$')
-klg.add('YIELD', r'^yield$')
-klg.add('RETURN', r'^return$')
-klg.add('WITH', r'^with$')
-klg.add('MACRO', r'^macro$')
-klg.add('QUOTE', r'^quote$')
-klg.add('QUASI_QUOTE', r'^quasi_quote$')
-klg.add('UNQUOTE', r'^unquote$')
-klg.add('UNQUOTE_SPLICING', r'^unquote_splicing$')
-klg.add('FOR', r'^for$')
-klg.add('IN', r'^in$')
-klg.add('FROM', r'^from$')
-klg.add('OPAND', r'^and$')
-klg.add('OPOR', r'^or$')
-klg.add('OPIS', r'^is$')
-klg.add('NOT', r'^not$')
 
 pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ', 'OPGEQ', 'OPEQ', 'OPNEQ',
                       'OPLT', 'OPGT', 'OPAND', 'OPOR', 'OPIS', 'NOT', 'NEWLINE', 'PERCENT', 'EXPORT',
