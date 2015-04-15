@@ -1,12 +1,14 @@
 import os
+from functools import partial
 
-from pyrsistent import pvector
-from mochi.utils.pycloader import PycLoader
+from mochi.utils.pycloader import get_function, get_module
 
-loader = PycLoader(__file__)
-factorial = loader.get_function('factorial')
-fizzbuzz = loader.get_function('fizzbuzz')
-patterns = loader.get_module('patterns')
+get_module = partial(get_module, file_path=__file__)
+get_function = partial(get_function, file_path=__file__)
+
+factorial = get_function('factorial')
+fizzbuzz = get_function('fizzbuzz')
+patterns = get_module('patterns')
 
 
 def test_factorial_1():
@@ -29,7 +31,7 @@ def test_list_seq():
 
 
 def test_match_rest():
-    assert patterns.match_rest() == pvector([2, 3])
+    assert patterns.match_rest() == patterns.result_match_rest()
 
 
 def test_list_seq_auto():
