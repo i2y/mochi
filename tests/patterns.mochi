@@ -19,3 +19,105 @@ def match_rest():
 
 def result_match_rest():
     pvector([2, 3])
+
+
+def map_pattern():
+    foo_map = {'foo' : 'bar'}
+
+    # Mapping pattern
+    match foo_map:
+        {'foo' : value}: value
+        _: None
+
+
+def result_map_pattern():
+    'bar'
+
+
+def type_pattern():
+    # Type pattern
+    # <name of variable refers to type> <pattern>: <action>
+    match 10:
+        int x: 'int'
+        float x: 'float'
+        str x: 'str'
+        bool x: 'bool'
+        _: 'other'
+
+
+def result_type_pattern():
+    'int'
+
+
+def int_match():
+    match [1, 2, 3]:
+        [1, str x, 3]: 'str'
+        [1, int x, 3]: 'int'
+        _: 'other'
+
+
+def result_int_match():
+    'int'
+
+
+def match_num():
+    num = union(int, float)
+    vector nums[num]
+    vector strs[str]
+
+    match nums([1, 2, 3]):
+        nums[x, y, z]: z
+        strs[x, y, z]: x
+
+def result_match_num():
+    3
+
+
+def even_positive():
+    Positive = predicate(-> $1 > 0)
+    Even = predicate(-> $1 % 2 == 0)
+    EvenAndPositive = predicate(-> ($1 % 2 == 0) and ($1 >= 0))
+
+    match 10:
+        EvenAndPositive n: str(n) + ':Even and Positive'
+        Even n: str(n) + ':Even'
+        Positive n: str(n) + ':Positive'
+
+def result_even_positive():
+    '10:Even and Positive'
+
+
+def or_pattern():
+    # Or pattern
+    match ['foo', 100]:
+        ['foo' or 'bar', value]: value
+        _: 10000
+
+def result_or_pattern():
+    100
+
+def match_100():
+    match ['foo', 100]:
+        [str x or int x, value]: value
+        _: 10000
+
+
+def result_match_100():
+    100
+
+def record_pattern():
+    # Record pattern
+    record Person(name, age)
+
+    foo = Person('foo', 32)
+
+    match foo:
+        Person('bar', age):
+            'bar:' + str(age)
+        Person('foo', age):
+            'foo:' + str(age)
+        _: None
+
+
+def result_record_pattern():
+    'foo:32'

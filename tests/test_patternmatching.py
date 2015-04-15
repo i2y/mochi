@@ -1,7 +1,11 @@
 import os
 from functools import partial
 
+import pytest
+
 from mochi.utils.pycloader import get_function, get_module
+
+from conftest import auto_test
 
 get_module = partial(get_module, file_path=__file__)
 get_function = partial(get_function, file_path=__file__)
@@ -26,13 +30,7 @@ def test_fizzbuzz():
     assert [fizzbuzz(n) for n in range(1, 31)] == res
 
 
-def test_list_seq():
-    assert patterns.list_seq() == 3
+@pytest.mark.parametrize("func,result", auto_test(patterns))
+def test_patterns(func, result):
+    assert func() == result()
 
-
-def test_match_rest():
-    assert patterns.match_rest() == patterns.result_match_rest()
-
-
-def test_list_seq_auto():
-    assert patterns.list_seq() == patterns.result_list_seq()
