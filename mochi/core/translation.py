@@ -10,7 +10,7 @@ from .constants import *
 from .exceptions import MochiSyntaxError, DuplicatedDefError
 from .global_env import global_env
 from mochi import GE_PYTHON_34, IS_PYPY
-from mochi.parser.parser import Symbol, Keyword, parse, lex, get_temp_name
+from mochi.parser import Symbol, Keyword, parse, lex, get_temp_name
 
 
 if GE_PYTHON_34:

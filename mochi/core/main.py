@@ -7,7 +7,7 @@ from platform import platform
 
 from mochi import __version__, IS_PYPY, GE_PYTHON_34, GE_PYTHON_33
 from .builtins import current_error_port, eval_sexp_str, eval_tokens
-from mochi.parser.parser import lex, REPL_CONTINUE
+from mochi.parser import lex, REPL_CONTINUE
 from .global_env import global_env
 from .translation import syntax_table, global_scope, translator
 

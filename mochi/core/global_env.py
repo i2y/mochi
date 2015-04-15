@@ -1,17 +1,24 @@
-from collections import Iterable, Mapping, MutableMapping, Sequence, MutableSequence
+from collections import (
+    Iterable,
+    Mapping,
+    MutableMapping,
+    Sequence,
+    MutableSequence
+)
 import functools
 import itertools
 from numbers import Number
 import operator
 import re
-import sys
 
-from pyrsistent import (v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l,
-                        plist, immutable, freeze, thaw, CheckedPVector, PVector, PMap, PSet,
-                        _PList, _PBag)
+from pyrsistent import (
+    v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l,
+    plist, immutable, freeze, thaw, CheckedPVector, PVector,
+    PMap, PSet, _PList, _PBag
+)
 from mochi import IS_PYPY
 from mochi.actor import actor
-from mochi.parser.parser import Symbol, Keyword, get_temp_name
+from mochi.parser import Symbol, Keyword, get_temp_name
 if not IS_PYPY:
     from annotation.typed import union, options, optional, only, predicate
 
