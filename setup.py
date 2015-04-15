@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
+from pip.download import PipSession
+from pip.req import parse_requirements
+
+
 from mochi import __author__, __version__, __license__, GE_PYTHON_34
 
-install_requires = ['rply>=0.7.3',
-                    'pyrsistent>=0.9.3',
-                    'greenlet>=0.4.5',
-                    'eventlet>=0.17.2',
-                    'pyzmq>=14.5.0',
-                    'msgpack-python>=0.4.6',
-                    'kazoo>=2.0',
-                    'typeannotations>=0.1.0']
+
+install_reqs = parse_requirements('requirements.txt', session=PipSession())
+install_requires = [str(ir.req) for ir in install_reqs]
 
 if not GE_PYTHON_34:
     install_requires.append('pathlib>=1.0.1')
