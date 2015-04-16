@@ -1,0 +1,4 @@
+def factorial:
+    n: factorial(n, 1)
+    0, acc: acc
+    n, acc: factorial(n - 1, acc * n)

@@ -1,0 +1,23 @@
+macro aif(test, true_expr, false_expr):
+    quasi_quote:
+        it = unquote(test)
+        if it:
+            unquote(true_expr)
+        else:
+            unquote(false_expr)
+
+
+def aif_empty():
+    aif([], first(it), 'empty')
+
+
+def result_aif_empty():
+    'empty'
+
+
+def aif_10():
+    aif([10, 20], first(it), "empty")
+
+
+def result_aif_10():
+    10
