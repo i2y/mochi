@@ -175,6 +175,7 @@ aif([10, 20], first(it), "empty")
 
 ```sh
 $ pip3 install mochi
+$ pip3 install flask Flask-RESTful Pillow  # examplesを実行するために必要
 ```
 
 
