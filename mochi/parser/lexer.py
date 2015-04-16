@@ -1,3 +1,4 @@
+import sys
 from queue import Queue
 
 from rply import LexerGenerator, Token
@@ -83,9 +84,11 @@ def mod_lex(lexer, repl_mode=False):
             yield token_queue.get()
 
 
-def lex(input, repl_mode=False):
-    return mod_lex(lg.build().lex(input), repl_mode)
+def lex(input, repl_mode=False, debug=True):  # TODO
+    if debug:
+        print(list(mod_lex(lg.build().lex(input), repl_mode)), file=sys.stderr)
 
+    return mod_lex(lg.build().lex(input), repl_mode)
 
 
 lg = LexerGenerator()

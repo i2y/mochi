@@ -36,9 +36,9 @@ def output_pyc(code, buffer=sys.stdout.buffer):
     buffer.flush()
 
 
-def compile_file(src_path, optimize=-1):
+def compile_file(src_path, optimize=-1, show_tokens=False):
     # binding_name_set_stack[0].update(global_env.keys())
-    py_ast = translator.translate_file(src_path)
+    py_ast = translator.translate_file(src_path, show_tokens=show_tokens)
     sys.modules['__main__'] = global_env
     return compile(py_ast, src_path, 'exec', optimize=optimize)
 
@@ -57,7 +57,7 @@ def execute_compiled_file(path):
         return exec(marshal.load(compiled_file), global_env)
 
 
-def interact():
+def interact(show_tokens=False):
     try:
         import readline
     except ImportError:
@@ -84,7 +84,7 @@ def interact():
                 sys.exit()
 
             try:
-                lexer = lex(buffer, repl_mode=True)
+                lexer = lex(buffer, repl_mode=True, debug=show_tokens)
 
                 for last in lexer:
                     tokens.append(last)
@@ -138,14 +138,14 @@ def init():
     sys.path.append(os.getcwd())
 
 
-def _pyc_compile(in_file_name, env, out_file_name):
+def _pyc_compile(in_file_name, env, out_file_name, show_tokens=False):
     """Compile a Mochi file into a Python bytecode file.
     """
     if not out_file_name:
         out_file = sys.stdout.buffer
     else:
         out_file = open(out_file_name, 'wb')
-    target_ast = translator.translate_file(in_file_name)
+    target_ast = translator.translate_file(in_file_name, show_tokens=show_tokens)
     import_env_file = Path(__file__).absolute().parents[0] / env
     import_env_ast = translator.translate_file(import_env_file.as_posix())
     target_ast.body = import_env_ast.body + target_ast.body
@@ -153,46 +153,49 @@ def _pyc_compile(in_file_name, env, out_file_name):
                buffer=out_file)
 
 
-def pyc_compile_monkeypatch(in_file_name, out_file_name=None):
+def pyc_compile_monkeypatch(in_file_name, out_file_name=None, show_tokens=False):
     env='import_global_env_and_monkey_patch.mochi'
-    _pyc_compile(in_file_name, env, out_file_name)
+    _pyc_compile(in_file_name, env, out_file_name, show_tokens=show_tokens)
 
 
-def pyc_compile_no_monkeypatch(in_file_name, out_file_name=None):
+def pyc_compile_no_monkeypatch(in_file_name, out_file_name=None, show_tokens=False):
     env='import_global_env.mochi'
-    _pyc_compile(in_file_name, env, out_file_name)
+    _pyc_compile(in_file_name, env, out_file_name, show_tokens=show_tokens)
 
+
+def parse_args():
+    arg_parser = argparse.ArgumentParser(
+        description='Mochi is a functional programming language.')
+    arg_parser.add_argument('-v', '--version', action='version',
+                            version=__version__)
+    arg_parser.add_argument('-c', '--compile', action='store_true')
+    arg_parser.add_argument('-pyc', '--pyc-compile', action='store_true')
+    arg_parser.add_argument('-pyc-no-mp', '--pyc-compile-no-monkeypatch',
+                            action='store_true')
+    arg_parser.add_argument('-e', '--execute-compiled-file',
+                            action='store_true')
+    arg_parser.add_argument('file', nargs='?', type=str)
+    arg_parser.add_argument('--show-tokens', dest='tokens', help='Shows the results of the tokenizing step', action='store_true')
+
+    return arg_parser.parse_args()
 
 
 def main():
-    if len(sys.argv) > 1:
-        arg_parser = argparse.ArgumentParser(
-            description='Mochi is a functional programming language.')
-        arg_parser.add_argument('-v', '--version', action='version',
-                                version=__version__)
-        arg_parser.add_argument('-c', '--compile', action='store_true')
-        arg_parser.add_argument('-pyc', '--pyc-compile', action='store_true')
-        arg_parser.add_argument('-pyc-no-mp', '--pyc-compile-no-monkeypatch',
-                                action='store_true')
-        arg_parser.add_argument('-e', '--execute-compiled-file',
-                                action='store_true')
-        arg_parser.add_argument('file', nargs='?', type=str)
-        args = arg_parser.parse_args()
-
-        if args.file:
-            if args.compile:
-                output_code(compile_file(args.file, optimize=2))
-            elif args.execute_compiled_file:
-                execute_compiled_file(args.file)
-            elif args.pyc_compile:
-                pyc_compile_monkeypatch(in_file_name=args.file)
-            elif args.pyc_compile_no_monkeypatch:
-                pyc_compile_no_monkeypatch(in_file_name=args.file)
-            else:
-                load_file(args.file, global_env)
-            sys.exit(0)
+    args = parse_args()
+    if args.file:
+        if args.compile:
+            output_code(compile_file(args.file, optimize=2, show_tokens=args.tokens))
+        elif args.execute_compiled_file:
+            execute_compiled_file(args.file)
+        elif args.pyc_compile:
+            pyc_compile_monkeypatch(in_file_name=args.file, show_tokens=args.tokens)
+        elif args.pyc_compile_no_monkeypatch:
+            pyc_compile_no_monkeypatch(in_file_name=args.file, show_tokens=args.tokens)
+        else:
+            load_file(args.file, global_env)
+        sys.exit(0)
     else:
-        interact()
+        interact(args.tokens)
 
 init()
 

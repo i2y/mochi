@@ -100,11 +100,11 @@ class Translator(object):
         self.macro_table = macro_table
         self.filename = filename
 
-    def translate_file(self, filename):
+    def translate_file(self, filename, show_tokens=False):
         body = []
         self.filename = filename
         with open(filename, 'r') as f:
-            sexps = parse(lex(f.read()))
+            sexps = parse(lex(f.read(), debug=show_tokens))
             chdir(normpath(str(Path(filename).parent)))
             for sexp in sexps:
                 if isinstance(sexp, MutableSequence):
@@ -116,11 +116,11 @@ class Translator(object):
                 body.append(self.enclose(value, True))
         return ast.Module(body=body)
 
-    def translate_loaded_file(self, filename):
+    def translate_loaded_file(self, filename, show_tokens=False):
         body = []
         self.filename = filename
         with open(filename, 'r') as f:
-            sexps = parse(lex(f.read()))
+            sexps = parse(lex(f.read(), debug=show_tokens))
             for sexp in sexps:
                 if isinstance(sexp, MutableSequence):
                     sexp = tuple_it(sexp)
