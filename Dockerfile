@@ -10,6 +10,10 @@ RUN locale-gen en_US.UTF-8 && \
     LANG=en_US.UTF-8 pip3 install mochi flask Flask-RESTful Pillow && \
     useradd mochiuser --create-home
 
+# prevent encoding errors
+ENV LANG=en_US.UTF-8
+
+# best-practice: run as user, not root to avoid security exploit
 USER mochiuser
 WORKDIR /home/mochiuser
 
