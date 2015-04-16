@@ -46,9 +46,16 @@ $ docker build -t mochi .
 - Tag the new build appropriately with the new version.  Example from 0.2.1
   release:
 ```sh
-$ docker tag mochi tlvu/mochi:0.2.1
+$ docker tag -f mochi tlvu/mochi:0.2.1  # -f to force move existing tag if needed
+
+# This tag should be unique for each release (should never use '-f' here).  If
+# releasing more than once in same day, append something to the date to make it
+# different, ex: 0.2.1-20150415-2.
 $ docker tag mochi tlvu/mochi:0.2.1-20150415
-$ docker tag mochi tlvu/mochi:latest
+
+# Need 'latest' tag for 'tlvu/mochi<no tags specified>' to work.  This tag is
+# sure to already exist so we need '-f'.
+$ docker tag -f mochi tlvu/mochi:latest
 ```
 
 - Push the image to Docker hub
