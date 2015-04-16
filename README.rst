@@ -188,6 +188,7 @@ Installation
 .. code:: sh
 
     $ pip3 install mochi
+    $ pip3 install flask Flask-RESTful Pillow  # to run the examples
 
 Usage
 -----
