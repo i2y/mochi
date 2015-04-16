@@ -1,0 +1,34 @@
+macro rest_if_first_is_true(first, &args):
+     match first:
+         quote(True): quasi_quote(v(unquote_splicing(args)))
+         _: quote(False)
+
+def macro_is_true():
+    rest_if_first_is_true(True, 1, 2, 3)
+
+
+def result_macro_is_true():
+    pvector([1, 2, 3])
+
+def macro_is_false():
+    rest_if_first_is_true("foo", 1, 2, 3)
+
+def result_macro_is_false():
+    False
+
+macro pipeline(&args):
+    [Symbol('|>')] + args
+
+
+def use_pipeline():
+    pipeline([1, 2, 3],
+             map(-> $1 * 2),
+             filter(-> $1 != 2),
+             pvector())
+
+
+def result_use_pipeline():
+    pvector([4, 6])
+
+
+
