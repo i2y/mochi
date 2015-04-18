@@ -5,7 +5,7 @@ from mochi.utils.pycloader import get_module
 from conftest import auto_test
 
 
-macro = get_module('macro', file_path=__file__)
+macro = get_module('mochi_test_macro', file_path=__file__)
 
 
 @pytest.mark.parametrize("func,result", auto_test(macro))
