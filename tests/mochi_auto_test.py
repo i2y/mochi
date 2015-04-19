@@ -48,4 +48,5 @@ def test_patterns(func, result):
     This test is parameterized and will be called by py.test for all
     (func, result) pairs in `parameters.
     """
+    print('Error in {}.{}.'.format(func.__module__, func.__qualname__))
     assert func() == result()
