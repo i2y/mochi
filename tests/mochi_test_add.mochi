@@ -1,0 +1,8 @@
+# file mochi_test_add.mochi in dir tests
+
+def add():
+    return 1 + 1
+
+
+def result_add():
+    return 2
