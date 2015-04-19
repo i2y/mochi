@@ -14,7 +14,7 @@ from .utils import issequence, issequence_except_str, is_tuple_or_list
 from .constants import *
 from .exceptions import UnquoteSplicingError, DuplicatedDefError, ReadError
 from .global_env import global_env
-from mochi.parser.parser import lex
+from mochi.parser import lex
 from .translation import binding_name_set_stack, translator, Keyword, parse
 
 
