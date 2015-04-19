@@ -1,11 +1,34 @@
 import warnings
-from queue import Queue
 from collections import Sequence
 
-from rply import ParserGenerator, Token, ParsingError
+from rply import ParserGenerator, ParsingError
 
 from mochi import __version__
 from mochi.parser.lexer import lg, klg
+
+name_seq = 0
+
+def get_temp_name():
+    global name_seq
+    name_seq += 1
+    name_symbol = Symbol('_gs%s' % name_seq)
+    return name_symbol
+
+
+def parse(lexer):
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            return pg.build().parse(lexer)
+    except ParsingError as e:
+        source_pos = e.getsourcepos()
+        if source_pos is None:
+            print('')
+        else:
+            print('ParsingError: lineno='
+                  + str(source_pos.lineno)
+                  + ' colno='
+                  + str(source_pos.colno))
 
 
 class Symbol(object):
@@ -1290,112 +1313,4 @@ def binop_expr(p):
     return p[0]
 
 
-name_seq = 0
 
-
-def get_temp_name():
-    global name_seq
-    name_seq += 1
-    name_symbol = Symbol('_gs%s' % name_seq)
-    return name_symbol
-
-
-REPL_CONTINUE = object()
-
-
-def mod_lex(lexer, repl_mode=False):
-    paren_openers = {'LPAREN', 'LBRACE', 'LBRACK'}
-    paren_closers = {'RPAREN', 'RBRACE', 'RBRACK'}
-
-    token_queue = Queue()
-    indent_level = [0]
-    ignore_newline = False
-    paren_level = 0
-    tab_len = 4
-
-    def handle_newline(token):
-        text = token.getstr()
-        indent_str = text.rsplit('\n', 1)[1]
-        indent = indent_str.count(' ') + indent_str.count('\t') * tab_len
-        if indent > indent_level[-1]:
-            indent_level.append(indent)
-            indent_token = Token('INDENT', indent_str)
-            indent_token.source_pos = token.getsourcepos()
-            token_queue.put(indent_token)
-        else:
-            while indent < indent_level[-1]:
-                indent_level.pop()
-                dedent_token = Token('DEDENT', indent_str)
-                token_queue.put(dedent_token)
-        return token
-
-    for token in lexer:
-        while not token_queue.empty():
-            queued_token = token_queue.get()
-            if queued_token.gettokentype() in paren_openers:
-                paren_level += 1
-            elif queued_token.gettokentype() in paren_closers:
-                paren_level -= 1
-            ignore_newline = (paren_level > 0)
-            yield queued_token
-
-        if token.name == 'NAME':
-            for rule in klg.rules:
-                if rule.matches(token.value, 0):
-                    token.name = rule.name
-                    break
-        elif token.gettokentype() == 'NEWLINE':
-            if not ignore_newline:
-                yield handle_newline(token)
-            continue
-
-        if token.gettokentype() in paren_openers:
-            paren_level += 1
-        elif token.gettokentype() in paren_closers:
-            paren_level -= 1
-        ignore_newline = (paren_level > 0)
-
-        if token.gettokentype() == 'NAME' and token.getstr().startswith('&'):
-            amp = Token('AMP', '&')
-            amp.source_pos = token.getsourcepos()
-            comma = Token('COMMA', ',')
-            amp.source_pos = token.getsourcepos()
-            name = Token('NAME', token.getstr()[1:])
-            name.source_pos = token.getsourcepos()
-            yield amp
-            yield comma
-            yield name
-        else:
-            yield token
-
-    if repl_mode and len(indent_level) > 1:
-        yield REPL_CONTINUE
-    elif repl_mode and paren_level > 0:
-        yield REPL_CONTINUE
-    else:
-        while len(indent_level) > 1:
-            indent_level.pop()
-            yield Token('DEDENT', '')
-
-        while not token_queue.empty():
-            yield token_queue.get()
-
-
-def lex(input, repl_mode=False):
-    return mod_lex(lg.build().lex(input), repl_mode)
-
-
-def parse(lexer):
-    try:
-        with warnings.catch_warnings():
-            warnings.simplefilter('ignore')
-            return pg.build().parse(lexer)
-    except ParsingError as e:
-        source_pos = e.getsourcepos()
-        if source_pos is None:
-            print('')
-        else:
-            print('ParsingError: lineno='
-                  + str(source_pos.lineno)
-                  + ' colno='
-                  + str(source_pos.colno))
