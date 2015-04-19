@@ -82,15 +82,16 @@ other functions inside your test function. For example:
 You may put as many functions `result_<func>` in one Mochi file.
 Each needs to have a corresponding function `<func>` inside the same file.
 In addition, you may define other functions in such a file. They will be
-ignore by the test runner as long as their names do not follow the pattern
+ignored by the test runner as long as their names do not follow the pattern
 `result_<func>`. This allows you to write helper functions. One use case is
-to call other functions with arguments as the tested
+to call other functions with arguments since the tested functions cannot take
+arguments.
 
 Mixed Mochi-Python Tests
 ++++++++++++++++++++++++
 
 Mochi-only tests are somewhat restricted and you cannot use all `py.test`
-features. Therefore, you can writing mixed Mochi-Python tests.
+features. Therefore, you can write mixed Mochi-Python tests.
 This always involves a Mochi and Python file, but gives you all the power of
 `py.test`.
 
@@ -99,7 +100,7 @@ This always involves a Mochi and Python file, but gives you all the power of
 3. In this file import `mochi.utils.pycloader.get_module`.
 4. Import the Mochi file as Python module with
    `mod_<name> = get_module('<name>', file_path=__file__)`
-5. Use the Mochi functions in your test, referencing them as
+5. Use the Mochi functions in your tests, referencing them as
    `mod_<name>.<mochi_func>`.
 6. Run `inv test` from the main directory.
 7. Change your test so that `assert` fails to see how a failed
