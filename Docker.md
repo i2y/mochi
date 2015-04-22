@@ -2,10 +2,9 @@ Using Docker
 ============
 
 ## How to use Docker image
-- Install Docker for your appropriate environment, see [Docker
+- Install and configure Docker for your appropriate environment, see [Docker
   installation documentation] (https://docs.docker.com/installation)
-- Mochi Docker image usage is explained on its [Docker hub]
-  (https://registry.hub.docker.com/u/tlvu/mochi)
+- Follow instructions in `bin/mochidocker --dockerhelp` in this checkout
 
 ## Why Docker
 - Full-stack (OS, python libs), reproducible, easy to distribute runtime
