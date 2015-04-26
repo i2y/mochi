@@ -162,9 +162,17 @@ aif([10, 20], first(it), "empty")
 ```sh
 $ pip3 install mochi
 $ pip3 install flask Flask-RESTful Pillow  # to run the examples
-
 ```
 
+Th error of the following may occur when you run the mochi on pypy.
+```
+ImportError: Importing zmq.backend.cffi failed with version mismatch, 0.8.2 != 0.9.2
+```
+In this case, please change the version of cffi to 0.8.2 using pip on pypy.
+```sh
+$ pip3 uninstall cffi
+$ pip3 install cffi==0.8.2
+```
 
 ## Usage
 

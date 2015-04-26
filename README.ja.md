@@ -174,6 +174,15 @@ $ pip3 install mochi
 $ pip3 install flask Flask-RESTful Pillow  # examplesを実行するために必要
 ```
 
+pypyでmochiを実行した場合に下記のエラーになることがあります。
+```
+ImportError: Importing zmq.backend.cffi failed with version mismatch, 0.8.2 != 0.9.2
+```
+この場合は、pypyのpipコマンドでcffiのバージョンを0.8.2に変更してください。
+```sh
+$ pip3 uninstall cffi
+$ pip3 install cffi==0.8.2
+```
 
 ## 使い方
 
