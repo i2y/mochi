@@ -1,5 +1,22 @@
 Revision history
 ----------------
+v0.2.2, 2015-04-26
+  * Ignore sorrounding newlines of a infix operator
+    [example]
+    def fizzbuzz(n):
+      match [n % 3, n % 5]:
+          [0, 0]: "fizzbuzz"
+          [0, _]: "fizz"
+          [_, 0]: "buzz"
+          _: n
+    range(1, 31)
+    |> map(fizzbuzz)
+    |> pvector()
+    |> print()
+  * Add lexical tokens showing command option (--show-tokens)
+  * Add automatic tests for development of mochi
+  * Add first Dockerfile
+  * Clean some source codes and setup scripts
 v0.2.1, 2015-04-09
   * Use 'MessagePack' instead of 'Pickle' to encode messages for a remote actor
   * Add ActorAddressBook
