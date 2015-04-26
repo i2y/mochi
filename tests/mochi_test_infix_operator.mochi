@@ -1,0 +1,315 @@
+# +
+def plus_case_1():
+    1 + 1
+      + 1
+
+
+def result_plus_case_1():
+    3
+
+
+def plus_case_2():
+    1
+    + 1
+    + 1
+
+
+def result_plus_case_2():
+    3
+
+
+def plus_case_3():
+    if False:
+        10 + 20 +
+        30
+    else:
+        1 + 1
+          + 1
+
+
+def result_plus_case_3():
+    3
+
+
+# -
+def minus_case_1():
+    1 - 1
+      - 1
+
+
+def result_minus_case_1():
+    -1
+
+
+def minus_case_2():
+    1
+    - 1
+    - 1
+
+
+def result_minus_case_2():
+    -1
+
+
+def minus_case_3():
+    if False:
+        10 - 20 -
+        30
+    else:
+        1 - 1
+          - 1
+
+
+def result_minus_case_3():
+    -1
+
+
+# |>
+def pipeline_case_1():
+    10 |> ((n) -> n + 3)()
+       |> ((n) -> n + 4)()
+       |> ((n) -> n + 3)()
+
+
+def result_pipeline_case_1():
+    20
+
+
+def pipeline_case_2():
+    10
+    |> ((n) -> n + 3)()
+    |> ((n) -> n + 4)()
+    |> ((n) -> n + 3)()
+
+
+def result_pipeline_case_2():
+    20
+
+
+def pipeline_case_3():
+    10 |> ((n) -> n + 3)()
+       |> ((n) -> n + 4)() |> ((n) -> n + 3)()
+
+
+def result_pipeline_case_3():
+    20
+
+
+# and
+def and_case_1():
+    True and
+    True
+    and False
+
+
+def result_and_case_1():
+    False
+
+
+# or
+def or_case_1():
+    False
+    or False or
+    True
+
+
+def result_or_case_1():
+    True
+
+
+# is
+def is_case_1():
+    3
+    is 3
+
+
+def result_is_case_1():
+    True
+
+
+def is_case_2():
+    3 is
+    5
+
+
+def result_is_case_2():
+    False
+
+
+# ==
+def eq_case_1():
+    3
+    == 5
+
+
+def result_eq_case_1():
+    False
+
+
+def eq_case_2():
+    3 ==
+    5
+
+
+def result_eq_case_2():
+    False
+
+
+# !=
+def not_eq_case_1():
+    3
+    != 3
+
+
+def result_not_eq_case_1():
+    False
+
+
+def not_eq_case_2():
+    3 !=
+    3
+
+
+def result_not_eq_case_2():
+    False
+
+
+# gt
+def gt_case_1():
+    3
+    > 3
+
+
+def result_gt_case_1():
+    False
+
+
+def gt_case_2():
+    3 >
+    1
+
+
+def result_gt_case_2():
+    True
+
+
+# ge
+def ge_case_1():
+    3
+    >= 3
+
+
+def result_ge_case_1():
+    True
+
+
+def ge_case_2():
+    3 >=
+    1
+
+
+def result_ge_case_2():
+    True
+
+
+# lt
+def lt_case_1():
+    3
+    < 3
+
+
+def result_lt_case_1():
+    False
+
+
+def lt_case_2():
+    3 <
+    1
+
+
+def result_lt_case_2():
+    False
+
+
+# le
+def le_case_1():
+    3
+    <= 3
+
+
+def result_le_case_1():
+    True
+
+
+def le_case_2():
+    3 <=
+    1
+
+
+def result_le_case_2():
+    False
+
+
+# div
+def div_case_1():
+    3
+    / 3
+
+
+def result_div_case_1():
+    1
+
+
+def div_case_2():
+    3.0 /
+    2
+
+
+def result_div_case_2():
+    1.5
+
+
+# times
+def times_case_1():
+    3
+    * 3
+
+
+def result_times_case_1():
+    9
+
+
+def times_case_2():
+    3.0 *
+    2
+
+
+def result_times_case_2():
+    6.0
+
+
+# percent
+def percent_case_1():
+    3
+    % 3
+
+
+def result_percent_case_1():
+    0
+
+
+def percent_case_2():
+    3.0 %
+    10
+
+
+def result_percent_case_2():
+    3.0
+
+
+def percent_case_3():
+    '%d' % 10
+
+
+def result_percent_case_3():
+    '10'
