@@ -5,6 +5,35 @@ from rply import LexerGenerator, Token
 
 REPL_CONTINUE = object()
 
+INFIX_OPERATORS = {'OPPLUS',
+                   'OPMINUS',
+                   'OPTIMES',
+                   'PERCENT',
+                   'OPDIV',
+                   'OPLEQ',
+                   'OPGEQ',
+                   'OPEQ',
+                   'OPNEQ',
+                   'OPLT',
+                   'OPGT',
+                   'OPAND',
+                   'OPOR',
+                   'OPIS',
+                   'PIPELINE',
+                   'PIPELINE_BIND',
+                   'PIPELINE_FIRST',
+                   'PIPELINE_FIRST_BIND',
+                   'PIPELINE_SEND',
+                   'PIPELINE_MULTI_SEND'}
+
+
+def _set_keyword(token):
+    if token.name == 'NAME':
+        for rule in klg.rules:
+            if rule.matches(token.value, 0):
+                token.name = rule.name
+                break
+
 
 def mod_lex(lexer, repl_mode=False):
     paren_openers = {'LPAREN', 'LBRACE', 'LBRACK'}
@@ -40,16 +69,46 @@ def mod_lex(lexer, repl_mode=False):
             elif queued_token.gettokentype() in paren_closers:
                 paren_level -= 1
             ignore_newline = (paren_level > 0)
-            yield queued_token
+
+            if queued_token.gettokentype() == 'NAME' and queued_token.getstr().startswith('&'):
+                amp = Token('AMP', '&')
+                amp.source_pos = queued_token.getsourcepos()
+                comma = Token('COMMA', ',')
+                amp.source_pos = queued_token.getsourcepos()
+                name = Token('NAME', queued_token.getstr()[1:])
+                name.source_pos = queued_token.getsourcepos()
+                yield amp
+                yield comma
+                yield name
+            else:
+                yield queued_token
 
         if token.name == 'NAME':
             for rule in klg.rules:
                 if rule.matches(token.value, 0):
                     token.name = rule.name
+                    print(token)
+                    print(token.gettokentype())
                     break
+        if token.gettokentype() in INFIX_OPERATORS:
+            print("TRUE!")
+            ahead_token = next(lexer)
+            print(ahead_token)
+            if ahead_token.gettokentype() == 'NEWLINE':
+                pass
+            else:
+                token_queue.put(ahead_token)
         elif token.gettokentype() == 'NEWLINE':
-            if not ignore_newline:
+            try:
+                ahead_token = next(lexer)
+                _set_keyword(ahead_token)
+            except StopIteration:
+                ahead_token = None
+            if not (ignore_newline or ((ahead_token is not None)
+                                       and (ahead_token.gettokentype() in INFIX_OPERATORS))):
                 yield handle_newline(token)
+            if ahead_token is not None:
+                token_queue.put(ahead_token)
             continue
 
         if token.gettokentype() in paren_openers:
@@ -76,16 +135,16 @@ def mod_lex(lexer, repl_mode=False):
     elif repl_mode and paren_level > 0:
         yield REPL_CONTINUE
     else:
+        while not token_queue.empty():
+            yield token_queue.get()
+
         while len(indent_level) > 1:
             indent_level.pop()
             yield Token('DEDENT', '')
 
-        while not token_queue.empty():
-            yield token_queue.get()
 
-
-def lex(input, repl_mode=False, debug=True):  # TODO
-    if debug:
+def lex(input, repl_mode=False, debug=True):
+    if True:
         print(list(mod_lex(lg.build().lex(input), repl_mode)), file=sys.stderr)
 
     return mod_lex(lg.build().lex(input), repl_mode)
@@ -156,7 +215,6 @@ klg.add('DEFM', r'^defm$')
 klg.add('FN', r'^fn$')
 klg.add('TRUE', r'^True$')
 klg.add('FALSE', r'^False$')
-klg.add('DOC', r'^doc:$')
 klg.add('TRY', r'^try$')
 klg.add('EXCEPT', r'^except$')
 klg.add('AS', r'^as$')
