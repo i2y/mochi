@@ -155,6 +155,9 @@ aif([10, 20], first(it), "empty")
 - pyrsistent >= 0.9.1
 - pathlib >= 1.0.1
 - eventlet >= 0.17.1
+- pyzmq >= 14.5.0
+- msgpack-python >= 0.4.6
+- kazoo >= 2.0
 - typeannotations >= 0.1.0
 
 
