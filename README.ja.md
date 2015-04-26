@@ -57,16 +57,12 @@ def fizzbuzz(n):
         [_, 0]: "buzz"
         _: n
 
-range(1, 31) |> map(fizzbuzz) |> pvector() |> print()
+range(1, 31)
+|> map(fizzbuzz)
+|> pvector()
+|> print()
 # Python3ではmapはイテレータを返すため、そのままprintするとイテレータオブジェクト自体を表示します。
 # ここではイテレータの中身を表示したいので、print前にpvectorでpesrsistent vectorに変換しています。
-
-# Or
-
-pipeline(range(1, 31),
-         map(fizzbuzz),
-         pvector(),
-         print())
 ```
 
 ### Actor
