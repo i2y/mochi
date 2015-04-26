@@ -308,7 +308,9 @@ def result_percent_case_2():
 
 
 def percent_case_3():
-    '%d' % 10
+    '%d'
+
+     % 10
 
 
 def result_percent_case_3():
