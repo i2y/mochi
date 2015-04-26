@@ -87,13 +87,9 @@ def mod_lex(lexer, repl_mode=False):
             for rule in klg.rules:
                 if rule.matches(token.value, 0):
                     token.name = rule.name
-                    print(token)
-                    print(token.gettokentype())
                     break
         if token.gettokentype() in INFIX_OPERATORS:
-            print("TRUE!")
             ahead_token = next(lexer)
-            print(ahead_token)
             if ahead_token.gettokentype() == 'NEWLINE':
                 pass
             else:
@@ -144,7 +140,7 @@ def mod_lex(lexer, repl_mode=False):
 
 
 def lex(input, repl_mode=False, debug=True):
-    if True:
+    if debug:
         print(list(mod_lex(lg.build().lex(input), repl_mode)), file=sys.stderr)
 
     return mod_lex(lg.build().lex(input), repl_mode)
