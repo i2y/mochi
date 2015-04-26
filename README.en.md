@@ -700,5 +700,5 @@ X.foobar()
 ## License
 MIT License
 
-## Author
-[i2y] (https://github.com/i2y)
+## Contributors
+https://github.com/i2y/mochi/graphs/contributors

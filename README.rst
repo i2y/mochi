@@ -770,7 +770,7 @@ License
 
 MIT License
 
-Author
-------
+Contributors
+------------
 
-[i2y] (https://github.com/i2y)
+https://github.com/i2y/mochi/graphs/contributors
