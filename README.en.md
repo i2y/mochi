@@ -171,6 +171,7 @@ Th error of the following may occur when you run the mochi on PyPy.
 ```
 ImportError: Importing zmq.backend.cffi failed with version mismatch, 0.8.2 != 0.9.2
 ```
+
 In this case, please change the version of cffi to 0.8.2 using pip on PyPy.
 ```sh
 $ pip3 uninstall cffi
