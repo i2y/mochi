@@ -416,7 +416,7 @@ class Translator(object):
         return pre, ref
 
     @syntax('+', '-', '*', '/', '%', '**',
-            '<<', '>>', 'bitor', '^', '&', '//')
+            '<<', '>>', '|', '^^', '&&', '//')
     def translate_bin_op(self, exp):
         if not len(exp) >= 2:
             raise MochiSyntaxError(exp, self.filename)

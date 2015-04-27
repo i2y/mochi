@@ -16,6 +16,13 @@ INFIX_OPERATORS = {'OPPLUS',
                    'OPNEQ',
                    'OPLT',
                    'OPGT',
+                   'OPBITOR',
+                   'OPBITAND',
+                   'OPBITXOR',
+                   'OPFLOORDIV',
+                   'OPPOW',
+                   'OPRSHIFT',
+                   'OPLSHIFT',
                    'OPAND',
                    'OPOR',
                    'OPIS',
@@ -157,6 +164,7 @@ lg.add('SQUOTE_RAW_STR', r"(?x)r'(?:|[^'\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]
 lg.add('DQUOTE_RAW_STR', r'(?x)r"(?:|[^"\\]|\\.|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*"')
 
 lg.add('NUMBER', r'-?[0-9]+(?:\.[0-9]+)?')
+lg.add('OPBITAND', r'\&\&')
 lg.add('DOT_NAME', r'\.\&?[_a-zA-Z$][-_a-zA-Z0-9]*')
 lg.add('NAME', r'\&?[_a-zA-Z$][-_a-zA-Z0-9]*')
 lg.add('PIPELINE_FIRST_BIND', r'\|>1\?')
@@ -165,7 +173,12 @@ lg.add('PIPELINE_BIND', r'\|>\?')
 lg.add('PIPELINE', r'\|>')
 lg.add('PIPELINE_SEND', r'!>')
 lg.add('PIPELINE_MULTI_SEND', r'!&>')
-lg.add('BAR', r'\|')
+lg.add('OPBITOR', r'\|')
+lg.add('OPBITXOR', r'\^\^')
+lg.add('OPFLOORDIV', r'//')
+lg.add('OPPOW', r'\*\*')
+lg.add('OPRSHIFT', r'>>')
+lg.add('OPLSHIFT', r'<<')
 lg.add('LBRACK', r'\[')
 lg.add('RBRACK', r'\]')
 lg.add('LBRACE', r'\{')
@@ -188,7 +201,6 @@ lg.add('OPNEQ', r'!=')
 lg.add('OPLT', r'<')
 lg.add('OPGT', r'>')
 lg.add('BANG', r'!')
-
 lg.add('EQUALS', r'=')
 lg.add('SEMI', r';')
 lg.add('AT', r'@')

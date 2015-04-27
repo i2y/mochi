@@ -88,12 +88,14 @@ class Keyword(object):
 
 
 pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ', 'OPGEQ', 'OPEQ', 'OPNEQ',
-                      'OPLT', 'OPGT', 'OPAND', 'OPOR', 'OPIS', 'NOT', 'NEWLINE', 'PERCENT', 'EXPORT',
+                      'OPLT', 'OPGT', 'OPBITOR', 'OPPOW',
+                      'OPRSHIFT', 'OPLSHIFT', 'OPFLOORDIV', 'OPBITAND', 'OPBITXOR',
+                      'OPAND', 'OPOR', 'OPIS', 'NOT', 'NEWLINE', 'PERCENT', 'EXPORT',
                       'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'TQUOTE_STR', 'DQUOTE_STR', 'SQUOTE_STR',
                       'AT', 'BANG', 'DOT_NAME', 'TQUOTE_RAW_STR', 'DQUOTE_RAW_STR', 'SQUOTE_RAW_STR',
                       'NAME', 'EQUALS', 'IF', 'ELSEIF', 'ELSE', 'COLON', 'SEMI', 'DATA', 'IMPORT', 'REQUIRE',
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'PIPELINE_BIND', 'PIPELINE_FIRST',
-                      'PIPELINE_FIRST_BIND', 'PIPELINE_SEND', 'PIPELINE_MULTI_SEND', 'RETURN', 'VECTOR',
+                      'PIPELINE_FIRST_BIND', 'PIPELINE_SEND', 'PIPELINE_MULTI_SEND','RETURN', 'VECTOR',
                       'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'THINARROW', 'RECEIVE',
                       'YIELD', 'FROM', 'FOR', 'IN', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT',
                       'MODULE', 'AS', 'RAISE', 'WITH', 'MACRO', 'QUOTE', 'QUASI_QUOTE', 'UNQUOTE', 'UNQUOTE_SPLICING'],
@@ -105,7 +107,8 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                                            'PIPELINE_SEND', 'PIPELINE_MULTI_SEND']),
                                  ('left', ['OPPLUS', 'OPMINUS']),
                                  ('left', ['LBRACK', 'RBRACK']),
-                                 ('left', ['OPTIMES', 'OPDIV', 'PERCENT'])],
+                                 ('left', ['OPTIMES', 'OPDIV', 'OPFLOORDIV', 'PERCENT', 'OPBITAND', 'OPBITOR',
+                                           'OPBITXOR', 'OPPOW', 'OPRSHIFT', 'OPLSHIFT'])],
                      cache_id='mochi_' + __version__)
 
 
@@ -1260,6 +1263,13 @@ def binop_expr(p):
 @pg.production('binop_expr : binop_expr OPNEQ binop_expr')
 @pg.production('binop_expr : binop_expr OPLT binop_expr')
 @pg.production('binop_expr : binop_expr OPGT binop_expr')
+@pg.production('binop_expr : binop_expr OPBITOR binop_expr')
+@pg.production('binop_expr : binop_expr OPBITXOR binop_expr')
+@pg.production('binop_expr : binop_expr OPBITAND binop_expr')
+@pg.production('binop_expr : binop_expr OPFLOORDIV binop_expr')
+@pg.production('binop_expr : binop_expr OPPOW binop_expr')
+@pg.production('binop_expr : binop_expr OPRSHIFT binop_expr')
+@pg.production('binop_expr : binop_expr OPLSHIFT binop_expr')
 @pg.production('binop_expr : binop_expr OPAND binop_expr')
 @pg.production('binop_expr : binop_expr OPOR binop_expr')
 @pg.production('binop_expr : binop_expr OPIS binop_expr')
