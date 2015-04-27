@@ -957,7 +957,7 @@ def key(p):
     return p[0]
 
 
-@pg.production('match_expr : MATCH expr COLON NEWLINE INDENT case_branches DEDENT')
+@pg.production('match_expr : MATCH binop_expr COLON NEWLINE INDENT case_branches DEDENT')
 def case(p):
     return [Symbol('match'), p[1]] + p[5]
 
