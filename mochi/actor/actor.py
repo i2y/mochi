@@ -6,7 +6,7 @@ from eventlet.green import zmq
 from urllib.parse import urlparse
 from kazoo.client import KazooClient, KazooRetry
 from msgpack import packb, unpackb, ExtType
-from pyrsistent import (PVector, _PList, _PBag,
+from pyrsistent import (PVector, PList, PBag,
                         pvector, pmap, pset, plist, pbag)
 
 _actor_map = {}
@@ -65,9 +65,9 @@ def encode(obj):
         return obj
     if isinstance(obj, Set):
         return ExtType(TYPE_PSET, packb([encode(item) for item in obj], use_bin_type=True))
-    if isinstance(obj, _PList):
+    if isinstance(obj, PList):
         return ExtType(TYPE_PLIST, packb([encode(item) for item in obj], use_bin_type=True))
-    if isinstance(obj, _PBag):
+    if isinstance(obj, PBag):
         return ExtType(TYPE_PBAG, packb([encode(item) for item in obj], use_bin_type=True))
     # assume record
     cls = obj.__class__

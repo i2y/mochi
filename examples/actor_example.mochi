@@ -8,7 +8,7 @@ print(Message)
 print(__name__)
 def show_loop():
     receive:
-        _PList(&rest):
+        PList(&rest):
             print('aaa')
             show_loop()
         Message(tag, value):

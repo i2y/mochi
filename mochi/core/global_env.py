@@ -14,7 +14,7 @@ import re
 from pyrsistent import (
     v, pvector, m, pmap, s, pset, b, pbag, dq, pdeque, l,
     plist, immutable, freeze, thaw, CheckedPVector, PVector,
-    PMap, PSet, _PList, _PBag
+    PMap, PSet, PList, PBag
 )
 from mochi import IS_PYPY
 from mochi.actor import actor
@@ -64,8 +64,8 @@ def make_default_env():
     env['PVector'] = PVector
     env['PMap'] = PMap
     env['PSet'] = PSet
-    env['_PList'] = _PList
-    env['_PBag'] = _PBag
+    env['PList'] = PList
+    env['PBag'] = PBag
     if not IS_PYPY:
         env['union'] = union
         env['options'] = options
