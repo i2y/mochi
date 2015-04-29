@@ -1,0 +1,87 @@
+def newline_dot_name_case_1():
+    obj = object()
+    obj.__class__
+
+
+def result_newline_dot_name_case_1():
+    object
+
+
+def newline_dot_name_case_2():
+    obj = object()
+    obj
+       .__class__
+
+
+def result_newline_dot_name_case_2():
+    object
+
+
+def newline_dot_name_case_3():
+    obj = object()
+    obj.__class__
+       .__class__
+
+
+def result_newline_dot_name_case_3():
+    type
+
+
+def newline_dot_name_case_4():
+    object().__class__
+            .__class__
+
+
+def result_newline_dot_name_case_4():
+    type
+
+
+def newline_dot_name_case_5():
+    obj = object().__class__
+                  .__class__
+    obj
+
+
+def result_newline_dot_name_case_5():
+    type
+
+
+def newline_dot_name_case_6():
+    'foo'.title()
+         .__add__('_bar')
+
+
+def result_newline_dot_name_case_6():
+    'Foo_bar'
+
+
+def newline_dot_name_case_7():
+    'foo'.title()
+         + '_bar'
+         .title()
+
+
+def result_newline_dot_name_case_7():
+    'Foo_Bar'
+
+
+def newline_dot_name_case_8():
+    'foo'.title()
+         + '_bar'
+         .title()
+
+
+def result_newline_dot_name_case_8():
+    'Foo_Bar'
+
+
+def newline_dot_name_case_9():
+    lis = [1, 2, 3]
+    lis2 = lis.set(3, 4)
+              .set(4, 5)
+              .set(0, 10)
+    lis + lis2
+
+
+def result_newline_dot_name_case_9():
+    [1, 2, 3, 10, 2, 3, 4, 5]
