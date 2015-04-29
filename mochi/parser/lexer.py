@@ -105,10 +105,13 @@ def mod_lex(lexer, repl_mode=False):
             try:
                 ahead_token = next(lexer)
                 _set_keyword(ahead_token)
+                ahead_token_type = ahead_token.gettokentype()
             except StopIteration:
                 ahead_token = None
+                ahead_token_type = None
             if not (ignore_newline or ((ahead_token is not None)
-                                       and (ahead_token.gettokentype() in INFIX_OPERATORS))):
+                                       and ((ahead_token_type in INFIX_OPERATORS)
+                                            or ahead_token_type == 'DOT_NAME'))):
                 yield handle_newline(token)
             if ahead_token is not None:
                 token_queue.put(ahead_token)
