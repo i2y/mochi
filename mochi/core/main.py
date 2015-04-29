@@ -159,12 +159,12 @@ def _pyc_compile(in_file_name, env, out_file_name, show_tokens=False):
 
 
 def pyc_compile_monkeypatch(in_file_name, out_file_name=None, show_tokens=False):
-    env='import_global_env_and_monkey_patch.mochi'
+    env = 'import_global_env_and_monkey_patch.mochi'
     _pyc_compile(in_file_name, env, out_file_name, show_tokens=show_tokens)
 
 
 def pyc_compile_no_monkeypatch(in_file_name, out_file_name=None, show_tokens=False):
-    env='import_global_env.mochi'
+    env = 'import_global_env.mochi'
     _pyc_compile(in_file_name, env, out_file_name, show_tokens=show_tokens)
 
 
@@ -186,6 +186,7 @@ def parse_args():
 
 
 def main():
+    init()
     args = parse_args()
     if args.file:
         try:
@@ -207,7 +208,6 @@ def main():
     else:
         interact(args.tokens)
 
-init()
 
 if __name__ == '__main__':
     main()
