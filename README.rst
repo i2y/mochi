@@ -173,7 +173,7 @@ Requirements
 
 -  CPython >= 3.2 or PyPy >= 3.2.1
 -  rply >= 0.7.2
--  pyrsistent >= 0.9.1
+-  pyrsistent >= 0.10.1
 -  pathlib >= 1.0.1
 -  eventlet >= 0.17.1
 -  pyzmq >= 14.5.0

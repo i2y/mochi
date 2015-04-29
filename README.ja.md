@@ -160,16 +160,15 @@ aif([10, 20], first(it), "empty")
 ```
 
 ## 依存モジュール
-- CPython >= 3.2 or PyPy >= 3.2.1 
+- CPython >= 3.2 or PyPy >= 3.2.1
 - rply >= 0.7.2
-- pyrsistent >= 0.8.0
+- pyrsistent >= 0.10.1
 - pathlib >= 1.0.1
-- eventlet >= 0.16.1
+- eventlet >= 0.17.1
 - pyzmq >= 14.5.0
 - msgpack-python >= 0.4.6
 - kazoo >= 2.0
 - typeannotations >= 0.1.0
-
 
 ## インストール
 
