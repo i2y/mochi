@@ -174,7 +174,7 @@ aif([10, 20], first(it), "empty")
 
 ```sh
 $ pip3 install mochi
-$ pip3 install flask Flask-RESTful Pillow  # examplesを実行するために必要
+$ pip3 install flask Flask-RESTful Pillow RxPY  # examplesを実行するために必要
 ```
 
 PyPyでmochiを実行した場合に下記のエラーになることがあります。
@@ -201,7 +201,8 @@ $ cat kinako.mochi
 print('kinako') 
 $ mochi kinako.mochi
 kinako
-$
+$ mochi -no-mp kinako.mochi  # eventletのmonkey patchを適用しない場合
+kinako
 ```
 
 ### ファイルをバイトコンパイル
@@ -213,6 +214,25 @@ $ mochi -c kinako.mochi > kinako.mochic
 ```sh
 $ mochi -e kinako.mochic
 kinako
+$ mochi -e -no-mp kinako.mochic  # eventletのmonkey patchを適用しない場合
+kinako
+$
+```
+
+### .pyc ファイルを生成
+```sh
+$ cat kagami.mochi
+print('kagami')
+$ mochi -pyc kagami.mochi > kagami.pyc
+$ python3 kagami.pyc
+kagami
+$ mochi -pyc -no-mp kagami.mochi > kagami.pyc  # eventletのmonkey patchを適用しない場合
+$ python3 kagami.pyc
+kagami
+$ python3
+>>> import kagami
+kagami
+>>> eixt()
 $
 ```
 
