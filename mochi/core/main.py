@@ -112,7 +112,7 @@ def interact(show_tokens=False):
             traceback.print_exc(file=current_error_port)
 
 
-def init():
+def init(no_monkeypatch=False):
     import eventlet
 
     def eval_from_file(path_obj):
@@ -122,7 +122,9 @@ def init():
             expr = fobj.read()
         eval_sexp_str(expr)
 
-    if platform().lower().startswith('win'):
+    if no_monkeypatch:
+        pass
+    elif platform().lower().startswith('win'):
         eventlet.monkey_patch(os=False)
     else:
         eventlet.monkey_patch()
@@ -175,19 +177,21 @@ def parse_args():
                             version=__version__)
     arg_parser.add_argument('-c', '--compile', action='store_true')
     arg_parser.add_argument('-pyc', '--pyc-compile', action='store_true')
-    arg_parser.add_argument('-pyc-no-mp', '--pyc-compile-no-monkeypatch',
+    arg_parser.add_argument('-no-mp', '--no-monkeypatch',
                             action='store_true')
     arg_parser.add_argument('-e', '--execute-compiled-file',
                             action='store_true')
     arg_parser.add_argument('file', nargs='?', type=str)
-    arg_parser.add_argument('--show-tokens', dest='tokens', help='Shows the results of the tokenizing step', action='store_true')
+    arg_parser.add_argument('--show-tokens', dest='tokens',
+                            help='Shows the results of the tokenizing step',
+                            action='store_true')
 
     return arg_parser.parse_args()
 
 
 def main():
-    init()
     args = parse_args()
+    init(args.no_monkeypatch)
     if args.file:
         try:
             if args.compile:
@@ -195,9 +199,10 @@ def main():
             elif args.execute_compiled_file:
                 execute_compiled_file(args.file)
             elif args.pyc_compile:
-                pyc_compile_monkeypatch(in_file_name=args.file, show_tokens=args.tokens)
-            elif args.pyc_compile_no_monkeypatch:
-                pyc_compile_no_monkeypatch(in_file_name=args.file, show_tokens=args.tokens)
+                if args.no_monkeypatch:
+                    pyc_compile_no_monkeypatch(in_file_name=args.file, show_tokens=args.tokens)
+                else:
+                    pyc_compile_monkeypatch(in_file_name=args.file, show_tokens=args.tokens)
             else:
                 load_file(args.file, global_env)
         except ParsingError as e:
