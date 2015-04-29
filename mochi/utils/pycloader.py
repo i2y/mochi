@@ -3,7 +3,7 @@
 
 import os
 
-from mochi.core import pyc_compile_monkeypatch
+from mochi.core import init, pyc_compile_monkeypatch
 
 
 def get_function(name, file_path):
@@ -26,3 +26,5 @@ def get_module(name, file_path):
     py_name = os.path.join(base_path, name + '.pyc')
     pyc_compile_monkeypatch(mochi_name, py_name)
     return __import__(name)
+
+init()
