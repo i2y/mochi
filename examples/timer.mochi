@@ -1,4 +1,6 @@
 # usage: mochi -no-mp timer.mochi
+# original:
+# https://github.com/ReactiveX/RxPY/blob/master/examples/parallel/timer.py
 
 import rx
 import concurrent.futures
