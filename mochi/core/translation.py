@@ -638,11 +638,12 @@ class Translator(object):
 
     @syntax('getattr')
     def translate_getattr(self, exp):
-        return (), ast.Attribute(value=self.translate(exp[1], False)[1],
-                                 attr=exp[2],
-                                 lineno=exp[0].lineno,
-                                 col_offset=exp[0].col_offset,
-                                 ctx=ast.Load())
+        pre, value = self.translate(exp[1], False)
+        return pre, ast.Attribute(value=value,
+                                  attr=exp[2],
+                                  lineno=exp[0].lineno,
+                                  col_offset=exp[0].col_offset,
+                                  ctx=ast.Load())
 
     @syntax('with_decorator')
     def translate_with_decorator(self, exp):
