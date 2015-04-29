@@ -1,7 +1,7 @@
 import ast
 
 from .global_env import global_env
-from mochi.parser.parser import Symbol
+from mochi.parser import Symbol
 
 
 # -----------------------------------------------

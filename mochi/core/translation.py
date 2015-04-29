@@ -5,12 +5,12 @@ from pathlib import Path
 from os import chdir
 from os.path import normpath, abspath
 
+from mochi import GE_PYTHON_34, IS_PYPY
+from mochi.parser import Symbol, Keyword, parse, lex, get_temp_name
 from .utils import issequence_except_str
 from .constants import *
 from .exceptions import MochiSyntaxError, DuplicatedDefError
 from .global_env import global_env
-from mochi import GE_PYTHON_34, IS_PYPY
-from mochi.parser import Symbol, Keyword, parse, lex, get_temp_name
 
 
 if GE_PYTHON_34:
@@ -104,7 +104,7 @@ class Translator(object):
         body = []
         self.filename = filename
         with open(filename, 'r') as f:
-            sexps = parse(lex(f.read(), debug=show_tokens))
+            sexps = parse(lex(f.read(), debug=show_tokens), filename)
             chdir(normpath(str(Path(filename).parent)))
             for sexp in sexps:
                 if isinstance(sexp, MutableSequence):
@@ -120,7 +120,7 @@ class Translator(object):
         body = []
         self.filename = filename
         with open(filename, 'r') as f:
-            sexps = parse(lex(f.read(), debug=show_tokens))
+            sexps = parse(lex(f.read(), debug=show_tokens), filename)
             for sexp in sexps:
                 if isinstance(sexp, MutableSequence):
                     sexp = tuple_it(sexp)

@@ -1,12 +1,13 @@
 import warnings
 from collections import Sequence
 
-from rply import ParserGenerator, ParsingError
+import rply
+from rply import ParserGenerator
 
 from mochi import __version__
-from mochi.parser.lexer import lg, klg
 
 name_seq = 0
+
 
 def get_temp_name():
     global name_seq
@@ -15,20 +16,34 @@ def get_temp_name():
     return name_symbol
 
 
-def parse(lexer):
+class ParsingError(Exception):
+    def __init__(self, file_path, lineno=1, colno=1):
+        self.file_path = file_path
+        self.lineno = lineno
+        self.colno = colno
+
+    def __str__(self):
+        return 'ParsingError: file=' \
+               + self.file_path\
+               + ' lineno='\
+               + str(self.lineno)\
+               + ' colno='\
+               + str(self.colno)
+
+
+def parse(lexer, filename="<string>"):
     try:
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
             return pg.build().parse(lexer)
-    except ParsingError as e:
+    except rply.errors.ParsingError as e:
         source_pos = e.getsourcepos()
         if source_pos is None:
-            print('')
+            raise ParsingError(filename)
         else:
-            print('ParsingError: lineno='
-                  + str(source_pos.lineno)
-                  + ' colno='
-                  + str(source_pos.colno))
+            raise ParsingError(filename,
+                               source_pos.lineno,
+                               source_pos.colno)
 
 
 class Symbol(object):

@@ -1,13 +1,13 @@
 import argparse
-import traceback
 from pathlib import Path
 import sys
 import os
 from platform import platform
+import traceback
 
 from mochi import __version__, IS_PYPY, GE_PYTHON_34, GE_PYTHON_33
+from mochi.parser import lex, REPL_CONTINUE, ParsingError
 from .builtins import current_error_port, eval_sexp_str, eval_tokens
-from mochi.parser import lex, REPL_CONTINUE
 from .global_env import global_env
 from .translation import syntax_table, global_scope, translator
 
@@ -104,7 +104,12 @@ def interact(show_tokens=False):
                 continuation_flag = False
                 buffer = ''
                 continue
-        eval_tokens(tokens)
+        try:
+            eval_tokens(tokens)
+        except ParsingError as e:
+            print(e, file=current_error_port)
+        except Exception:
+            traceback.print_exc(file=current_error_port)
 
 
 def init():
@@ -183,16 +188,21 @@ def parse_args():
 def main():
     args = parse_args()
     if args.file:
-        if args.compile:
-            output_code(compile_file(args.file, optimize=2, show_tokens=args.tokens))
-        elif args.execute_compiled_file:
-            execute_compiled_file(args.file)
-        elif args.pyc_compile:
-            pyc_compile_monkeypatch(in_file_name=args.file, show_tokens=args.tokens)
-        elif args.pyc_compile_no_monkeypatch:
-            pyc_compile_no_monkeypatch(in_file_name=args.file, show_tokens=args.tokens)
-        else:
-            load_file(args.file, global_env)
+        try:
+            if args.compile:
+                output_code(compile_file(args.file, optimize=2, show_tokens=args.tokens))
+            elif args.execute_compiled_file:
+                execute_compiled_file(args.file)
+            elif args.pyc_compile:
+                pyc_compile_monkeypatch(in_file_name=args.file, show_tokens=args.tokens)
+            elif args.pyc_compile_no_monkeypatch:
+                pyc_compile_no_monkeypatch(in_file_name=args.file, show_tokens=args.tokens)
+            else:
+                load_file(args.file, global_env)
+        except ParsingError as e:
+                print(e, file=sys.stderr)
+        except Exception:
+                traceback.print_exc(file=sys.stderr)
         sys.exit(0)
     else:
         interact(args.tokens)

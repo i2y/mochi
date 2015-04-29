@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import sys
-import traceback
 from types import FunctionType
 from functools import reduce, partial
 from itertools import chain
@@ -10,11 +9,11 @@ from io import StringIO
 
 from pyrsistent import pmap
 
+from mochi.parser import lex
 from .utils import issequence, issequence_except_str, is_tuple_or_list
 from .constants import *
 from .exceptions import UnquoteSplicingError, DuplicatedDefError, ReadError
 from .global_env import global_env
-from mochi.parser import lex
 from .translation import binding_name_set_stack, translator, Keyword, parse
 
 
@@ -996,21 +995,17 @@ def tuple_it(obj):
 
 
 def eval_tokens(tokens):
-    try:
-        sexps = parse(tokens.__iter__())
-        for sexp in sexps:
-            if isinstance(sexp, MutableSequence):
-                sexp = tuple_it(sexp)
-            if sexp is COMMENT:
-                continue
-            py_ast = translator.translate_sexp_to_interact(sexp)
-            if py_ast is not None:
-                code = compile(py_ast, '<string>', 'exec')
-                if code is not None:
-                    exec(code, global_env)
-                # print(file=current_output_port)
-    except Exception:
-        traceback.print_exc(file=current_error_port)
+    sexps = parse(tokens.__iter__())
+    for sexp in sexps:
+        if isinstance(sexp, MutableSequence):
+            sexp = tuple_it(sexp)
+        if sexp is COMMENT:
+            continue
+        py_ast = translator.translate_sexp_to_interact(sexp)
+        if py_ast is not None:
+            code = compile(py_ast, '<string>', 'exec')
+            if code is not None:
+                exec(code, global_env)
 
 
 @builtin_rename('eval')
