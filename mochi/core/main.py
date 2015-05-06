@@ -135,7 +135,7 @@ def init(no_monkeypatch=False):
 
     if no_monkeypatch:
         pass
-    elif platform().lower().startswith('win'):
+    elif (not GE_PYTHON_33) or platform().lower().startswith('win'):
         eventlet.monkey_patch(os=False)
     else:
         eventlet.monkey_patch()
