@@ -201,7 +201,7 @@ $ pip3 install mochi
 $ pip3 install flask Flask-RESTful Pillow RxPY  # to run the examples
 ```
 
-Th error of the following may occur when you run the mochi on PyPy.
+Th error of the following may occur when you run Mochi on PyPy.
 ```
 ImportError: Importing zmq.backend.cffi failed with version mismatch, 0.8.2 != 0.9.2
 ```
@@ -245,19 +245,29 @@ kinako
 
 ### generating .pyc
 ```sh
+$ ls
+kagami.mochi
 $ cat kagami.mochi
 print('kagami')
+$ mochi
+>>> import kagami
+kagami
+>>> exit()
+$ ls
+kagami.mochi kagami.pyc
+$ python3 kagami.pyc
+kagami
+```
+
+Or
+
+```sh
 $ mochi -pyc kagami.mochi > kagami.pyc
 $ python3 kagami.pyc
 kagami
 $ mochi -pyc -no-mp kagami.mochi > kagami.pyc  # not apply eventlet's monkey patching
 $ python3 kagami.pyc
 kagami
-$ python3
->>> import kagami
-kagami
->>> eixt()
-$
 ```
 
 ## Examples for each feature

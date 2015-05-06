@@ -255,6 +255,23 @@ $
 
 ### .pyc ファイルを生成
 ```sh
+$ ls
+kagami.mochi
+$ cat kagami.mochi
+print('kagami')
+$ mochi
+>>> import kagami
+kagami
+>>> exit()
+$ ls
+kagami.mochi kagami.pyc
+$ python3 kagami.pyc
+kagami
+```
+
+もしくは
+
+```sh
 $ cat kagami.mochi
 print('kagami')
 $ mochi -pyc kagami.mochi > kagami.pyc
@@ -263,11 +280,6 @@ kagami
 $ mochi -pyc -no-mp kagami.mochi > kagami.pyc  # eventletのmonkey patchを適用しない場合
 $ python3 kagami.pyc
 kagami
-$ python3
->>> import kagami
-kagami
->>> eixt()
-$
 ```
 
 ## 機能ごとの例
