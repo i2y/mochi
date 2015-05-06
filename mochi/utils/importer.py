@@ -24,6 +24,9 @@ class Loader(object):
 
         absolute_file_path = str(self.path.absolute())
         mod = get_module(full_name, absolute_file_path)
+        print(">>>>>>>>>>>")
+        print(absolute_file_path)
+        print("<<<<<<<<<<<")
         mod.__file__ = absolute_file_path
         mod.__loader__ = self
         mod.__name__ = full_name
@@ -39,9 +42,7 @@ class Loader(object):
 
 
 def find_file(full_name):
-    target_files = ['%s/__init__.pyc',
-                    '%s.pyc',
-                    '%s/__init__.mochi',
+    target_files = ['%s/__init__.mochi',
                     '%s.mochi']
     module_path = '/'.join(full_name.split('.'))
 
@@ -57,8 +58,15 @@ def find_file(full_name):
 class Importer(object):
     def find_module(self, fullname, path=None):
         file_path = find_file(fullname)
-        if file_path and file_path.suffix != '.pyc':
-            return Loader(file_path)
+        if file_path:
+            pyc_file_path = Path(file_path.with_suffix('.pyc'))
+            if pyc_file_path.exists():
+                pyc_file_mtime = pyc_file_path.stat().st_mtime
+                mochi_file_mtime = file_path.stat().st_mtime
+                if mochi_file_mtime > pyc_file_mtime:
+                    return Loader(file_path)
+            else:
+                return Loader(file_path)
 
 
 def set_importer():
