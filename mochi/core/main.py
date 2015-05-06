@@ -20,6 +20,8 @@ def output_code(code):
 
 def output_pyc(code, buffer=sys.stdout.buffer):
     import marshal
+    import struct
+    import time
 
     if GE_PYTHON_34:
         from importlib.util import MAGIC_NUMBER
@@ -28,11 +30,6 @@ def output_pyc(code, buffer=sys.stdout.buffer):
         MAGIC_NUMBER = imp.get_magic()
 
     buffer.write(MAGIC_NUMBER)
-    #if GE_PYTHON_33:
-    #    buffer.write(b'0' * 8)
-    #else:
-    #    buffer.write(b'0' * 4)
-    import struct, time
     timestamp = struct.pack('i', int(time.time()))
     if GE_PYTHON_33:
         buffer.write(timestamp)
