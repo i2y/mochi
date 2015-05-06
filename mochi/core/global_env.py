@@ -5,6 +5,8 @@ from collections import (
     Sequence,
     MutableSequence
 )
+import sys
+import imp
 import functools
 import itertools
 from numbers import Number
@@ -16,7 +18,7 @@ from pyrsistent import (
     plist, immutable, freeze, thaw, CheckedPVector, PVector,
     PMap, PSet, PList, PBag
 )
-from mochi import IS_PYPY
+from mochi import IS_PYPY, GE_PYTHON_33
 from mochi.actor import actor
 from mochi.parser import Symbol, Keyword, get_temp_name
 if not IS_PYPY:
@@ -25,7 +27,10 @@ if not IS_PYPY:
 
 class AttrDict(dict):
     def __getattr__(self, attr):
-        return self[attr]
+        if attr in self.keys():
+            return self[attr]
+        else:
+            return self['__builtins__'][attr]
 
     def __setattr__(self, attr, value):
         self[attr] = value
@@ -33,6 +38,10 @@ class AttrDict(dict):
 
 def make_default_env():
     env = AttrDict()
+    if isinstance(__builtins__, dict):
+        env.update(__builtins__)
+    else:
+        env.update(__builtins__.__dict__)
     env['Symbol'] = Symbol
     env['Keyword'] = Keyword
     env.update(__builtins__.__dict__) if hasattr(__builtins__, '__dict__') else env.update(__builtins__)
@@ -42,6 +51,8 @@ def make_default_env():
     env.update(functools.__dict__)
     env.update(itertools.__dict__)
     env.update(operator.__dict__)
+    if GE_PYTHON_33:
+        env['__spec__'] = sys.modules[__name__].__spec__
     env[Iterable.__name__] = Iterable
     env[Sequence.__name__] = Sequence
     env[Mapping.__name__] = Mapping
@@ -140,14 +151,19 @@ def make_default_env():
     env['__package__'] = __package__
     env['__doc__'] = __doc__
     if IS_PYPY:
-        env['__builtins__'] = {}
         from _continuation import continulet
-
         env['continulet'] = continulet
-    else:
-        env['__builtins__'] = {'__build_class__': __build_class__,
-                               '__import__': __import__}
     return env
 
-
 global_env = make_default_env()
+global_env['__name__'] = '__main__'
+global_env['__package__'] = None
+global_env['__spec__'] = None
+global_env['__loader__'] = None
+
+global_mod = imp.new_module('__main__')
+global_mod.__name__ = '__main__'
+global_mod.__package__ = None
+global_mod.__spec__ = None
+global_mod.__loader__ = None
+global_mod.__builtins__ = global_env

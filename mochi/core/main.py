@@ -28,10 +28,17 @@ def output_pyc(code, buffer=sys.stdout.buffer):
         MAGIC_NUMBER = imp.get_magic()
 
     buffer.write(MAGIC_NUMBER)
+    #if GE_PYTHON_33:
+    #    buffer.write(b'0' * 8)
+    #else:
+    #    buffer.write(b'0' * 4)
+    import struct, time
+    timestamp = struct.pack('i', int(time.time()))
     if GE_PYTHON_33:
-        buffer.write(b'0' * 8)
-    else:
+        buffer.write(timestamp)
         buffer.write(b'0' * 4)
+    else:
+        buffer.write(timestamp)
     marshal.dump(code, buffer)
     buffer.flush()
 
@@ -39,22 +46,22 @@ def output_pyc(code, buffer=sys.stdout.buffer):
 def compile_file(src_path, optimize=-1, show_tokens=False):
     # binding_name_set_stack[0].update(global_env.keys())
     py_ast = translator.translate_file(src_path, show_tokens=show_tokens)
-    sys.modules['__main__'] = global_env
     return compile(py_ast, src_path, 'exec', optimize=optimize)
 
 
 def load_file(path, env):
-    env['__name__'] = '__main__'
-    sys.modules['__main__'] = env
     return exec(compile_file(path), env)
 
 
 def execute_compiled_file(path):
     import marshal
-    global_env['__name__'] = '__main__'
+    orig_main = sys.modules['__main__']
     sys.modules['__main__'] = global_env
-    with open(path, 'rb') as compiled_file:
-        return exec(marshal.load(compiled_file), global_env)
+    try:
+        with open(path, 'rb') as compiled_file:
+            return exec(marshal.load(compiled_file), global_env)
+    finally:
+        sys.modules['__main__'] = orig_main
 
 
 def interact(show_tokens=False):
@@ -62,6 +69,8 @@ def interact(show_tokens=False):
         import readline
     except ImportError:
         pass
+
+    sys.modules['__main__'] = global_env
 
     while True:
         buffer = ''
@@ -113,6 +122,11 @@ def interact(show_tokens=False):
 
 
 def init(no_monkeypatch=False):
+    if hasattr(init, '__called') and init.__called:
+        return
+    else:
+        init.__called = True
+
     import eventlet
 
     def eval_from_file(path_obj):
@@ -143,6 +157,8 @@ def init(no_monkeypatch=False):
         del global_scope[syntax]
 
     sys.path.append(os.getcwd())
+    from mochi.utils.importer import set_importer
+    set_importer()
 
 
 def _pyc_compile(in_file_name, env, out_file_name, show_tokens=False):
@@ -195,15 +211,20 @@ def main():
     if args.file:
         try:
             if args.compile:
-                output_code(compile_file(args.file, optimize=2, show_tokens=args.tokens))
+                output_code(compile_file(args.file,
+                                         optimize=2,
+                                         show_tokens=args.tokens))
             elif args.execute_compiled_file:
                 execute_compiled_file(args.file)
             elif args.pyc_compile:
                 if args.no_monkeypatch:
-                    pyc_compile_no_monkeypatch(in_file_name=args.file, show_tokens=args.tokens)
+                    pyc_compile_no_monkeypatch(in_file_name=args.file,
+                                               show_tokens=args.tokens)
                 else:
-                    pyc_compile_monkeypatch(in_file_name=args.file, show_tokens=args.tokens)
+                    pyc_compile_monkeypatch(in_file_name=args.file,
+                                            show_tokens=args.tokens)
             else:
+                sys.modules['__main__'] = global_env
                 load_file(args.file, global_env)
         except ParsingError as e:
                 print(e, file=sys.stderr)
