@@ -20,6 +20,7 @@ showusage() {
 Ex:
 
 Run one .mochi file using relative path to the .mochi file (absolute path does not work)
+Note: relative forward path only.  This form \"../path/to/file.mochi\" does not work.
   \$ cd \$MOCHI_CHECKOUT_ROOT; bin/$THIS_FILE examples/fizzbuzz.mochi
   \$ $THIS_FILE relative-path/to/file.mochi
 
