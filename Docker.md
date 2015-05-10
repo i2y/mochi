@@ -4,7 +4,44 @@ Using Docker
 ## How to use Docker image
 - Install and configure Docker for your appropriate environment, see [Docker
   installation documentation] (https://docs.docker.com/installation)
-- Follow instructions in `bin/mochidocker --dockerhelp` in this checkout
+- Follow instructions in `bin/mochidocker --dockerhelp` in this checkout, a
+  sample below:
+```sh
+$ bin/mochidocker --dockerhelp
+Usage: mochidocker [options] <any mochi interpreter arguments> ...
+
+
+Ex:
+
+Run one .mochi file using relative path to the .mochi file (absolute path does not work)
+Note: relative forward path only.  This form "../path/to/file.mochi" does not work.
+  $ cd $MOCHI_CHECKOUT_ROOT; bin/mochidocker examples/fizzbuzz.mochi
+  $ mochidocker relative-path/to/file.mochi
+
+Explore mochi command-line
+  $ mochidocker --help  # mochi interpreter help
+  $ mochidocker --version  # mochi interpreter version
+
+Enter mochi interractive interpreter
+  $ mochidocker
+
+Run all examples
+  $ cd $MOCHI_CHECKOUT_ROOT; for f in examples/*.mochi; do echo $f; bin/mochidocker $f; done
+
+Use an alternate docker image
+  $ mochidocker --dockerimg tlvu/mochi:<version tag> --version
+  $ cd $MOCHI_CHECKOUT_ROOT; bin/mochidocker --dockerimg tlvu/mochi:0.2.1 workdir/examples/fizzbuzz.mochi
+
+As a developer, run the latest code in this checkout (not the code in the docker image)
+Note: $MOCHI_CHECKOUT_ROOT must not contain space for this to work
+  $ cd $MOCHI_CHECKOUT_ROOT; bin/mochidocker --dockerdevel examples/fizzbuzz.mochi
+
+
+Options:
+  --dockerimg img   Alternate image name, default: tlvu/mochi
+  --dockerdevel     Use latest code in the current checkout
+  --dockerhelp      Show this help
+```
 
 ## Why Docker
 - Full-stack (OS, python libs), reproducible, easy to distribute runtime
