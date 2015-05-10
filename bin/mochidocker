@@ -45,7 +45,7 @@ Note: \$MOCHI_CHECKOUT_ROOT must not contain space for this to work
 
 Options:
   --dockerimg img   Alternate image name, default: $DEFAULT_IMAGE
-  --dockerdevel     Use latest code the current checkout
+  --dockerdevel     Use latest code in the current checkout
   --dockerhelp      Show this help
 "
 }
