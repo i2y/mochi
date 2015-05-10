@@ -1,0 +1,77 @@
+#!/bin/sh
+# Conveniently launch mochi docker image.
+
+
+CURRENT_DIR="`pwd`"
+cd "`dirname "$0"`"
+THIS_DIR="`pwd`"
+THIS_FILE="`basename "$0"`"
+cd ..
+REPO_ROOT_DIR="`pwd`"
+cd "$CURRENT_DIR"
+
+DEFAULT_IMAGE="tlvu/mochi"
+
+
+showusage() {
+  echo "Usage: $THIS_FILE [options] <any mochi interpreter arguments> ...
+
+
+Ex:
+
+Run one .mochi file using relative path to the .mochi file (absolute path does not work)
+  \$ cd \$MOCHI_CHECKOUT_ROOT; bin/$THIS_FILE examples/fizzbuzz.mochi
+  \$ $THIS_FILE relative-path/to/file.mochi
+
+Explore mochi command-line
+  \$ $THIS_FILE --help  # mochi interpreter help
+  \$ $THIS_FILE --version  # mochi interpreter version
+
+Enter mochi interractive interpreter
+  \$ $THIS_FILE
+
+Run all examples
+  \$ cd \$MOCHI_CHECKOUT_ROOT; for f in examples/*.mochi; do echo \$f; bin/$THIS_FILE \$f; done
+
+Use an alternate docker image
+  \$ $THIS_FILE --dockerimg tlvu/mochi:<version tag> --version
+  \$ cd \$MOCHI_CHECKOUT_ROOT; bin/$THIS_FILE --dockerimg tlvu/mochi:0.2.1 workdir/examples/fizzbuzz.mochi
+
+As a developer, run the latest code in this checkout (not the code in the docker image)
+Note: \$MOCHI_CHECKOUT_ROOT must not contain space for this to work
+  \$ cd \$MOCHI_CHECKOUT_ROOT; bin/$THIS_FILE --dockerdevel examples/fizzbuzz.mochi
+
+
+Options:
+  --dockerimg img   Alternate image name, default: $DEFAULT_IMAGE
+  --dockerdevel     Use latest code the current checkout
+  --dockerhelp      Show this help
+"
+}
+
+
+IMAGE="$DEFAULT_IMAGE"
+DEV_OPT=""
+DEV_ARG=""
+while [ 1 ]; do
+  case "$1" in
+    --dockerimg) shift
+      IMAGE="$1"; shift
+      ;;
+    --dockerdevel) shift
+      DEV_OPT="-v"
+      # REPO_ROOT_DIR better have no space
+      DEV_ARG="$REPO_ROOT_DIR/mochi:/home/mochiuser/.pyenv/versions/venv343mochi/lib/python3.4/site-packages/mochi"
+      ;;
+    --dockerhelp) shift
+      showusage
+      exit
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+
+docker run -it --rm -v "`pwd`":/home/mochiuser/workdir $DEV_OPT $DEV_ARG "$IMAGE" "$@"
