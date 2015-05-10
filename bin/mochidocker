@@ -7,7 +7,7 @@ cd "`dirname "$0"`"
 THIS_DIR="`pwd`"
 THIS_FILE="`basename "$0"`"
 cd ..
-REPO_ROOT_DIR="`pwd`"
+MOCHI_CHECKOUT_ROOT="`pwd`"
 cd "$CURRENT_DIR"
 
 DEFAULT_IMAGE="tlvu/mochi"
@@ -61,8 +61,8 @@ while [ 1 ]; do
       ;;
     --dockerdevel) shift
       DEV_OPT="-v"
-      # REPO_ROOT_DIR better have no space
-      DEV_ARG="$REPO_ROOT_DIR/mochi:/home/mochiuser/.pyenv/versions/venv343mochi/lib/python3.4/site-packages/mochi"
+      # MOCHI_CHECKOUT_ROOT better have no space
+      DEV_ARG="$MOCHI_CHECKOUT_ROOT/mochi:/home/mochiuser/.pyenv/versions/venv343mochi/lib/python3.4/site-packages/mochi"
       ;;
     --dockerhelp) shift
       showusage
