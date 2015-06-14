@@ -5,6 +5,8 @@ from pathlib import Path
 from os import chdir
 from os.path import normpath, abspath
 
+import astunparse
+
 from mochi import GE_PYTHON_34, IS_PYPY
 from mochi.parser import Symbol, Keyword, parse, lex, get_temp_name
 from .utils import issequence_except_str
@@ -100,9 +102,11 @@ class Translator(object):
         self.macro_table = macro_table
         self.filename = filename
 
-    def translate_sexps(self, sexps):
+    def translate_block(self, mochi_block, filename='<string>',
+                        show_tokens=False):
         """Translate sexpressions into a Python AST.
         """
+        sexps = parse(lex(mochi_block, debug=show_tokens), filename)
         body = []
         for sexp in sexps:
             if isinstance(sexp, MutableSequence):
@@ -119,11 +123,11 @@ class Translator(object):
         """
         self.filename = filename
         with open(filename, 'r') as fobj:
-            content = fobj.read()
-        sexps = parse(lex(content, debug=show_tokens), filename)
+            mochi_block = fobj.read()
         # TODO: Why this change of directory is needed?
-        chdir(normpath(str(Path(filename).parent)))
-        return self.translate_sexps(sexps)
+        #chdir(normpath(str(Path(filename).parent)))
+        return self.translate_block(mochi_block, filename=filename,
+                                    show_tokens=show_tokens)
 
     def translate_loaded_file(self, filename, show_tokens=False):
         body = []
@@ -1729,3 +1733,27 @@ global_scope = Scope()
 for name in global_env.keys():
     global_scope.add_binding_name(name, "<builtin>")
 binding_name_set_stack = [global_scope]
+
+
+INIT_CODE = """
+from mochi.core import init
+
+init()
+"""
+
+
+def ast2py(ast, mochi_env='', add_init=False):
+    """Translate Python AST to Python code.
+
+    :param ast: Python AST
+    :param env: Mochi environment such monkey patch
+    :param add_init: Add Mochi intialization or not
+    :return: Python source code
+    """
+    if mochi_env:
+        env_ast = translator.translate_block(mochi_env)
+        ast.body = env_ast.body + ast.body
+    source = astunparse.unparse(ast)
+    if add_init:
+        source = INIT_CODE + source
+    return source

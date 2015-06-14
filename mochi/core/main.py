@@ -9,7 +9,11 @@ from mochi import __version__, IS_PYPY, GE_PYTHON_34, GE_PYTHON_33
 from mochi.parser import lex, REPL_CONTINUE, ParsingError
 from .builtins import current_error_port, eval_sexp_str, eval_tokens
 from .global_env import global_env
-from .translation import syntax_table, global_scope, translator
+from .translation import syntax_table, global_scope, translator, ast2py
+
+
+MONKEY_PATCH_ENV = 'import_global_env_and_monkey_patch.mochi'
+GLOBAL_ENV = 'import_global_env.mochi'
 
 
 def output_code(code):
@@ -183,20 +187,47 @@ def pyc_compile_no_monkeypatch(in_file_name, out_file_name=None, show_tokens=Fal
     _pyc_compile(in_file_name, env, out_file_name, show_tokens=show_tokens)
 
 
+def make_py_source_file(mochi_file_name, python_file_name=None, mochi_env='',
+                        add_init=False, show_tokens=False):
+    """Generate Python source code from Mochi code.
+    """
+    ast = translator.translate_file(mochi_file_name, show_tokens=show_tokens)
+    if mochi_env:
+        env_file = Path(__file__).absolute().parents[0] / mochi_env
+        with open(env_file.as_posix()) as fobj:
+            mochi_env = fobj.read()
+    py_source = ast2py(ast, mochi_env, add_init=add_init)
+    if not python_file_name:
+        print(py_source)
+    else:
+        with open(python_file_name, 'w') as fobj:
+            fobj.write(py_source)
+
+
 def parse_args():
     arg_parser = argparse.ArgumentParser(
         description='Mochi is a functional programming language.')
     arg_parser.add_argument('-v', '--version', action='version',
                             version=__version__)
-    arg_parser.add_argument('-c', '--compile', action='store_true')
-    arg_parser.add_argument('-pyc', '--pyc-compile', action='store_true')
+    arg_parser.add_argument('-c', '--compile', action='store_true',
+                            help='Show marshalled code.')
+    arg_parser.add_argument('-pyc', '--pyc-compile', action='store_true',
+                            help='Generate Python bytecode from Mochi file.')
+    arg_parser.add_argument('-py', '--py-source', action='store_true',
+                            help='Generate Python source code from Mochi file.')
+    arg_parser.add_argument('-o', '--outfile', nargs='?', type=str,
+                            help='Name of output file.')
     arg_parser.add_argument('-no-mp', '--no-monkeypatch',
                             action='store_true')
+    arg_parser.add_argument('-init', '--add-init-code', action='store_true',
+                            help='Add Mochi init code to Python source code '
+                                 'files. This allows running the from the '
+                                 'command line with Python.')
     arg_parser.add_argument('-e', '--execute-compiled-file',
                             action='store_true')
     arg_parser.add_argument('file', nargs='?', type=str)
     arg_parser.add_argument('--show-tokens', dest='tokens',
-                            help='Shows the results of the tokenizing step',
+                            help='Shows the results of the tokenizing step.',
                             action='store_true')
 
     return arg_parser.parse_args()
@@ -207,6 +238,10 @@ def main():
     init(args.no_monkeypatch)
     if args.file:
         try:
+            if args.no_monkeypatch:
+                env = GLOBAL_ENV
+            else:
+                env = MONKEY_PATCH_ENV
             if args.compile:
                 output_code(compile_file(args.file,
                                          optimize=2,
@@ -220,6 +255,12 @@ def main():
                 else:
                     pyc_compile_monkeypatch(in_file_name=args.file,
                                             show_tokens=args.tokens)
+            elif args.py_source:
+                make_py_source_file(mochi_file_name=args.file,
+                                    python_file_name=args.outfile,
+                                    mochi_env=env,
+                                    show_tokens=args.tokens,
+                                    add_init=args.add_init_code)
             else:
                 sys.modules['__main__'] = global_env
                 load_file(args.file, global_env)
