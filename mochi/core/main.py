@@ -5,6 +5,8 @@ import os
 from platform import platform
 import traceback
 
+import astunparse
+
 from mochi import __version__, IS_PYPY, GE_PYTHON_34, GE_PYTHON_33
 from mochi.parser import lex, REPL_CONTINUE, ParsingError
 from .builtins import current_error_port, eval_sexp_str, eval_tokens
@@ -204,6 +206,19 @@ def make_py_source_file(mochi_file_name, python_file_name=None, mochi_env='',
             fobj.write(py_source)
 
 
+
+def pprint_ast(mochi_file_name, ast_file_name=None, show_tokens=False):
+    """Generate a nicly formatted AST from Mochi code.
+    """
+    ast = translator.translate_file(mochi_file_name, show_tokens=show_tokens)
+    py_source = astunparse.dump(ast)
+    if not ast_file_name:
+        print(py_source)
+    else:
+        with open(ast_file_name, 'w') as fobj:
+            fobj.write(py_source)
+
+
 def clean_source(source):
     # TODO: Fix AST generation so this function is not needed.
     """Dirty cleaning of dirty source."""
@@ -249,6 +264,8 @@ def parse_args():
                             help='Generate Python bytecode from Mochi file.')
     arg_parser.add_argument('-py', '--py-source', action='store_true',
                             help='Generate Python source code from Mochi file.')
+    arg_parser.add_argument('-a', '--ast', action='store_true',
+                            help='Generate AST from Mochi file.')
     arg_parser.add_argument('-o', '--outfile', nargs='?', type=str,
                             help='Name of output file.')
     arg_parser.add_argument('-no-mp', '--no-monkeypatch',
@@ -295,6 +312,9 @@ def main():
                                     mochi_env=env,
                                     show_tokens=args.tokens,
                                     add_init=args.add_init_code)
+            elif args.ast:
+                pprint_ast(mochi_file_name=args.file,
+                           ast_file_name=args.outfile, show_tokens=args.tokens)
             else:
                 sys.modules['__main__'] = global_env
                 load_file(args.file, global_env)
