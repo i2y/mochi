@@ -53,3 +53,7 @@ doc/*.html
 doc/*.pdf
 # PyBuilder
 target/
+
+# Wing IDE project settings
+mochi.wpr
+mochi.wpu
