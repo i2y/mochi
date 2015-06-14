@@ -484,7 +484,7 @@ class Translator(object):
                                lineno=op_symbol.lineno,
                                col_offset=0)
 
-    @syntax('=', '!=', '<', '<=', '>', '>=',
+    @syntax('=', '==', '!=', '<', '<=', '>', '>=',
             'is', 'is_not', 'in', 'not_in')
     def translate_compare(self, exp):
         if len(exp) < 3:
