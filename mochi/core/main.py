@@ -196,12 +196,46 @@ def make_py_source_file(mochi_file_name, python_file_name=None, mochi_env='',
         env_file = Path(__file__).absolute().parents[0] / mochi_env
         with open(env_file.as_posix()) as fobj:
             mochi_env = fobj.read()
-    py_source = ast2py(ast, mochi_env, add_init=add_init)
+    py_source = clean_source(ast2py(ast, mochi_env, add_init=add_init))
     if not python_file_name:
         print(py_source)
     else:
         with open(python_file_name, 'w') as fobj:
             fobj.write(py_source)
+
+
+def clean_source(source):
+    # TODO: Fix AST generation so this function is not needed.
+    """Dirty cleaning of dirty source."""
+    # replace '$_x'  with 'arg_x' x = 1, 2, 3 ... 9
+    if '$' in source:
+        for number in range(1, 10):
+            source = source.replace('${}'.format(number),
+                                            'arg_{}'.format(number))
+    # remove extra `try` with no use but messing up syntax
+    if 'try' in source:
+        lines = source.splitlines()
+        new_lines = [line for line in lines if not line.strip() == 'try']
+        source = '\n'.join(new_lines)
+    if '|>(' in source:
+        source = source.replace('|>(', 'bind(')
+    val = 'val('
+    if val in source:
+        lines = source.splitlines()
+        new_lines = []
+        for line in lines:
+            if line.strip().startswith(val):
+                spaces = int(line.index(val)) * ' '
+                name, value = line.split(val)[1].split(',', 1)
+                assign = '{} = {}'.format(name, value[:-1])
+                new_lines.append(spaces + assign)
+            else:
+                new_lines.append(line)
+        source = '\n'.join(new_lines)
+    # TODO: fix `&
+    #if '&' in source:
+    #    source = source.replace('&', '*_rest')
+    return source
 
 
 def parse_args():
