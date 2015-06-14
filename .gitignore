@@ -57,3 +57,7 @@ target/
 # Wing IDE project settings
 mochi.wpr
 mochi.wpu
+
+# Temp
+tmp/
+temp/
