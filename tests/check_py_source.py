@@ -42,7 +42,7 @@ def check_py_syntax(src_path, dst_path):
         with TempDir(dst_path):
             try:
                 py_compile.compile('{}.py'.format(mod_name), doraise=True)
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 print('#' * 30)
                 print('Error in module', mod_name)
                 print('#' * 30)
