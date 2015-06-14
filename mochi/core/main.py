@@ -272,8 +272,8 @@ def parse_args():
                             action='store_true')
     arg_parser.add_argument('-init', '--add-init-code', action='store_true',
                             help='Add Mochi init code to Python source code '
-                                 'files. This allows running the from the '
-                                 'command line with Python.')
+                                 'files. This allows running the generated '
+                                 'file from the command line with Python.')
     arg_parser.add_argument('-e', '--execute-compiled-file',
                             action='store_true')
     arg_parser.add_argument('file', nargs='?', type=str)
