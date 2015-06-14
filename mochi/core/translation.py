@@ -100,21 +100,30 @@ class Translator(object):
         self.macro_table = macro_table
         self.filename = filename
 
-    def translate_file(self, filename, show_tokens=False):
+    def translate_sexps(self, sexps):
+        """Translate sexpressions into a Python AST.
+        """
         body = []
-        self.filename = filename
-        with open(filename, 'r') as f:
-            sexps = parse(lex(f.read(), debug=show_tokens), filename)
-            chdir(normpath(str(Path(filename).parent)))
-            for sexp in sexps:
-                if isinstance(sexp, MutableSequence):
-                    sexp = tuple_it(sexp)
-                if sexp is COMMENT:
-                    continue
-                pre, value = self.translate(sexp)
-                body.extend([self.enclose(exp, True) for exp in pre])
-                body.append(self.enclose(value, True))
+        for sexp in sexps:
+            if isinstance(sexp, MutableSequence):
+                sexp = tuple_it(sexp)
+            if sexp is COMMENT:
+                continue
+            pre, value = self.translate(sexp)
+            body.extend([self.enclose(exp, True) for exp in pre])
+            body.append(self.enclose(value, True))
         return ast.Module(body=body)
+
+    def translate_file(self, filename, show_tokens=False):
+        """Translate a Mochi file into a Python AST.
+        """
+        self.filename = filename
+        with open(filename, 'r') as fobj:
+            content = fobj.read()
+        sexps = parse(lex(content, debug=show_tokens), filename)
+        # TODO: Why this change of directory is needed?
+        chdir(normpath(str(Path(filename).parent)))
+        return self.translate_sexps(sexps)
 
     def translate_loaded_file(self, filename, show_tokens=False):
         body = []
@@ -179,7 +188,8 @@ class Translator(object):
         return ast.Module(body=body)
 
     def is_self_evaluating(self, exp):
-        return isinstance(exp, (int, float, complex, str, bool, type(None), Keyword))
+        return isinstance(exp, (int, float, complex, str, bool, type(None),
+                          Keyword))
 
     def translate_self_evaluating(self, exp):
         if isinstance(exp, (int, float, complex)):
