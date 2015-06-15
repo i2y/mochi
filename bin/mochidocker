@@ -7,7 +7,7 @@ cd "`dirname "$0"`"
 THIS_DIR="`pwd`"
 THIS_FILE="`basename "$0"`"
 cd ..
-REPO_ROOT_DIR="`pwd`"
+MOCHI_CHECKOUT_ROOT="`pwd`"
 cd "$CURRENT_DIR"
 
 DEFAULT_IMAGE="tlvu/mochi"
@@ -20,6 +20,7 @@ showusage() {
 Ex:
 
 Run one .mochi file using relative path to the .mochi file (absolute path does not work)
+Note: relative forward path only.  This form \"../path/to/file.mochi\" does not work.
   \$ cd \$MOCHI_CHECKOUT_ROOT; bin/$THIS_FILE examples/fizzbuzz.mochi
   \$ $THIS_FILE relative-path/to/file.mochi
 
@@ -44,7 +45,7 @@ Note: \$MOCHI_CHECKOUT_ROOT must not contain space for this to work
 
 Options:
   --dockerimg img   Alternate image name, default: $DEFAULT_IMAGE
-  --dockerdevel     Use latest code the current checkout
+  --dockerdevel     Use latest code in the current checkout
   --dockerhelp      Show this help
 "
 }
@@ -60,8 +61,8 @@ while [ 1 ]; do
       ;;
     --dockerdevel) shift
       DEV_OPT="-v"
-      # REPO_ROOT_DIR better have no space
-      DEV_ARG="$REPO_ROOT_DIR/mochi:/home/mochiuser/.pyenv/versions/venv343mochi/lib/python3.4/site-packages/mochi"
+      # MOCHI_CHECKOUT_ROOT better have no space
+      DEV_ARG="$MOCHI_CHECKOUT_ROOT/mochi:/home/mochiuser/.pyenv/versions/venv343mochi/lib/python3.4/site-packages/mochi"
       ;;
     --dockerhelp) shift
       showusage
