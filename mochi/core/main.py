@@ -302,9 +302,11 @@ def main():
             elif args.pyc_compile:
                 if args.no_monkeypatch:
                     pyc_compile_no_monkeypatch(in_file_name=args.file,
+                                               out_file_name=args.outfile,
                                                show_tokens=args.tokens)
                 else:
                     pyc_compile_monkeypatch(in_file_name=args.file,
+                                            out_file_name=args.outfile,
                                             show_tokens=args.tokens)
             elif args.py_source:
                 make_py_source_file(mochi_file_name=args.file,
