@@ -5,6 +5,8 @@ from pathlib import Path
 from os import chdir
 from os.path import normpath, abspath
 
+import astunparse
+
 from mochi import GE_PYTHON_34, IS_PYPY
 from mochi.parser import Symbol, Keyword, parse, lex, get_temp_name
 from .utils import issequence_except_str
@@ -100,21 +102,32 @@ class Translator(object):
         self.macro_table = macro_table
         self.filename = filename
 
-    def translate_file(self, filename, show_tokens=False):
+    def translate_block(self, mochi_block, filename='<string>',
+                        show_tokens=False):
+        """Translate sexpressions into a Python AST.
+        """
+        sexps = parse(lex(mochi_block, debug=show_tokens), filename)
         body = []
-        self.filename = filename
-        with open(filename, 'r') as f:
-            sexps = parse(lex(f.read(), debug=show_tokens), filename)
-            chdir(normpath(str(Path(filename).parent)))
-            for sexp in sexps:
-                if isinstance(sexp, MutableSequence):
-                    sexp = tuple_it(sexp)
-                if sexp is COMMENT:
-                    continue
-                pre, value = self.translate(sexp)
-                body.extend([self.enclose(exp, True) for exp in pre])
-                body.append(self.enclose(value, True))
+        for sexp in sexps:
+            if isinstance(sexp, MutableSequence):
+                sexp = tuple_it(sexp)
+            if sexp is COMMENT:
+                continue
+            pre, value = self.translate(sexp)
+            body.extend([self.enclose(exp, True) for exp in pre])
+            body.append(self.enclose(value, True))
         return ast.Module(body=body)
+
+    def translate_file(self, filename, show_tokens=False):
+        """Translate a Mochi file into a Python AST.
+        """
+        self.filename = filename
+        with open(filename, 'r') as fobj:
+            mochi_block = fobj.read()
+        # TODO: Why this change of directory is needed?
+        #chdir(normpath(str(Path(filename).parent)))
+        return self.translate_block(mochi_block, filename=filename,
+                                    show_tokens=show_tokens)
 
     def translate_loaded_file(self, filename, show_tokens=False):
         body = []
@@ -179,7 +192,8 @@ class Translator(object):
         return ast.Module(body=body)
 
     def is_self_evaluating(self, exp):
-        return isinstance(exp, (int, float, complex, str, bool, type(None), Keyword))
+        return isinstance(exp, (int, float, complex, str, bool, type(None),
+                          Keyword))
 
     def translate_self_evaluating(self, exp):
         if isinstance(exp, (int, float, complex)):
@@ -470,7 +484,7 @@ class Translator(object):
                                lineno=op_symbol.lineno,
                                col_offset=0)
 
-    @syntax('=', '!=', '<', '<=', '>', '>=',
+    @syntax('==', '!=', '<', '<=', '>', '>=',
             'is', 'is_not', 'in', 'not_in')
     def translate_compare(self, exp):
         if len(exp) < 3:
@@ -1719,3 +1733,27 @@ global_scope = Scope()
 for name in global_env.keys():
     global_scope.add_binding_name(name, "<builtin>")
 binding_name_set_stack = [global_scope]
+
+
+INIT_CODE = """
+from mochi.core import init
+
+init()
+"""
+
+
+def ast2py(ast, mochi_env='', add_init=False):
+    """Translate Python AST to Python code.
+
+    :param ast: Python AST
+    :param env: Mochi environment such monkey patch
+    :param add_init: Add Mochi intialization or not
+    :return: Python source code
+    """
+    if mochi_env:
+        env_ast = translator.translate_block(mochi_env)
+        ast.body = env_ast.body + ast.body
+    source = astunparse.unparse(ast)
+    if add_init:
+        source = INIT_CODE + source
+    return source
