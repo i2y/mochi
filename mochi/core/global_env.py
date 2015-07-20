@@ -130,12 +130,12 @@ def make_default_env():
     env['gensym'] = get_temp_name
     env['uniq'] = get_temp_name
     env['Record'] = immutable((), 'Record')
-    env['ActorAddressBook'] = actor.ActorAddressBook
-    env['ActorHub'] = actor.ActorHub
-    env['RemoteActor'] = actor.RemoteActor
     env['spawn'] = actor.spawn
+    env['spawn_with_mailbox'] = actor.spawn_with_mailbox
     env['send'] = actor.send
     env['recv'] = actor.recv
+    env['ack_last_msg'] = actor.ack_last_msg
+    env['ack'] = actor.ack
     env['link'] = actor.link
     env['unlink'] = actor.unlink
     env['kill'] = actor.kill

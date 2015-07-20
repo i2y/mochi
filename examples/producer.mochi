@@ -1,0 +1,19 @@
+from mochi.actor.mailbox import KombuMailbox, ZmqOutbox
+
+record Message(tag, value)
+
+mailbox = KombuMailbox('sqs://<access_key_id>@<secret_access_key>:80//',
+                       '<queue_name>',
+                       dict(region='<region>'))
+
+mailbox ! Message('sqs', 'AWS SQS')
+mailbox ! [2, 3]
+mailbox ! 'special'
+mailbox ! 'exit'
+
+mailbox = ZmqOutbox('tcp://localhost:9999')
+
+mailbox ! Message('zmq', 'ZeroMQ')
+mailbox ! [2, 3]
+mailbox ! 'special'
+mailbox ! 'exit'

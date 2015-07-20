@@ -3,16 +3,10 @@ def show_once():
         message:
             print(message)
 
-record Message(tag, value)
-print(Message)
-print(__name__)
 def show_loop():
     receive:
         PList(&rest):
             print('aaa')
-            show_loop()
-        Message(tag, value):
-            print('Message!', tag, value)
             show_loop()
         [tag, value]:
             print(tag, value)
@@ -46,18 +40,6 @@ sleep(1)
 # -> foo 1000
 # -> bar 2000
 
-remote_actor = RemoteActor('tcp://localhost:9999/test')
-remote_actor ! Message('mefafsg', ['value'])
-remote_actor ! ['remote!', [[3000]]]
-remote_actor ! ['remo', Message(3000, 1000)]
-
-remote_actor ! {'x': [1, 2, 3]}
-remote_actor ! s(1, [2, 1, 2, 3])
-remote_actor ! b(1, [2, 1, 2, 3])
-remote_actor ! l(1, [2, 1, 2, 3])
-
-hub = ActorHub('tcp://*:9999')
-hub.register('test', actor2)
-hub.run()
-
 wait_all()
+
+

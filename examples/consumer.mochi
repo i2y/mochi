@@ -1,0 +1,30 @@
+from mochi.actor.mailbox import KombuMailbox, ZmqInbox
+
+record Message(tag, value)
+
+def consumer():
+    receive:
+        Message(tag, value):
+            print(tag, ':', value)
+            # ack()
+            consumer()
+        "special":
+            print("!!!!!!!")
+            # ack()
+            consumer()
+        "exit":
+            # ack()
+            print("exit!")
+        other:
+            print(other)
+            # ack()
+            consumer()
+
+mailbox = KombuMailbox('sqs://<access_key_id>@<secret_access_key>:80//',
+                       '<queue_name>',
+                       dict(region='<region>'))
+# no_ack=False)
+spawn_with_mailbox(consumer, mailbox)
+mailbox = ZmqInbox('tcp://*:9999')
+spawn_with_mailbox(consumer, mailbox)
+wait_all()
