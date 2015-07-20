@@ -149,7 +149,7 @@ def mod_lex(lexer, repl_mode=False):
             yield Token('DEDENT', '')
 
 
-def lex(input, repl_mode=False, debug=True):
+def lex(input, repl_mode=False, debug=False):
     if debug:
         print(list(mod_lex(lg.build().lex(input), repl_mode)), file=sys.stderr)
 
