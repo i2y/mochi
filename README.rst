@@ -258,9 +258,10 @@ Installation
 
 
 Optional Installation
-_____________________
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: sh
+
     $ pip3 install flask Flask-RESTful Pillow RxPY  # to run the examples
     $ pip3 install pyzmq # to use ZmqInbox and ZmqOutbox
     $ pip3 install kombu # to use KombuMailbox
