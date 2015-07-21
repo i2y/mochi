@@ -161,7 +161,6 @@ class KombuMailbox(AckableMailbox):
 class ZmqInbox(Mailbox):
     def __init__(self, url='tcp://*:9999'):
         from eventlet.green import zmq
-        self._path_actor_mapping = {}
         self._url = url
         self._context = zmq.Context()
         self._recv_sock = self._context.socket(zmq.PULL)

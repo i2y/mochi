@@ -125,15 +125,47 @@ Actor
     # -> foo 1000
     # -> bar 2000
 
-    remote_actor = RemoteActor('tcp://localhost:9999/test')
-    remote_actor ! ['remote!', 3000]
 
-    hub = ActorHub('tcp://*:9999')
-    hub.register('test', actor2)
-    hub.run()
+Distributed Computing
+~~~~~~~~~~~~~~~~~~~~~
+.. code:: python
+    # comsumer.mochi
+    from mochi.actor.mailbox import KombuMailbox, ZmqInbox
+
+    def consumer():
+        receive:
+            'exit':
+                print('exit!')
+            other:
+                print(other)
+                consumer()
+
+    mailbox = KombuMailbox('sqs://<access_key_id>@<secret_access_key>:80//',
+                           '<queue_name>',
+                           dict(region='<region>'))
+    spawn_with_mailbox(consumer, mailbox)
+
+    mailbox = ZmqInbox('tcp://*:9999')
+    spawn_with_mailbox(consumer, mailbox)
 
     wait_all()
-    # -> remote! 3000
+```
+
+```python
+# producer.mochi
+from mochi.actor.mailbox import KombuMailbox, ZmqOutbox
+
+mailbox = KombuMailbox('sqs://<access_key_id>@<secret_access_key>:80//',
+                       '<queue_name>',
+                       dict(region='<region>'))
+mailbox ! [1, 2, 3]
+mailbox ! 'exit'
+
+mailbox = ZmqOutbox('tcp://localhost:9999')
+mailbox ! [4, 5, 6]
+mailbox ! 'exit'
+```
+
 
 Flask
 ~~~~~
@@ -212,9 +244,7 @@ Requirements
 -  pyrsistent >= 0.10.1
 -  pathlib >= 1.0.1
 -  eventlet >= 0.17.1
--  pyzmq >= 14.5.0
 -  msgpack-python >= 0.4.6
--  kazoo >= 2.0
 -  typeannotations >= 0.1.0
 
 Installation
@@ -224,6 +254,16 @@ Installation
 
     $ pip3 install mochi
     $ pip3 install flask Flask-RESTful Pillow RxPY  # to run the examples
+
+
+Optional Installation
+_____________________
+
+.. code:: sh
+    $ pip3 install flask Flask-RESTful Pillow RxPY  # to run the examples
+    $ pip3 install pyzmq # to use ZmqInbox and ZmqOutbox
+    $ pip3 install kombu # to use KombuMailbox
+    $ pip3 install boto # to use SQS as transport of KombuMailbox
 
 Th error of the following may occur when you run Mochi on PyPy.
 

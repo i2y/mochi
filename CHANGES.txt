@@ -1,5 +1,13 @@
 Revision history
 ----------------
+v0.2.5 2015-07-21
+  * Add mailbox module
+  * Remove ActorHub, RemoteActor and ActorAddressBook
+  * Set debug to false as default to avoid tokens to be displayed in IPython Notebooks
+  * Add -o --outfile option to pyc file generation
+  * Add commandline option to generate pretty-printed AST
+  * Add commandline options to convert mochi file Python source file
+  * Fix some bugs
 v0.2.4.2, 2015-05-06
   * Fix a bug related to eventlet's monkey patching on Python 3.2 (pypy3)
 v0.2.4.1, 2015-05-06
