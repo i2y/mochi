@@ -129,6 +129,7 @@ Actor
 Distributed Computing
 ~~~~~~~~~~~~~~~~~~~~~
 .. code:: python
+
     # comsumer.mochi
     from mochi.actor.mailbox import KombuMailbox, ZmqInbox
 
@@ -149,22 +150,22 @@ Distributed Computing
     spawn_with_mailbox(consumer, mailbox)
 
     wait_all()
-```
 
-```python
-# producer.mochi
-from mochi.actor.mailbox import KombuMailbox, ZmqOutbox
 
-mailbox = KombuMailbox('sqs://<access_key_id>@<secret_access_key>:80//',
-                       '<queue_name>',
-                       dict(region='<region>'))
-mailbox ! [1, 2, 3]
-mailbox ! 'exit'
+.. code:: python
 
-mailbox = ZmqOutbox('tcp://localhost:9999')
-mailbox ! [4, 5, 6]
-mailbox ! 'exit'
-```
+    # producer.mochi
+    from mochi.actor.mailbox import KombuMailbox, ZmqOutbox
+
+    mailbox = KombuMailbox('sqs://<access_key_id>@<secret_access_key>:80//',
+                           '<queue_name>',
+                           dict(region='<region>'))
+    mailbox ! [1, 2, 3]
+    mailbox ! 'exit'
+
+    mailbox = ZmqOutbox('tcp://localhost:9999')
+    mailbox ! [4, 5, 6]
+    mailbox ! 'exit'
 
 
 Flask
