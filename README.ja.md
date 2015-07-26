@@ -123,7 +123,7 @@ sleep(1)
 ### 分散コンピューティング
 ```python
 # comsumer.mochi
-from mochi.actor.mailbox import KombuMailbox, ZmqInbox
+from mochi.actor.mailbox import KombuMailbox, ZmqInbox, SQSMailbox
 
 def consumer():
     receive:
@@ -133,31 +133,40 @@ def consumer():
             print(other)
             consumer()
 
-mailbox = KombuMailbox('sqs://<access_key_id>@<secret_access_key>:80//',
-                       '<queue_name>',
-                       dict(region='<region>'))
-spawn_with_mailbox(consumer, mailbox)
+kombu_mailbox = KombuMailbox('sqs://<access_key_id>@<secret_access_key>:80//',
+                             '<queue_name>',
+                             dict(region='<region>'))
+spawn_with_mailbox(consumer, kombu_mailbox)
 
-mailbox = ZmqInbox('tcp://*:9999')
-spawn_with_mailbox(consumer, mailbox)
+zmq_mailbox = ZmqInbox('tcp://*:9999')
+spawn_with_mailbox(consumer, zmq_mailbox)
+
+sqs_mailbox = SQSMailbox('<queue_name>')
+spawn_with_mailbox(consumer, sqs_mailbox)
 
 wait_all()
 ```
 
+
 ```python
 # producer.mochi
-from mochi.actor.mailbox import KombuMailbox, ZmqOutbox
+from mochi.actor.mailbox import KombuMailbox, ZmqOutbox, SQSMailbox
 
-mailbox = KombuMailbox('sqs://<access_key_id>@<secret_access_key>:80//',
-                       '<queue_name>',
-                       dict(region='<region>'))
-mailbox ! [1, 2, 3]
-mailbox ! 'exit'
+kombu_mailbox = KombuMailbox('sqs://<access_key_id>@<secret_access_key>:80//',
+                             '<queue_name>',
+                             dict(region='<region>'))
+kombu_mailbox ! [1, 2, 3]
+kombu_mailbox ! 'exit'
 
-mailbox = ZmqOutbox('tcp://localhost:9999')
-mailbox ! [4, 5, 6]
-mailbox ! 'exit'
+zmq_mailbox = ZmqOutbox('tcp://localhost:9999')
+zmq_mailbox ! [4, 5, 6]
+zmq_mailbox ! 'exit'
+
+sqs_mailbox = SQSMailbox('<queue_name>')
+sqs_mailbox ! [7, 8, 9]
+sqs_mailbox ! 'exit'
 ```
+
 
 ### Flask
 ```python
@@ -243,6 +252,7 @@ $ pip3 install flask Flask-RESTful Pillow RxPY  # to run the examples
 $ pip3 install pyzmq # to use ZmqInbox and ZmqOutbox
 $ pip3 install kombu # to use KombuMailbox
 $ pip3 install boto # to use SQS as transport of KombuMailbox
+$ pip3 install boto3 # to use SQSMailbox
 ```
 
 PyPyでmochiを実行した場合に下記のエラーになることがあります。

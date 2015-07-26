@@ -1,4 +1,5 @@
 import sys
+import base64
 from collections import Mapping, Set
 from abc import ABCMeta, abstractmethod
 
@@ -158,11 +159,56 @@ class KombuMailbox(AckableMailbox):
             self._conn.close()
 
 
+class SQSMailbox(AckableMailbox):
+
+    def __init__(self, name, no_ack=True):
+        import boto3
+        sqs = boto3.resource('sqs')
+        self._queue = sqs.get_queue_by_name(QueueName=name)
+        self._last_msg = None
+        self._last_msgs = None
+        self._no_ack = no_ack
+
+    def get(self, **kwargs):
+        while self._last_msgs is None or len(self._last_msgs) == 0:
+            self._last_msgs = self._queue.receive_messages(**kwargs)
+        self._last_msg = self._last_msgs.pop(0)
+        if self._no_ack:
+            self._last_msg.delete()
+        return decode(unpackb(base64.decodebytes(bytes(self._last_msg.body,
+                                                       'utf-8')),
+                              encoding='utf-8',
+                              use_list=False))
+
+    def put(self, message, **kwargs):
+        return self._queue.send_message(MessageBody=str(base64.encodebytes(packb(encode(message),
+                                                                                encoding='utf-8',
+                                                                                 use_bin_type=True)),
+                                                        'utf-8'),
+                                        **kwargs)
+
+    def ack(self):
+        if self._no_ack:
+            return
+        if self._last_msg is not None:
+            self._last_msg.delete()
+            self._last_msg = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_details):
+        self.__del__()
+
+    def __del__(self):
+        pass
+
+
 class ZmqInbox(Mailbox):
-    def __init__(self, url='tcp://*:9999'):
+    def __init__(self, url='tcp://*:9999', **kwargs):
         from eventlet.green import zmq
         self._url = url
-        self._context = zmq.Context()
+        self._context = zmq.Context(**kwargs)
         self._recv_sock = self._context.socket(zmq.PULL)
         self._recv_sock.bind(url)
 
@@ -186,10 +232,10 @@ class ZmqInbox(Mailbox):
 
 class ZmqOutbox(Mailbox):
 
-    def __init__(self, url):
+    def __init__(self, url, **kwargs):
         from eventlet.green import zmq
         self._url = url
-        self._context = zmq.Context()
+        self._context = zmq.Context(**kwargs)
         self._send_sock = self._context.socket(zmq.PUSH)
         self._send_sock.connect(self._url)
 

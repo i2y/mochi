@@ -1,5 +1,7 @@
 Revision history
 ----------------
+v0.2.6 2015-07-27
+  * Add mochi.actor.mailbox.SQSMailbox
 v0.2.5 2015-07-21
   * Add mailbox module
   * Remove ActorHub, RemoteActor and ActorAddressBook
