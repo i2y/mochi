@@ -110,7 +110,7 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                       'AT', 'BANG', 'DOT_NAME', 'TQUOTE_RAW_STR', 'DQUOTE_RAW_STR', 'SQUOTE_RAW_STR',
                       'NAME', 'EQUALS', 'IF', 'ELSEIF', 'ELSE', 'COLON', 'SEMI', 'DATA', 'IMPORT', 'REQUIRE',
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'PIPELINE_BIND', 'PIPELINE_FIRST',
-                      'PIPELINE_FIRST_BIND', 'PIPELINE_SEND', 'PIPELINE_MULTI_SEND','RETURN', 'VECTOR',
+                      'PIPELINE_FIRST_BIND', 'PIPELINE_SEND', 'PIPELINE_MULTI_SEND', 'RETURN', 'VECTOR',
                       'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'THINARROW', 'RECEIVE',
                       'YIELD', 'FROM', 'FOR', 'IN', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT',
                       'MODULE', 'AS', 'RAISE', 'WITH', 'MACRO', 'QUOTE', 'QUASI_QUOTE', 'UNQUOTE', 'UNQUOTE_SPLICING'],
@@ -123,7 +123,8 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                                  ('left', ['OPPLUS', 'OPMINUS']),
                                  ('left', ['LBRACK', 'RBRACK']),
                                  ('left', ['OPTIMES', 'OPDIV', 'OPFLOORDIV', 'PERCENT', 'OPBITAND', 'OPBITOR',
-                                           'OPBITXOR', 'OPPOW', 'OPRSHIFT', 'OPLSHIFT'])],
+                                           'OPBITXOR', 'OPPOW', 'OPRSHIFT', 'OPLSHIFT']),
+                                 ('left', ['IF'])],
                      cache_id='mochi_' + __version__)
 
 
