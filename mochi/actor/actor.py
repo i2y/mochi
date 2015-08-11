@@ -1,4 +1,4 @@
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
 import eventlet
 from .mailbox import Mailbox, AckableMailbox, LocalMailbox, Receiver
@@ -10,7 +10,14 @@ _actor_pool = eventlet.GreenPool()
 
 
 class ActorBase(Receiver, metaclass=ABCMeta):
-    pass
+    @abstractmethod
+    def encode(self):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def decode(params):
+        pass
 
 
 class Actor(ActorBase):
@@ -70,6 +77,14 @@ class Actor(ActorBase):
     def ack_last_msg(self):
         if self._ack:
             self._inbox.ack()
+
+    def encode(self):
+        return self._inbox.encode()
+
+    @staticmethod
+    def decode(params):
+        raise NotImplementedError
+
 
 default_mailbox = LocalMailbox()
 

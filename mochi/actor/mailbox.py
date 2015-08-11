@@ -78,15 +78,10 @@ def encode(obj):
         return ExtType(TYPE_PLIST, packb([encode(item) for item in obj], use_bin_type=True))
     if isinstance(obj, PBag):
         return ExtType(TYPE_PBAG, packb([encode(item) for item in obj], use_bin_type=True))
-    from .actor import Actor  # TODO
-    if isinstance(obj, Actor):
-        return encode(obj._inbox)
     if isinstance(obj, types.FunctionType):
         return ExtType(TYPE_FUNC, packb([obj.__module__, obj.__name__], use_bin_type=True))
-    if isinstance(obj, Mailbox):
-        cls = obj.__class__
-        return ExtType(TYPE_MBOX, packb([cls.__module__, cls.__name__] + obj.encode(),
-                                        use_bin_type=True))
+    if isinstance(obj, Receiver):
+        return ExtType(TYPE_MBOX, packb(obj.encode(), use_bin_type=True))
     # assume record
     cls = obj.__class__
     return ExtType(0, packb([cls.__module__, cls.__name__] + [encode(item) for item in obj],
@@ -94,7 +89,14 @@ def encode(obj):
 
 
 class Receiver(metaclass=ABCMeta):
-    pass
+    @abstractmethod
+    def encode(self):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def decode(params):
+        pass
 
 
 class Mailbox(Receiver, metaclass=ABCMeta):
@@ -255,7 +257,8 @@ class SQSMailbox(AckableMailbox):
             self._last_msg = None
 
     def encode(self):
-        return [self._name, self._no_ack]
+        cls = self.__class__
+        return [cls.__module__, cls.__name__, self._name, self._no_ack]
 
     @staticmethod
     def decode(params):
@@ -361,7 +364,8 @@ class TcpInbox(Mailbox):
         raise NotImplementedError()
 
     def encode(self):
-        return [get_hostname(), self._port]
+        cls = self.__class__
+        return [cls.__module__, cls.__name__, get_hostname(), self._port]
 
     @staticmethod
     def decode(params):
@@ -375,7 +379,6 @@ class TcpInbox(Mailbox):
         self.__del__()
 
     def __del__(self):
-        print('in close!')
         self._recv_sock.close()
         self._context.term()
 
@@ -411,6 +414,5 @@ class TcpOutbox(Mailbox):
         self.__del__()
 
     def __del__(self):
-        print('out close')
         self._send_sock.close()
         self._context.term()
