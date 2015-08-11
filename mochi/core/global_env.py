@@ -51,6 +51,7 @@ def make_default_env():
     env.update(functools.__dict__)
     env.update(itertools.__dict__)
     env.update(operator.__dict__)
+    env['pow'] = pow
     if GE_PYTHON_33:
         env['__spec__'] = sys.modules[__name__].__spec__
     env[Iterable.__name__] = Iterable

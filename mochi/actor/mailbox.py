@@ -1,5 +1,7 @@
 import sys
 import base64
+import socket
+import types
 from collections import Mapping, Set
 from abc import ABCMeta, abstractmethod
 
@@ -14,6 +16,8 @@ _native_builtin_types = (int, float, str, bool)
 TYPE_PSET = 1
 TYPE_PLIST = 2
 TYPE_PBAG = 3
+TYPE_MBOX = 4
+TYPE_FUNC = 5
 
 
 def decode(obj):
@@ -33,11 +37,20 @@ def decode(obj):
                                     use_list=False,
                                     encoding='utf-8')
             return pbag(decode(item) for item in unpacked_data)
+        if obj.code == TYPE_FUNC:
+            module_name, func_name = unpackb(obj.data,
+                                             use_list=False,
+                                             encoding='utf-8')
+
+            return getattr(sys.modules[module_name],
+                           func_name)
         module_name, class_name, *data = unpackb(obj.data,
                                                  use_list=False,
                                                  encoding='utf-8')
         cls = getattr(sys.modules[module_name],
                       class_name)
+        if obj.code == TYPE_MBOX:
+            return cls.decode(data)
         return cls(*(decode(item) for item in data))
     if isinstance(obj, tuple):
         return pvector(decode(item) for item in obj)
@@ -65,19 +78,41 @@ def encode(obj):
         return ExtType(TYPE_PLIST, packb([encode(item) for item in obj], use_bin_type=True))
     if isinstance(obj, PBag):
         return ExtType(TYPE_PBAG, packb([encode(item) for item in obj], use_bin_type=True))
+    from .actor import Actor  # TODO
+    if isinstance(obj, Actor):
+        return encode(obj._inbox)
+    if isinstance(obj, types.FunctionType):
+        return ExtType(TYPE_FUNC, packb([obj.__module__, obj.__name__], use_bin_type=True))
+    if isinstance(obj, Mailbox):
+        cls = obj.__class__
+        return ExtType(TYPE_MBOX, packb([cls.__module__, cls.__name__] + obj.encode(),
+                                        use_bin_type=True))
     # assume record
     cls = obj.__class__
     return ExtType(0, packb([cls.__module__, cls.__name__] + [encode(item) for item in obj],
                             use_bin_type=True))
 
 
-class Mailbox(metaclass=ABCMeta):
+class Receiver(metaclass=ABCMeta):
+    pass
+
+
+class Mailbox(Receiver, metaclass=ABCMeta):
     @abstractmethod
     def put(self, message):
         pass
 
     @abstractmethod
     def get(self):
+        pass
+
+    @abstractmethod
+    def encode(self):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def decode(params):
         pass
 
 
@@ -95,6 +130,16 @@ class AckableMailbox(Mailbox,
     def ack(self):
         pass
 
+    @abstractmethod
+    def encode(self):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def decode(params):
+        pass
+
+
 Mailbox.register(Queue)
 
 
@@ -108,6 +153,13 @@ class LocalMailbox(Mailbox):
 
     def get(self):
         return self._queue.get()
+
+    def encode(self):
+        raise NotImplementedError
+
+    @staticmethod
+    def decode(params):
+        raise NotImplementedError
 
 
 class KombuMailbox(AckableMailbox):
@@ -146,6 +198,13 @@ class KombuMailbox(AckableMailbox):
             self._last_msg.ack()
             self._last_msg = None
 
+    def encode(self):
+        raise NotImplementedError
+
+    @staticmethod
+    def decode(params):
+        raise NotImplementedError
+
     def __enter__(self):
         return self
 
@@ -164,6 +223,7 @@ class SQSMailbox(AckableMailbox):
     def __init__(self, name, no_ack=True):
         import boto3
         sqs = boto3.resource('sqs')
+        self._name = name
         self._queue = sqs.get_queue_by_name(QueueName=name)
         self._last_msg = None
         self._last_msgs = None
@@ -182,7 +242,7 @@ class SQSMailbox(AckableMailbox):
 
     def put(self, message, **kwargs):
         return self._queue.send_message(MessageBody=str(base64.encodebytes(packb(encode(message),
-                                                                                encoding='utf-8',
+                                                                                 encoding='utf-8',
                                                                                  use_bin_type=True)),
                                                         'utf-8'),
                                         **kwargs)
@@ -193,6 +253,14 @@ class SQSMailbox(AckableMailbox):
         if self._last_msg is not None:
             self._last_msg.delete()
             self._last_msg = None
+
+    def encode(self):
+        return [self._name, self._no_ack]
+
+    @staticmethod
+    def decode(params):
+        name, no_ack = params
+        return SQSMailbox(name, no_ack=no_ack)
 
     def __enter__(self):
         return self
@@ -219,6 +287,13 @@ class ZmqInbox(Mailbox):
 
     def put(self, message):
         raise NotImplementedError()
+
+    def encode(self):
+        raise NotImplementedError
+
+    @staticmethod
+    def decode(params):
+        raise NotImplementedError
 
     def __enter__(self):
         return self
@@ -247,6 +322,13 @@ class ZmqOutbox(Mailbox):
                                    encoding='utf-8',
                                    use_bin_type=True))
 
+    def encode(self):
+        raise NotImplementedError
+
+    @staticmethod
+    def decode(params):
+        raise NotImplementedError
+
     def __enter__(self):
         return self
 
@@ -255,3 +337,80 @@ class ZmqOutbox(Mailbox):
 
     def __del__(self):
         self._send_sock.close()
+
+
+def get_hostname():
+    return socket.getfqdn()
+
+
+class TcpInbox(Mailbox):
+    def __init__(self, port=9999, **kwargs):
+        from eventlet.green import zmq
+        self._port = port
+        self._url = 'tcp://*:' + str(port)
+        self._context = zmq.Context(**kwargs)
+        self._recv_sock = self._context.socket(zmq.PULL)
+        self._recv_sock.bind(self._url)
+
+    def get(self):
+        return decode(unpackb(self._recv_sock.recv(),
+                              encoding='utf-8',
+                              use_list=False))
+
+    def put(self, message):
+        raise NotImplementedError()
+
+    def encode(self):
+        return [get_hostname(), self._port]
+
+    @staticmethod
+    def decode(params):
+        address, port = params
+        return TcpOutbox(address, port)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_details):
+        self.__del__()
+
+    def __del__(self):
+        print('in close!')
+        self._recv_sock.close()
+        self._context.term()
+
+
+class TcpOutbox(Mailbox):
+
+    def __init__(self, address, port, **kwargs):
+        from eventlet.green import zmq
+        self._url = 'tcp://' + address + ':' + str(port)
+        self._context = zmq.Context(**kwargs)
+        self._send_sock = self._context.socket(zmq.PUSH)
+        self._send_sock.connect(self._url)
+
+    def get(self):
+        raise NotImplementedError()
+
+    def put(self, msg):
+        self._send_sock.send(packb(encode(msg),
+                                   encoding='utf-8',
+                                   use_bin_type=True))
+
+    def encode(self):
+        raise NotImplementedError
+
+    @staticmethod
+    def decode(params):
+        raise NotImplementedError
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_details):
+        self.__del__()
+
+    def __del__(self):
+        print('out close')
+        self._send_sock.close()
+        self._context.term()

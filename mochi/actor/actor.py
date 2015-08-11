@@ -1,7 +1,7 @@
 from abc import ABCMeta
 
 import eventlet
-from .mailbox import Mailbox, AckableMailbox, LocalMailbox
+from .mailbox import Mailbox, AckableMailbox, LocalMailbox, Receiver
 
 
 _actor_map = {}
@@ -9,7 +9,7 @@ _actor_map = {}
 _actor_pool = eventlet.GreenPool()
 
 
-class ActorBase(metaclass=ABCMeta):
+class ActorBase(Receiver, metaclass=ABCMeta):
     pass
 
 
@@ -28,7 +28,8 @@ class Actor(ActorBase):
         try:
             self._callback(*args, **kwargs)
         finally:
-            del _actor_map[greenlet_id]
+            if greenlet_id in _actor_map.keys():
+                del _actor_map[greenlet_id]
 
     def spawn(self, *args, **kwargs):
         self._greenlet = _actor_pool.spawn(self.run, *args, **kwargs)
