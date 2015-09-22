@@ -17,13 +17,9 @@ def show_loop():
 
 
 actor1 = spawn(show_once)
-link(actor1, (&args) -> print("actor1", args))
-
 send("foo", actor1)
 
 actor2 = spawn(show_loop)
-link(actor2, (&args) -> print("actor2", args))
-
 actor2 ! ["bar", 2000]
 
 sleep(1)
@@ -41,5 +37,3 @@ sleep(1)
 # -> bar 2000
 
 wait_all()
-
-

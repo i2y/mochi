@@ -1,0 +1,32 @@
+from mochi.actor.actor import fork
+
+
+def forker():
+    receive:
+        message:
+            print(message)
+            forker()
+
+
+def printer():
+    receive:
+        'exit':
+            raise Exception('exit!')
+        message:
+            print(message)
+            sleep(1)
+            printer()
+
+forker_proc = spawn(forker)
+printer_A = fork(forker_proc, printer)
+
+sleep(1)
+printer_A ! 1
+printer_A ! 2
+printer_A ! 3
+
+printer_A ! 'exit'
+
+sleep(1)
+
+wait_all()

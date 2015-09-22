@@ -6,12 +6,12 @@ from collections import Mapping, Set
 from abc import ABCMeta, abstractmethod
 
 from msgpack import packb, unpackb, ExtType
-from eventlet.queue import Queue
+from eventlet.queue import LightQueue
 from pyrsistent import (PVector, PList, PBag,
                         pvector, pmap, pset, plist, pbag)
 
 
-_native_builtin_types = (int, float, str, bool)
+_native_builtin_types = (int, float, str, bool, type(None))
 
 TYPE_PSET = 1
 TYPE_PLIST = 2
@@ -117,6 +117,9 @@ class Mailbox(Receiver, metaclass=ABCMeta):
     def decode(params):
         pass
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class AckableMailbox(Mailbox,
                      metaclass=ABCMeta):
@@ -142,19 +145,20 @@ class AckableMailbox(Mailbox,
         pass
 
 
-Mailbox.register(Queue)
+Mailbox.register(LightQueue)
 
 
 class LocalMailbox(Mailbox):
+    __slots__ = ['_queue']
 
     def __init__(self):
-        self._queue = Queue()
+        self._queue = LightQueue()
 
     def put(self, message):
         self._queue.put(message)
 
     def get(self):
-        return self._queue.get()
+        return self._queue.get(block=True)
 
     def encode(self):
         raise NotImplementedError
@@ -165,6 +169,7 @@ class LocalMailbox(Mailbox):
 
 
 class KombuMailbox(AckableMailbox):
+    __slots__ = ['_address', '_conn', '_queue', '_no_ack', '_last_msg']
 
     def __init__(self,
                  address,
@@ -175,6 +180,7 @@ class KombuMailbox(AckableMailbox):
                  queue_opts=None,
                  exchange_opts=None):
         from kombu import Connection
+        self._address = address
         self._conn = Connection(address,
                                 transport_options=transport_options,
                                 ssl=ssl)
@@ -219,8 +225,16 @@ class KombuMailbox(AckableMailbox):
         if hasattr(self, '_conn'):
             self._conn.close()
 
+    def __str__(self):
+        return self._address
+
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__
+                and self._address == other._address)
+
 
 class SQSMailbox(AckableMailbox):
+    __slots__ = ['_name', '_queue', '_last_msg', '_last_msgs', '_no_ack']
 
     def __init__(self, name, no_ack=True):
         import boto3
@@ -274,8 +288,20 @@ class SQSMailbox(AckableMailbox):
     def __del__(self):
         pass
 
+    def __str__(self):
+        return str(self._queue.url)
+
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__
+                and self._queue.url == other._queue.url)
+
+    def __hash__(self):
+        return hash(self._queue.url)
+
 
 class ZmqInbox(Mailbox):
+    __slots__ = ['_url', '_context', '_recv_sock']
+
     def __init__(self, url='tcp://*:9999', **kwargs):
         from eventlet.green import zmq
         self._url = url
@@ -307,8 +333,19 @@ class ZmqInbox(Mailbox):
     def __del__(self):
         self._recv_sock.close()
 
+    def __str__(self):
+        return self._url
+
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__
+                and self._url == other._url)
+
+    def __hash__(self):
+        return hash(self._url)
+
 
 class ZmqOutbox(Mailbox):
+    __slots__ = ['_url', '_context', '_send_sock']
 
     def __init__(self, url, **kwargs):
         from eventlet.green import zmq
@@ -341,12 +378,24 @@ class ZmqOutbox(Mailbox):
     def __del__(self):
         self._send_sock.close()
 
+    def __str__(self):
+        return self._url
+
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__
+                and self._url == other._url)
+
+    def __hash__(self):
+        return hash(self._url)
+
 
 def get_hostname():
     return socket.getfqdn()
 
 
 class TcpInbox(Mailbox):
+    __slots__ = ['_port', '_url', '_context', '_recv_sock']
+
     def __init__(self, port=9999, **kwargs):
         from eventlet.green import zmq
         self._port = port
@@ -382,8 +431,19 @@ class TcpInbox(Mailbox):
         self._recv_sock.close()
         self._context.term()
 
+    def __str__(self):
+        return self._url
+
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__
+                and self._url == other._url)
+
+    def __hash__(self):
+        return hash(self._url)
+
 
 class TcpOutbox(Mailbox):
+    __slots__ = ['_url', '_context', '_send_sock']
 
     def __init__(self, address, port, **kwargs):
         from eventlet.green import zmq
@@ -416,3 +476,13 @@ class TcpOutbox(Mailbox):
     def __del__(self):
         self._send_sock.close()
         self._context.term()
+
+    def __str__(self):
+        return self._url
+
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__
+                and self._url == other._url)
+
+    def __hash__(self):
+        return hash(self._url)

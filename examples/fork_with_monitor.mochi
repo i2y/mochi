@@ -1,0 +1,40 @@
+from mochi.actor.actor import fork_with_monitor
+
+
+def forker():
+    receive:
+        message:
+            print(message)
+            forker()
+
+
+def printer():
+    receive:
+        'exit':
+            raise Exception('exit!')
+        message:
+            print(message)
+            sleep(1)
+            printer()
+
+
+def printer_monitor(forker, printer):
+    fork_with_monitor(forker, printer)
+    receive:
+        message:
+            print('Printer is down: ' + str(message))
+
+forker_proc = spawn(forker)
+monitor_A = spawn(printer_monitor, forker_proc, printer)
+printer_A = forker_proc
+
+sleep(1)
+printer_A ! 1
+printer_A ! 2
+printer_A ! 3
+
+printer_A ! 'exit'
+
+sleep(1)
+
+wait_all()

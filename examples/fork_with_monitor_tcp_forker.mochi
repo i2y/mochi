@@ -1,0 +1,25 @@
+from mochi.actor.actor import fork_with_monitor
+from mochi.actor.mailbox import TcpInbox
+
+
+
+def printer():
+    receive:
+        'exit':
+            raise Exception('exit!')
+        message:
+            print(message)
+            sleep(1)
+            printer()
+
+
+def forker():
+    receive:
+        message:
+            print(message)
+            print("aaa")
+            forker()
+
+
+forker_proc = spawn_with_mailbox(forker, TcpInbox(10006))
+wait_all()

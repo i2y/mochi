@@ -1,0 +1,34 @@
+from mochi.actor.actor import fork_with_monitor
+from mochi.actor.mailbox import TcpInbox, TcpOutbox
+
+
+def printer():
+    receive:
+        'exit':
+            raise Exception('exit!')
+        message:
+            print(message)
+            sleep(1)
+            printer()
+
+
+def printer_monitor(forker, printer):
+    fork_with_monitor(forker, printer)
+    receive:
+        message:
+            print('Printer is down: ' + str(message))
+
+forker_ref = TcpOutbox('localhost', 10006)
+monitor_A = spawn_with_mailbox(printer_monitor, TcpInbox(10007), forker_ref, printer)
+printer_A = forker_ref
+
+sleep(1)
+printer_A ! 1
+printer_A ! 2
+printer_A ! 3
+
+printer_A ! 'exit'
+
+sleep(1)
+
+wait_all()
