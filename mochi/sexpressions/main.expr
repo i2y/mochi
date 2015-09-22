@@ -306,7 +306,7 @@
      (_val targetval (gensym))
      (_val result (gensym))
      (_val len_pattern_procs (len pattern_procs))
-     (if (== len_pattern_procs 0) 'False
+     (if (== len_pattern_procs 0) '(raise (TypeError "no clause to match"))
        (>= len_pattern_procs 1)
        (let (((pattern & procs) (first pattern_procs)))
      `(do
