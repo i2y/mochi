@@ -1,5 +1,8 @@
 Revision history
 ----------------
+v0.2.7 2015-09-23
+  * Change to raise an exception when a pattern matching fails
+  * Change and improve API about actors to control remote actors
 v0.2.6 2015-07-27
   * Add mochi.actor.mailbox.SQSMailbox
 v0.2.5 2015-07-21
