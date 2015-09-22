@@ -206,7 +206,6 @@ def make_py_source_file(mochi_file_name, python_file_name=None, mochi_env='',
             fobj.write(py_source)
 
 
-
 def pprint_ast(mochi_file_name, ast_file_name=None, show_tokens=False):
     """Generate a nicly formatted AST from Mochi code.
     """
