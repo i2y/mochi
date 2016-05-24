@@ -276,6 +276,7 @@ def parse_args():
     arg_parser.add_argument('-e', '--execute-compiled-file',
                             action='store_true')
     arg_parser.add_argument('file', nargs='?', type=str)
+    arg_parser.add_argument('args', nargs='*', type=str)
     arg_parser.add_argument('--show-tokens', dest='tokens',
                             help='Shows the results of the tokenizing step.',
                             action='store_true')
