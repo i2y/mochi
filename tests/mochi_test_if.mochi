@@ -1,0 +1,9 @@
+def test_if():
+    x = if 1 > 2:
+        10
+    else:
+        30
+    x
+
+def result_test_if():
+    30
