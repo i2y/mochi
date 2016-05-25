@@ -105,7 +105,7 @@ class Keyword(object):
 pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ', 'OPGEQ', 'OPEQ', 'OPNEQ',
                       'OPLT', 'OPGT', 'OPBITOR', 'OPPOW',
                       'OPRSHIFT', 'OPLSHIFT', 'OPFLOORDIV', 'OPBITAND', 'OPBITXOR',
-                      'OPAND', 'OPOR', 'OPIS', 'NOT', 'NEWLINE', 'PERCENT', 'EXPORT',
+                      'OPAND', 'OPOR', 'OPIS', 'NOT', 'NEWLINE', 'PERCENT', 'EXPORT', 'ASSERT',
                       'LPAREN', 'RPAREN', 'TRUE', 'FALSE', 'TQUOTE_STR', 'DQUOTE_STR', 'SQUOTE_STR',
                       'AT', 'BANG', 'DOT_NAME', 'TQUOTE_RAW_STR', 'DQUOTE_RAW_STR', 'SQUOTE_RAW_STR',
                       'NAME', 'EQUALS', 'IF', 'ELSEIF', 'ELSE', 'COLON', 'SEMI', 'DATA', 'IMPORT', 'REQUIRE',
@@ -173,7 +173,6 @@ def stmt_newline(p):
 @pg.production('stmt : require_expr')
 @pg.production('stmt : module_expr')
 @pg.production('stmt : from_expr')
-@pg.production('stmt : if_expr')
 @pg.production('stmt : try_stmt')
 @pg.production('stmt : with_stmt')
 @pg.production('stmt : raise_stmt')
@@ -181,6 +180,7 @@ def stmt_newline(p):
 @pg.production('stmt : macro_stmt')
 @pg.production('stmt : q_stmt')
 @pg.production('stmt : qq_stmt')
+@pg.production('stmt : assert_stmt')
 def stmt(p):
     return p[0]
 
@@ -356,6 +356,11 @@ def qq_stmt(p):
     return [Symbol('unquote_splicing'), p[2]]
 
 
+@pg.production('assert_stmt : ASSERT binop_expr')
+def assert_stmt(p):
+    return [Symbol('assert'), p[1]]
+
+
 @pg.production('with_stmt : WITH with_contexts COLON suite2')
 def with_stmt(p):
     return [Symbol('with'), p[1]] + p[3]
@@ -401,7 +406,7 @@ def binding(p):
 
 @pg.production('expr : fn_expr')
 @pg.production('expr : paren_expr')
-# @pg.production('expr : if_expr')
+@pg.production('expr : if_expr')
 @pg.production('expr : trailing_if_expr')
 @pg.production('expr : prim_expr')
 @pg.production('expr : uq_expr')

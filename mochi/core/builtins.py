@@ -544,7 +544,7 @@ class OutputPort(object):
         return None
 
     def write(self, obj):
-        self.file.write(str(obj))  # emit_sexp(obj))
+        self.file.write(str(obj))  # emit_sexp(obj)) repr
         return None
 
 
@@ -994,7 +994,7 @@ def tuple_it(obj):
     return tuple(map(tuple_it, obj)) if isinstance(obj, MutableSequence) else obj
 
 
-def eval_tokens(tokens):
+def eval_tokens(tokens, globals=global_env, locals=None):
     sexps = parse(tokens.__iter__())
     for sexp in sexps:
         if isinstance(sexp, MutableSequence):
@@ -1005,13 +1005,13 @@ def eval_tokens(tokens):
         if py_ast is not None:
             code = compile(py_ast, '<string>', 'exec')
             if code is not None:
-                exec(code, global_env)
+                exec(code, globals, locals)
 
 
 @builtin_rename('eval')
-def eval_code_block(block):
+def eval_code_block(block, globals=global_env, locals=None):
     lexer = lex(block + '\n', repl_mode=True)
-    eval_tokens(lexer)
+    eval_tokens(lexer, globals, locals)
 
 
 def eval_sexp_str(sexp_str):
@@ -1082,11 +1082,6 @@ def iter_except(func, exc):
             yield func()
     except exc:
         pass
-
-
-@builtin_rename('assert')
-def _assert(value):
-    assert value
 
 
 @builtin

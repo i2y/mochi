@@ -18,7 +18,7 @@ from .global_env import global_env
 if GE_PYTHON_34:
     expr_and_stmt_ast = (ast.Expr, ast.If, ast.For, ast.FunctionDef, ast.Assign, ast.Delete, ast.Try, ast.Raise,
                          ast.With, ast.While, ast.Break, ast.Return, ast.Continue, ast.ClassDef,
-                         ast.Import, ast.ImportFrom, ast.Pass)
+                         ast.Import, ast.ImportFrom, ast.Pass, ast.Assert)
 else:
     expr_and_stmt_ast = (ast.Expr, ast.If, ast.For, ast.FunctionDef, ast.Assign, ast.Delete, ast.TryFinally,
                          ast.TryExcept, ast.Raise, ast.With, ast.While, ast.Break, ast.Return, ast.Continue,
@@ -1221,6 +1221,18 @@ class Translator(object):
         pre.append(vector_def)
         _, def_ref = self.translate_ref(vector_name)
         return pre, def_ref
+
+    @syntax('assert')
+    def translate_assert(self, exp):
+        if len(exp) != 2:
+            raise MochiSyntaxError(exp, self.filename)
+        assert_symbol, value_exp = exp
+        pre, value = self.translate(value_exp, False)
+        pre.append(ast.Assert(test=value,
+                              msg=None,
+                              lineno=assert_symbol.lineno,
+                              col_offset=assert_symbol.col_offset))
+        return pre, self.translate(NONE_SYM, False)[1]
 
     @syntax('record')
     def translate_record(self, exp):
