@@ -11,7 +11,7 @@ elif False:
 elif False:
     200000
 else:
-    print "False!"
+    print("False!")
 
 if True:
     w = "aiueo"
@@ -87,7 +87,12 @@ else:
 
 print(str(1) + str(2), 10)
 
-tuple(map(-> $1 + 10 if True else $1 + 20, [1, 2, 3]))
+m1 = map([1, 2, 3]) ->
+    if True:
+        $1 + 10
+    else:
+        $1 + 20
+m1 |> tuple |> print
 
 match ["faa", 200]:
     ["aaa", xx]: print(xx + 200)

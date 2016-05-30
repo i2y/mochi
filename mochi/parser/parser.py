@@ -407,7 +407,6 @@ def binding(p):
 @pg.production('expr : fn_expr')
 @pg.production('expr : paren_expr')
 @pg.production('expr : if_expr')
-@pg.production('expr : trailing_if_expr')
 @pg.production('expr : prim_expr')
 @pg.production('expr : uq_expr')
 @pg.production('expr : uqs_expr')
@@ -554,7 +553,7 @@ def elseif_expr_empty(p):
     return None
 
 
-@pg.production('trailing_if_expr : binop_expr IF binop_expr ELSE binop_expr')
+#@pg.production('trailing_if_expr : binop_expr IF binop_expr ELSE binop_expr')
 def trailing_if_expr(p):
     return [Symbol('if'), p[2], p[0], p[4]]
 
