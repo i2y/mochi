@@ -112,7 +112,7 @@ pg = ParserGenerator(['NUMBER', 'OPPLUS', 'OPMINUS', 'OPTIMES', 'OPDIV', 'OPLEQ'
                       'LBRACK', 'RBRACK', 'COMMA', 'DEF', 'DOC', 'CALET', 'PIPELINE', 'PIPELINE_BIND', 'PIPELINE_FIRST',
                       'PIPELINE_FIRST_BIND', 'PIPELINE_SEND', 'PIPELINE_MULTI_SEND', 'RETURN', 'VECTOR',
                       'LBRACE', 'RBRACE', 'MATCH', 'DEFM', 'RECORD', 'AMP', 'FN', 'THINARROW', 'RECEIVE',
-                      'YIELD', 'FROM', 'FOR', 'IN', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT',
+                      'YIELD', 'FROM', 'FOR', 'IN', 'INDENT', 'DEDENT', 'TRY', 'FINALLY', 'EXCEPT', 'REF',
                       'MODULE', 'AS', 'RAISE', 'WITH', 'MACRO', 'QUOTE', 'QUASI_QUOTE', 'UNQUOTE', 'UNQUOTE_SPLICING'],
                      precedence=[('left', ['EQUALS']),
                                  ('left', ['NOT']),
@@ -1015,6 +1015,7 @@ def case_branch(p):
 @pg.production('pattern : sequence_type_pattern')
 @pg.production('pattern : type_pattern')
 @pg.production('pattern : id_pattern')
+@pg.production('pattern : ref_pattern')
 @pg.production('pattern : and_pattern')
 @pg.production('pattern : or_pattern')
 @pg.production('pattern : quote_pattern')
@@ -1156,6 +1157,11 @@ def or_pattern(p):
 @pg.production('type_pattern : NAME pattern')
 def type_pattern(p):
     return [Symbol('type'), token_to_symbol(p[0]), p[1]]
+
+
+@pg.production('ref_pattern : REF NAME')
+def ref_pattern(p):
+    return [Symbol('ref'), token_to_symbol(p[1])]
 
 
 @pg.production('quote_pattern : QUOTE LPAREN pattern RPAREN')

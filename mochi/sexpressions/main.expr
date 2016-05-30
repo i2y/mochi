@@ -35,6 +35,7 @@
                   (== len_pattern 0) `(and (isinstance ,target Sequence) (== (len ,target) 0))
                   (== (car pattern) 'make_list) (match? target (cdr pattern))
                   (== (car pattern) 'make_tuple) (match? target (cdr pattern))
+                  (== (car pattern) 'ref) `(== ,target ,(cadr pattern))
                   (== (car pattern) 'table)
                     (if
                       (== len_pattern 1) `(isinstance ,target Mapping)
@@ -77,6 +78,7 @@
               (_val len_pattern (len pattern))
               (if
                 (== len_pattern 0) '()
+                (== (car pattern) 'ref) '()
                 (== (car pattern) 'make_list) (pattern_bind (cdr pattern) target)
                 (== (car pattern) 'make_tuple) (pattern_bind (cdr pattern) target)
                 (== (car pattern) 'table) (table_pattern_bind (cdr pattern) target)
@@ -213,6 +215,7 @@
                   (== len_pattern 0) `(and (isinstance ,target Sequence) (== (len ,target) 0))
                   (== (car pattern) 'make_list) (match? target (cdr pattern))
                   (== (car pattern) 'make_tuple) (match? target (cdr pattern))
+                  (== (car pattern) 'ref) `(== ,target ,(cadr pattern))
                   (== (car pattern) 'table)
                     (if
                       (== len_pattern 1) `(isinstance ,target Mapping)
@@ -279,6 +282,7 @@
                 (== len_pattern 0) '()
                 (== (car pattern) 'not) '()
                 (== (car pattern) 'or) '()
+                (== (car pattern) 'ref) '()
                 (== (car pattern) 'and)
                   (if (== len_pattern 2)
                     (pattern_bind (cadr pattern) target)
