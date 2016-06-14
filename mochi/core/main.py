@@ -37,11 +37,9 @@ def output_pyc(code, buffer=sys.stdout.buffer):
 
     buffer.write(MAGIC_NUMBER)
     timestamp = struct.pack('i', int(time.time()))
+    buffer.write(timestamp)
     if GE_PYTHON_33:
-        buffer.write(timestamp)
         buffer.write(b'0' * 4)
-    else:
-        buffer.write(timestamp)
     marshal.dump(code, buffer)
     buffer.flush()
 
