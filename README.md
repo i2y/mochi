@@ -229,6 +229,7 @@ aif([10, 20], first(it), "empty")
 - eventlet >= 0.17.1
 - msgpack-python >= 0.4.6
 - typeannotations >= 0.1.0
+- cloudpickle >= 0.2.1
 
 
 ## Installation

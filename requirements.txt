@@ -5,3 +5,4 @@ eventlet>=0.17.2
 msgpack-python>=0.4.6
 typeannotations>=0.1.0
 astunparse>=1.2.2
+cloudpickle>=0.2.1

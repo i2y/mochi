@@ -5,8 +5,10 @@ import types
 from collections import Mapping, Set
 from abc import ABCMeta, abstractmethod
 
+import cloudpickle
 from msgpack import packb, unpackb, ExtType
 from eventlet.queue import LightQueue
+from eventlet.green import zmq
 from pyrsistent import (PVector, PList, PBag,
                         pvector, pmap, pset, plist, pbag)
 
@@ -38,12 +40,7 @@ def decode(obj):
                                     encoding='utf-8')
             return pbag(decode(item) for item in unpacked_data)
         if obj.code == TYPE_FUNC:
-            module_name, func_name = unpackb(obj.data,
-                                             use_list=False,
-                                             encoding='utf-8')
-
-            return getattr(sys.modules[module_name],
-                           func_name)
+            return decode_func(obj.data)
         module_name, class_name, *data = unpackb(obj.data,
                                                  use_list=False,
                                                  encoding='utf-8')
@@ -79,13 +76,21 @@ def encode(obj):
     if isinstance(obj, PBag):
         return ExtType(TYPE_PBAG, packb([encode(item) for item in obj], use_bin_type=True))
     if isinstance(obj, types.FunctionType):
-        return ExtType(TYPE_FUNC, packb([obj.__module__, obj.__name__], use_bin_type=True))
+        return ExtType(TYPE_FUNC, encode_func(obj))
     if isinstance(obj, Receiver):
         return ExtType(TYPE_MBOX, packb(obj.encode(), use_bin_type=True))
     # assume record
     cls = obj.__class__
     return ExtType(0, packb([cls.__module__, cls.__name__] + [encode(item) for item in obj],
                             use_bin_type=True))
+
+
+def decode_func(obj):
+    return cloudpickle.loads(obj)
+
+
+def encode_func(obj):
+    return cloudpickle.dumps(obj)
 
 
 class Receiver(metaclass=ABCMeta):
@@ -303,7 +308,6 @@ class ZmqInbox(Mailbox):
     __slots__ = ['_url', '_context', '_recv_sock']
 
     def __init__(self, url='tcp://*:9999', **kwargs):
-        from eventlet.green import zmq
         self._url = url
         self._context = zmq.Context(**kwargs)
         self._recv_sock = self._context.socket(zmq.PULL)
@@ -348,7 +352,6 @@ class ZmqOutbox(Mailbox):
     __slots__ = ['_url', '_context', '_send_sock']
 
     def __init__(self, url, **kwargs):
-        from eventlet.green import zmq
         self._url = url
         self._context = zmq.Context(**kwargs)
         self._send_sock = self._context.socket(zmq.PUSH)
@@ -397,7 +400,6 @@ class TcpInbox(Mailbox):
     __slots__ = ['_port', '_url', '_context', '_recv_sock']
 
     def __init__(self, port=9999, **kwargs):
-        from eventlet.green import zmq
         self._port = port
         self._url = 'tcp://*:' + str(port)
         self._context = zmq.Context(**kwargs)
@@ -446,11 +448,191 @@ class TcpOutbox(Mailbox):
     __slots__ = ['_url', '_context', '_send_sock']
 
     def __init__(self, address, port, **kwargs):
-        from eventlet.green import zmq
         self._url = 'tcp://' + address + ':' + str(port)
         self._context = zmq.Context(**kwargs)
         self._send_sock = self._context.socket(zmq.PUSH)
         self._send_sock.connect(self._url)
+
+    def get(self):
+        raise NotImplementedError()
+
+    def put(self, msg):
+        self._send_sock.send(packb(encode(msg),
+                                   encoding='utf-8',
+                                   use_bin_type=True))
+
+    def encode(self):
+        raise NotImplementedError
+
+    @staticmethod
+    def decode(params):
+        raise NotImplementedError
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_details):
+        self.__del__()
+
+    def __del__(self):
+        self._send_sock.close()
+        self._context.term()
+
+    def __str__(self):
+        return self._url
+
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__
+                and self._url == other._url)
+
+    def __hash__(self):
+        return hash(self._url)
+
+
+class IpcInbox(Mailbox):
+    __slots__ = ['_port', '_url', '_context', '_recv_sock']
+
+    def __init__(self, address, **kwargs):
+        self._url = 'ipc://' + address
+        self._context = zmq.Context(**kwargs)
+        self._recv_sock = self._context.socket(zmq.PULL)
+        self._recv_sock.bind(self._url)
+
+    def get(self):
+        return decode(unpackb(self._recv_sock.recv(),
+                              encoding='utf-8',
+                              use_list=False))
+
+    def put(self, message):
+        raise NotImplementedError()
+
+    def encode(self):
+        cls = self.__class__
+        return [cls.__module__, cls.__name__, self._url]
+
+    @staticmethod
+    def decode(params):
+        return IpcOutbox(params[0])
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_details):
+        self.__del__()
+
+    def __del__(self):
+        self._recv_sock.close()
+        self._context.term()
+
+    def __str__(self):
+        return self._url
+
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__
+                and self._url == other._url)
+
+    def __hash__(self):
+        return hash(self._url)
+
+
+class IpcInboxR(Mailbox):
+    __slots__ = ['_port', '_url', '_context', '_recv_sock']
+
+    def __init__(self, address, zmq_context=zmq.Context.instance()):
+        self._url = 'ipc://' + address
+        self._context = zmq_context
+        self._recv_sock = self._context.socket(zmq.PULL)
+        self._recv_sock.connect(self._url)
+
+    def get(self):
+        return decode(unpackb(self._recv_sock.recv(),
+                              encoding='utf-8',
+                              use_list=False))
+
+    def put(self, message):
+        raise NotImplementedError()
+
+    def encode(self):
+        raise NotImplementedError()
+
+    @staticmethod
+    def decode(params):
+        raise NotImplementedError()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_details):
+        self.__del__()
+
+    def __del__(self):
+        self._recv_sock.close()
+        self._context.term()
+
+    def __str__(self):
+        return self._url
+
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__
+                and self._url == other._url)
+
+    def __hash__(self):
+        return hash(self._url)
+
+
+class IpcOutbox(Mailbox):
+    __slots__ = ['_url', '_context', '_send_sock']
+
+    def __init__(self, address, **kwargs):
+        self._url = 'ipc://' + address
+        self._context = zmq.Context(**kwargs)
+        self._send_sock = self._context.socket(zmq.PUSH)
+        self._send_sock.connect(self._url)
+
+    def get(self):
+        raise NotImplementedError()
+
+    def put(self, msg):
+        self._send_sock.send(packb(encode(msg),
+                                   encoding='utf-8',
+                                   use_bin_type=True))
+
+    def encode(self):
+        raise NotImplementedError
+
+    @staticmethod
+    def decode(params):
+        raise NotImplementedError
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_details):
+        self.__del__()
+
+    def __del__(self):
+        self._send_sock.close()
+        self._context.term()
+
+    def __str__(self):
+        return self._url
+
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__
+                and self._url == other._url)
+
+    def __hash__(self):
+        return hash(self._url)
+
+
+class IpcOutboxR(Mailbox):
+    __slots__ = ['_url', '_context', '_send_sock']
+
+    def __init__(self, address, zmq_context=zmq.Context.instance()):
+        self._url = 'ipc://' + address
+        self._context = zmq_context
+        self._send_sock = self._context.socket(zmq.PUSH)
+        self._send_sock.bind(self._url)
 
     def get(self):
         raise NotImplementedError()

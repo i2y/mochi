@@ -2,7 +2,7 @@ import argparse
 from pathlib import Path
 import sys
 import os
-from platform import platform
+from platform import platform, system
 import traceback
 
 import astunparse
@@ -271,6 +271,9 @@ def parse_args():
                             help='Remove doc-strings in addition to the -O optimizations.')
     arg_parser.add_argument('-no-mp', '--no-monkeypatch',
                             action='store_true')
+    arg_parser.add_argument('-mc', '--multi-core', action='store_true',
+                            help='''Add spawn_mc function that executes actors in multiple processes
+                             to gain effects of multi-core processor'''),
     arg_parser.add_argument('-init', '--add-init-code', action='store_true',
                             help='Add Mochi init code to Python source code '
                                  'files. This allows running the generated '
@@ -284,6 +287,30 @@ def parse_args():
                             action='store_true')
 
     return arg_parser.parse_args()
+
+
+def run_processes(cpu_nums):
+    from multiprocessing import Process
+    from mochi.actor.actor import spawn_with_mailbox, make_ref
+    from mochi.actor.mailbox import IpcInbox, IpcInboxR
+
+    def processor(address):
+        inbox = IpcInboxR(address)
+        while True:
+            message = inbox.get()
+            fun, args, actor_address = message
+            spawn_with_mailbox(fun,
+                               IpcInbox(actor_address),
+                               *args)
+
+    address = str(make_ref())
+    for i in range(cpu_nums):
+        p = Process(target=processor, args=(address,))
+        if 'Linux' in system():
+            os.system('taskset -p -c %d %d' % ((i % cpu_nums), p.pid))
+        p.start()
+
+    return address
 
 
 def main():
@@ -331,6 +358,22 @@ def main():
                            ast_file_name=args.outfile, show_tokens=args.tokens)
             else:
                 sys.modules['__main__'] = global_env
+
+                if args.multi_core:
+                    address = run_processes(os.cpu_count())
+                    from mochi.actor.actor import make_ref
+                    from mochi.actor.mailbox import IpcOutbox, IpcInbox, IpcOutboxR
+                    from itertools import cycle
+                    from eventlet.green import zmq
+
+                    outbox = IpcOutboxR(address)
+
+                    def spawn_m(fun, *args):
+                        new_address = str(make_ref())
+                        outbox.put([fun, args, new_address])
+                        return IpcOutbox(new_address)
+                    global_env['spawn_mc'] = spawn_m
+
                 load_file(args.file, global_env, optimize=optimize)
         except ParsingError as e:
                 print(e, file=sys.stderr)
