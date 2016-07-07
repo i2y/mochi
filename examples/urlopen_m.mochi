@@ -1,0 +1,30 @@
+#from eventlet.green.urllib.request import urlopen
+#import json
+
+urls = [
+    "http://weather.livedoor.com/forecast/webservice/json/v1?city=140010",
+    "http://weather.livedoor.com/forecast/webservice/json/v1?city=130010",
+    "http://weather.livedoor.com/forecast/webservice/json/v1?city=400040"
+] * 10
+
+
+def read(url):
+    from eventlet.green.urllib.request import urlopen
+    import json
+
+    weather = urlopen(url).read().decode('utf-8') |> json.loads()
+    print(weather['title'])
+    map(-> print($1['dateLabel'], $1['telop']),
+        weather['forecasts']) |> doall()
+    print('')
+
+
+def fetch():
+    from eventlet.green.urllib.request import urlopen
+    import json
+
+    receive:
+        url: read(url)
+
+urls !&> spawn_mc(fetch)
+wait_all()  
