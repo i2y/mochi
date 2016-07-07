@@ -1,8 +1,9 @@
-rply>=0.7.3
-pyrsistent>=0.10.1
-greenlet>=0.4.5
-eventlet>=0.17.2
-msgpack-python>=0.4.6
+rply>=0.7.4
+pyrsistent>=0.11.13
+greenlet>=0.4.10
+eventlet>=0.19.0
+msgpack-python>=0.4.7
 typeannotations>=0.1.0
 astunparse>=1.2.2
 cloudpickle>=0.2.1
+pyzmq>=15.3.0
