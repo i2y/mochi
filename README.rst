@@ -247,14 +247,7 @@ aif (Anaphoric macro)
 Requirements
 ------------
 
--  CPython >= 3.2 or PyPy >= 3.2.1
--  rply >= 0.7.2
--  pyrsistent >= 0.10.1
--  pathlib >= 1.0.1
--  eventlet >= 0.17.1
--  msgpack-python >= 0.4.6
--  typeannotations >= 0.1.0
--  cloudpickle >= 0.2.1
+See requirements.txt
 
 Installation
 ------------
@@ -271,7 +264,6 @@ Optional Installation
 .. code:: sh
 
     $ pip3 install flask Flask-RESTful Pillow RxPY  # to run the examples
-    $ pip3 install pyzmq # to use ZmqInbox and ZmqOutbox
     $ pip3 install kombu # to use KombuMailbox
     $ pip3 install boto # to use SQS as transport of KombuMailbox
     $ pip3 install boto3 # to use SQSMailbox
