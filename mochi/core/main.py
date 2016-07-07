@@ -306,10 +306,9 @@ def run_processes(cpu_nums):
     address = str(make_ref())
     for i in range(cpu_nums):
         p = Process(target=processor, args=(address,))
+        p.start()
         if 'Linux' in system():
             os.system('taskset -p -c %d %d' % ((i % cpu_nums), p.pid))
-        p.start()
-
     return address
 
 
